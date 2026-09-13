@@ -1382,78 +1382,18 @@
     }
 
 
-    /* Amul Butter Tikki */
+
+    /* Amul Butter Tikki - REAL IMAGE */
     .butter-tikki {
       position: absolute;
       z-index: 4;
-      width: 170px;
-      right: 15%;
-      bottom: 7%;
+      width: 190px;
+      height: 190px;
+      right: 13%;
+      bottom: 5%;
+      object-fit: contain;
       pointer-events: none;
       filter: drop-shadow(0 18px 22px rgba(0,0,0,.14));
-      animation: tikkiFloat 5.5s ease-in-out infinite;
-    }
-
-    .tikki-plate {
-      position: relative;
-      width: 145px;
-      height: 105px;
-      margin: auto;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #eeeeee, #bcbcbc);
-      border: 5px solid #d8d8d8;
-      box-shadow: inset 0 5px 8px rgba(255,255,255,.7);
-    }
-
-    .tikki {
-      position: absolute;
-      width: 54px;
-      height: 25px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #f4ca6b 0 7%, transparent 8%),
-                  radial-gradient(circle at 65% 65%, #9d551c 0 5%, transparent 6%),
-                  linear-gradient(145deg, #e8a342, #9a4c16);
-      box-shadow: 0 5px 7px rgba(70,35,10,.28);
-    }
-
-    .tikki.one { left: 22px; top: 42px; transform: rotate(-10deg); }
-    .tikki.two { left: 62px; top: 32px; transform: rotate(7deg); }
-    .tikki.three { left: 82px; top: 53px; transform: rotate(-4deg); }
-
-    .butter-piece {
-      position: absolute;
-      left: 62px;
-      top: 25px;
-      width: 30px;
-      height: 22px;
-      border-radius: 5px;
-      background: #ffd95a;
-      box-shadow: 0 4px 7px rgba(100,70,10,.22);
-      transform: rotate(-8deg);
-      z-index: 5;
-    }
-
-    .butter-tikki-label {
-      margin-top: 7px;
-      text-align: center;
-      color: #201b17;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .4px;
-    }
-
-    .butter-tikki-label span {
-      display: block;
-      margin-top: 2px;
-      color: #d34a25;
-      font-size: 8px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    @keyframes tikkiFloat {
-      0%, 100% { transform: translateY(0) rotate(2deg); }
-      50% { transform: translateY(-13px) rotate(-2deg); }
     }
 
     /* =====================================================
@@ -1556,13 +1496,13 @@
 
       z-index: 2;
 
-      width: 85px;
+      width: 120px;
 
-      height: 145px;
+      height: 205px;
 
-      left: 22%;
+      left: 19%;
 
-      bottom: 18%;
+      bottom: 7%;
 
       object-fit: contain;
 
@@ -3876,22 +3816,15 @@
         src="assets/photos/water.png"
         alt="Drinking water"
       >
-
-      <!-- AMUL BUTTER TIKKI -->
-      <div class="butter-tikki" aria-label="Amul Butter Tikki">
-        <div class="tikki-plate">
-          <div class="tikki one"></div>
-          <div class="tikki two"></div>
-          <div class="tikki three"></div>
-          <div class="tikki four"></div>
-          <div class="butter-piece"></div>
-        </div>
-        <div class="butter-tikki-label">
-          Amul Butter Tikki
-          <span>Hot • Crispy • Fresh</span>
-        </div>
-      </div>
-
+      <!-- AMUL BUTTER TIKKI
+           Replace this image with your own Amul tikki photo.
+           Recommended file name: assets/photos/amul-tikki.png
+      -->
+      <img
+        class="butter-tikki"
+        src="assets/photos/amul-tikki.png"
+        alt="Amul Butter Tikki"
+      >
 
 
       <!-- MAIN STORY -->
