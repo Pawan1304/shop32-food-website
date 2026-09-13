@@ -1344,6 +1344,118 @@
     }
 
 
+
+    /* Story visit-us line */
+    .story-location {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 22px auto 0;
+      color: #6f655d;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .story-location > div {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .story-location strong {
+      color: #201b17;
+      font-size: 13px;
+    }
+
+    .story-location span:last-child {
+      color: #70665d;
+    }
+
+    .location-icon {
+      font-size: 15px;
+    }
+
+
+    /* Amul Butter Tikki */
+    .butter-tikki {
+      position: absolute;
+      z-index: 4;
+      width: 170px;
+      right: 15%;
+      bottom: 7%;
+      pointer-events: none;
+      filter: drop-shadow(0 18px 22px rgba(0,0,0,.14));
+      animation: tikkiFloat 5.5s ease-in-out infinite;
+    }
+
+    .tikki-plate {
+      position: relative;
+      width: 145px;
+      height: 105px;
+      margin: auto;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #eeeeee, #bcbcbc);
+      border: 5px solid #d8d8d8;
+      box-shadow: inset 0 5px 8px rgba(255,255,255,.7);
+    }
+
+    .tikki {
+      position: absolute;
+      width: 54px;
+      height: 25px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #f4ca6b 0 7%, transparent 8%),
+                  radial-gradient(circle at 65% 65%, #9d551c 0 5%, transparent 6%),
+                  linear-gradient(145deg, #e8a342, #9a4c16);
+      box-shadow: 0 5px 7px rgba(70,35,10,.28);
+    }
+
+    .tikki.one { left: 22px; top: 42px; transform: rotate(-10deg); }
+    .tikki.two { left: 62px; top: 32px; transform: rotate(7deg); }
+    .tikki.three { left: 82px; top: 53px; transform: rotate(-4deg); }
+
+    .butter-piece {
+      position: absolute;
+      left: 62px;
+      top: 25px;
+      width: 30px;
+      height: 22px;
+      border-radius: 5px;
+      background: #ffd95a;
+      box-shadow: 0 4px 7px rgba(100,70,10,.22);
+      transform: rotate(-8deg);
+      z-index: 5;
+    }
+
+    .butter-tikki-label {
+      margin-top: 7px;
+      text-align: center;
+      color: #201b17;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .4px;
+    }
+
+    .butter-tikki-label span {
+      display: block;
+      margin-top: 2px;
+      color: #d34a25;
+      font-size: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    @keyframes tikkiFloat {
+      0%, 100% { transform: translateY(0) rotate(2deg); }
+      50% { transform: translateY(-13px) rotate(-2deg); }
+    }
+
     /* =====================================================
        9. FLOATING FOOD IMAGES
 
@@ -1448,9 +1560,9 @@
 
       height: 145px;
 
-      left: 18%;
+      left: 22%;
 
-      bottom: 8%;
+      bottom: 18%;
 
       object-fit: contain;
 
@@ -3075,7 +3187,8 @@
 
 
       .floating-food,
-      .floating-water {
+      .floating-water,
+      .butter-tikki {
         display: none;
       }
 
@@ -3757,11 +3870,26 @@
 
       <!-- WATER -->
 
+
       <img
         class="floating-water"
         src="assets/photos/water.png"
         alt="Drinking water"
       >
+
+      <!-- AMUL BUTTER TIKKI -->
+      <div class="butter-tikki" aria-label="Amul Butter Tikki">
+        <div class="tikki-plate">
+          <div class="tikki one"></div>
+          <div class="tikki two"></div>
+          <div class="tikki three"></div>
+          <div class="butter-piece"></div>
+        </div>
+        <div class="butter-tikki-label">
+          Amul Butter Tikki
+          <span>Hot • Crispy • Fresh</span>
+        </div>
+      </div>
 
 
 
@@ -3807,7 +3935,30 @@
         </p>
 
 
-        <!-- Statistics -->
+<!-- LOCATION CARD -->
+
+        <div class="story-location">
+
+        <span class="location-icon">
+          📍
+        </span>
+
+        <div>
+
+          <strong>
+            Visit us
+          </strong>
+
+          <small>
+            Gate No. 2, GMCH, Chandigarh
+          </small>
+
+        </div>
+
+      </div>
+
+
+                <!-- Statistics -->
 
         <div class="story-stats">
 
@@ -3841,11 +3992,11 @@
           <div class="story-stat">
 
             <strong>
-              2
+              4.9 ★
             </strong>
 
             <span>
-              Contact numbers
+              Customer rating
             </span>
 
           </div>
@@ -3854,7 +4005,7 @@
           <div class="story-stat">
 
             <strong>
-              7 AM
+              7AM–11PM
             </strong>
 
             <span>
@@ -3882,27 +4033,6 @@
       </div>
 
 
-      <!-- LOCATION CARD -->
-
-      <div class="story-location">
-
-        <span class="location-icon">
-          📍
-        </span>
-
-        <div>
-
-          <strong>
-            Visit us
-          </strong>
-
-          <small>
-            Gate No. 2, GMCH, Chandigarh
-          </small>
-
-        </div>
-
-      </div>
 
     </section>
 
