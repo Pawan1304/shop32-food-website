@@ -85,13 +85,40 @@ document.getElementById("cartItems").addEventListener("click", e=>{
 
 document.getElementById("checkoutBtn").onclick = () => {
   if (!cart.length) return;
-  let total=0;
-  const lines=cart.map(row=>{
-    const item=SHOP_CONFIG.menu.find(x=>x.id===row.id); total += item.price*row.qty;
-    return `${row.qty} × ${item.name} - ${money(item.price*row.qty)}`;
-  });
-  const text=`Hello ${SHOP_CONFIG.shopName}!%0A%0AI'd like to order:%0A${lines.map(encodeURIComponent).join("%0A")}%0A%0ATotal: ${encodeURIComponent(money(total))}%0A%0APlease confirm my order.`;
-  window.open(`https://wa.me/${SHOP_CONFIG.whatsapp}?text=${text}`, "_blank");
+
+  let total = 0;
+
+  const lines = cart.map(row => {
+    const item = SHOP_CONFIG.menu.find(x => x.id === row.id);
+
+    if (!item) return "";
+
+    total += item.price * row.qty;
+
+    return `${row.qty} × ${item.name} - ${money(item.price * row.qty)}`;
+  }).filter(Boolean);
+
+  // Create the normal WhatsApp message first
+  const message =
+`Hello ${SHOP_CONFIG.shopName}!
+
+I'd like to order:
+
+${lines.join("\n")}
+
+Total: ${money(total)}
+
+Please confirm my order.`;
+
+  // Get ONLY digits from the WhatsApp number
+  const whatsappNumber = String(SHOP_CONFIG.whatsapp).replace(/\D/g, "");
+
+  // Encode the complete message safely
+  const whatsappURL =
+    `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+  // Open WhatsApp
+  window.open(whatsappURL, "_blank");
 };
 
 renderMenu(); updateCart();
