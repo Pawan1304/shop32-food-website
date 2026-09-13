@@ -91,7 +91,7 @@ document.getElementById("checkoutBtn").onclick = () => {
     return `${row.qty} × ${item.name} - ${money(item.price*row.qty)}`;
   });
   const text=`Hello ${SHOP_CONFIG.shopName}!%0A%0AI'd like to order:%0A${lines.map(encodeURIComponent).join("%0A")}%0A%0ATotal: ${encodeURIComponent(money(total))}%0A%0APlease confirm my order.`;
-  window.open(`https://wa.me/${SHOP_CONFIG.phone}?text=${text}`, "_blank");
+  window.open(`https://wa.me/${SHOP_CONFIG.whatsapp}?text=${text}`, "_blank");
 };
 
 renderMenu(); updateCart();
