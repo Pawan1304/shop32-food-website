@@ -2357,6 +2357,203 @@
       }
     }
 
+
+
+    /* =====================================================
+       LANGAR SEVA / BULK ORDERS
+       ===================================================== */
+
+    .langar-section {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 55px;
+      align-items: center;
+      margin: 0 7vw 90px;
+      padding: clamp(34px, 5vw, 70px);
+      overflow: hidden;
+      color: white;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(255,174,89,.25), transparent 35%),
+        linear-gradient(135deg, #201b17, #38251d 55%, #5a2c1e);
+      border-radius: 34px;
+      box-shadow: 0 25px 65px rgba(43,25,15,.18);
+    }
+
+    .langar-section::before {
+      content: "SEVA";
+      position: absolute;
+      right: -20px;
+      bottom: -45px;
+      color: rgba(255,255,255,.035);
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(100px, 18vw, 220px);
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .langar-copy,
+    .langar-visual {
+      position: relative;
+      z-index: 2;
+    }
+
+    .langar-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      color: #ffd4ad;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.6px;
+    }
+
+    .langar-copy h2 {
+      margin: 18px 0 12px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(38px, 5vw, 65px);
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .langar-copy h2 span {
+      color: #ff8b52;
+    }
+
+    .langar-copy > p {
+      max-width: 590px;
+      margin: 0;
+      color: #dbcfc6;
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .langar-points {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .langar-point {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 13px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 16px;
+    }
+
+    .langar-point-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      color: #201b17;
+      background: #ffb36d;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .langar-point strong,
+    .langar-point small {
+      display: block;
+    }
+
+    .langar-point strong {
+      font-size: 12px;
+    }
+
+    .langar-point small {
+      margin-top: 3px;
+      color: #bdb0a7;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .langar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 27px;
+    }
+
+    .langar-visual {
+      min-height: 390px;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 28px;
+    }
+
+    .langar-visual img {
+      width: 100%;
+      height: 350px;
+      object-fit: cover;
+      border-radius: 21px;
+      background: #fff7f1;
+      box-shadow: 0 20px 45px rgba(0,0,0,.22);
+    }
+
+    @media (max-width: 1000px) {
+      .langar-section {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .langar-visual {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .langar-section {
+        margin: 0 20px 70px;
+        padding: 27px 20px 25px;
+        border-radius: 27px;
+      }
+
+      .langar-copy h2 {
+        font-size: 42px;
+      }
+
+      .langar-copy > p {
+        font-size: 13px;
+      }
+
+      .langar-points {
+        grid-template-columns: 1fr;
+      }
+
+      .langar-actions {
+        flex-direction: column;
+      }
+
+      .langar-actions .btn {
+        width: 100%;
+        text-align: center;
+      }
+
+      .langar-visual {
+        min-height: 260px;
+        padding: 10px;
+        border-radius: 20px;
+      }
+
+      .langar-visual img {
+        height: 240px;
+        border-radius: 15px;
+      }
+    }
+
     /* =====================================================
        17. FOOTER/* =====================================================
        17. FOOTER
@@ -3505,6 +3702,7 @@
     <nav class="desktop-nav" aria-label="Main navigation">
       <a href="#home" data-nav-link>Home</a>
       <a href="#menu" data-nav-link>Menu</a>
+      <a href="#langar" data-nav-link>Langar Seva</a>
       <a href="#photos" data-nav-link>Photos</a>
       <a href="#about" data-nav-link>About</a>
       <a href="#reviews" data-nav-link>Reviews</a>
@@ -3525,6 +3723,7 @@
   <div class="mobile-dropdown" id="mobileDropdown">
     <a href="#home">Home</a>
     <a href="#menu">Menu</a>
+    <a href="#langar">Langar Seva</a>
     <a href="#photos">Photos</a>
     <a href="#about">About</a>
     <a href="#reviews">Reviews</a>
@@ -4291,6 +4490,79 @@
 
     </section>
 
+
+
+
+
+    <!-- =====================================================
+         LANGAR SEVA / BULK ORDERS
+         ===================================================== -->
+
+    <section id="langar" class="langar-section">
+
+      <div class="langar-copy">
+
+        <span class="langar-eyebrow">🍲 LANGAR SEVA • BULK ORDERS</span>
+
+        <h2>
+          Food made to
+          <br>
+          <span>serve everyone.</span>
+        </h2>
+
+        <p>
+          Planning a langar, community gathering, religious function,
+          office event or a large family function? We provide fresh,
+          pure vegetarian food in bulk, prepared with the same care
+          and homely taste our customers have trusted since 1996.
+        </p>
+
+        <div class="langar-points">
+
+          <div class="langar-point">
+            <span class="langar-point-icon">✓</span>
+            <span><strong>Bulk Food Orders</strong><small>Suitable for large gatherings and events.</small></span>
+          </div>
+
+          <div class="langar-point">
+            <span class="langar-point-icon">🌱</span>
+            <span><strong>Pure Vegetarian</strong><small>Simple, fresh and homely vegetarian food.</small></span>
+          </div>
+
+          <div class="langar-point">
+            <span class="langar-point-icon">👥</span>
+            <span><strong>Large Gatherings</strong><small>Food planning for groups of different sizes.</small></span>
+          </div>
+
+          <div class="langar-point">
+            <span class="langar-point-icon">🙏</span>
+            <span><strong>Langar &amp; Seva</strong><small>Food service for community and seva occasions.</small></span>
+          </div>
+
+        </div>
+
+        <div class="langar-actions">
+          <a
+            class="btn btn-whatsapp"
+            href="https://wa.me/919779159680?text=Hello%20Sudh%20Vaishno%20Tandoor!%20I%20want%20to%20enquire%20about%20a%20Langar%20%2F%20Bulk%20Food%20Order."
+            target="_blank"
+            rel="noopener"
+          >💬 WhatsApp for Bulk Order</a>
+
+          <a class="btn btn-light" href="tel:+919779159680">📞 Call for Enquiry</a>
+        </div>
+
+      </div>
+
+      <div class="langar-visual">
+        <img
+          src="assets/photos/langar.png"
+          alt="Langar and bulk vegetarian food service"
+          loading="lazy"
+        >
+      </div>
+
+    </section>
 
 
     <!-- =====================================================
