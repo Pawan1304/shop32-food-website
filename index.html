@@ -1,1065 +1,4415 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- =====================================================
+       BASIC SETTINGS
+       ===================================================== -->
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <meta
     name="description"
-    content="Fresh, delicious food from our kitchen. View menu, reviews, photos and place your order on WhatsApp."
-  />
-
-  <title>Sudh Vaishno Tandoor | Pure Vegetarian Food | Chandigarh</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
-    rel="stylesheet"
+    content="Sudh Vaishno Tandoor - Pure vegetarian food in Chandigarh since 1996. Order by phone or WhatsApp."
   >
 
-  <link rel="stylesheet" href="styles.css" />
-</head>
-
-<body>
-
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
-
-  <header class="topbar">
-
-```
-<a class="brand" href="#home" aria-label="Home">
-
-  <span class="brand-mark">🍽️</span>
-
-  <span>
-    <strong data-shop-name>Sudh Vaishno Tandoor</strong>
-    <small>Pure Vegetarian • Since 1996</small>
-  </span>
-
-</a>
-
-
-<nav class="desktop-nav">
-  <a href="#home">Home</a>
-  <a href="#menu">Menu</a>
-  <a href="#photos">Photos</a>
-  <a href="#about">About</a>
-  <a href="#reviews">Reviews</a>
-  <a href="#contact">Contact</a>
-</nav>
-
-
-<a class="btn btn-primary nav-order" href="#menu">
-  Order Food
-</a>
-```
-
-  </header>
-
-  <main>
-
-```
-<!-- =========================================================
-     HERO SECTION
-     ========================================================= -->
-
-<section id="home" class="hero hero-video">
-
-  <!-- Background food video -->
-
-  <video
-    class="hero-video-bg"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="auto"
-    poster="menu-poster.jpg"
-    aria-hidden="true"
-  >
-    <source src="food-video.mp4" type="video/mp4">
-  </video>
-
-
-  <!-- Dark overlay -->
-
-  <div class="hero-video-overlay"></div>
-
-
-  <!-- Main content -->
-
-  <div class="hero-video-content">
-
-    <div class="hero-badge">
-      <span>🍃</span>
-      PURE VEGETARIAN
-    </div>
-
-
-    <h1>
-      Sudh Vaishno<br>
-      <span>Tandoor</span>
-    </h1>
-
-
-    <p class="hero-subtitle">
-      दिल से बना, स्वाद घर जैसा
-    </p>
-
-
-    <p class="hero-description">
-      Pure vegetarian food serving Chandigarh since 1996.
-      Fresh, tasty and made with care.
-    </p>
-
-
-    <div class="hero-order-buttons">
-
-      <!-- Call -->
-
-      <a
-        class="hero-order-btn call-btn"
-        href="tel:+919779159680"
-      >
-        <span class="order-icon">📞</span>
-
-        <span>
-          <small>ORDER BY</small>
-          CALL
-        </span>
-      </a>
-
-
-      <!-- WhatsApp -->
-
-      <a
-        class="hero-order-btn whatsapp-btn"
-        href="https://wa.me/919779159680?text=Hello%20Sudh%20Vaishno%20Tandoor,%20I%20would%20like%20to%20place%20an%20order."
-        target="_blank"
-        rel="noopener"
-      >
-        <span class="order-icon">💬</span>
-
-        <span>
-          <small>ORDER VIA</small>
-          WHATSAPP
-        </span>
-      </a>
-
-    </div>
-
-
-    <div class="hero-location">
-      📍 Gate No. 2, GMCH, Chandigarh
-    </div>
-
-  </div>
-
-
-  <!-- Animated scroll indicator -->
-
-  <a href="#menu" class="scroll-down">
-
-    <span>Scroll down</span>
-
-    <span class="scroll-arrow">
-      ↓
-    </span>
-
-  </a>
-
-</section>
-
-
-
-<!-- =========================================================
-     NEW SECTION 1
-     FEATURES / "WHAT'S WAITING FOR YOU?"
-     ========================================================= -->
-
-<section class="experience-section">
-
-  <!-- Small heading -->
-
-  <div class="experience-label">
-    SUDH VAISHNO TANDOOR
-  </div>
-
-
-  <!-- Main heading -->
-
-  <h2 class="experience-title">
-    What's waiting for you
-    <br>
-    <span>at our shop?</span>
-  </h2>
-
-
-  <!-- Description -->
-
-  <p class="experience-description">
-    Fresh vegetarian food, homely taste and simple
-    ordering — all in one place.
-  </p>
-
+  <title>
+    Sudh Vaishno Tandoor | Pure Vegetarian Food | Chandigarh
+  </title>
 
 
   <!-- =====================================================
-       MAIN FEATURE AREA
+       GOOGLE FONTS
        ===================================================== -->
 
-  <div class="experience-content">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
 
-    <!-- ================= LEFT FEATURES ================= -->
+  <!-- =====================================================
+       ALL WEBSITE CSS
+       ===================================================== -->
 
-    <div class="feature-column feature-left">
+  <style>
+
+    /* =====================================================
+       1. BASIC RESET
+       ===================================================== */
+
+    * {
+      box-sizing: border-box;
+    }
 
 
-      <!-- Feature 1 -->
+    html {
+      scroll-behavior: smooth;
+    }
 
-      <div class="feature-card">
 
-        <div class="feature-icon">
-          🌱
+    body {
+      margin: 0;
+
+      font-family:
+        "DM Sans",
+        Arial,
+        sans-serif;
+
+      color: #201b17;
+
+      background: #fffaf4;
+    }
+
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+
+    button {
+      font: inherit;
+      border: 0;
+      cursor: pointer;
+    }
+
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+
+    /* =====================================================
+       2. COMMON BUTTONS
+       ===================================================== */
+
+    .btn {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 9px;
+
+      padding: 13px 20px;
+
+      border-radius: 14px;
+
+      font-size: 13px;
+
+      font-weight: 800;
+
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        background .25s ease;
+    }
+
+
+    .btn:hover {
+      transform: translateY(-3px);
+    }
+
+
+    .btn-primary {
+      color: white;
+
+      background: #f04b23;
+
+      box-shadow:
+        0 10px 25px
+        rgba(240, 75, 35, .20);
+    }
+
+
+    .btn-light {
+
+      color: #201b17;
+
+      background: white;
+
+      border: 1px solid #eadfd5;
+    }
+
+
+    .btn-whatsapp {
+
+      color: white;
+
+      background: #1ca957;
+    }
+
+
+    /* =====================================================
+       3. HEADER
+       ===================================================== */
+
+    .topbar {
+
+      position: sticky;
+
+      top: 0;
+
+      z-index: 100;
+
+      height: 76px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding:
+        0 clamp(20px, 5vw, 76px);
+
+      background:
+        rgba(255, 250, 244, .96);
+
+      backdrop-filter: blur(14px);
+
+      border-bottom:
+        1px solid #eee4d9;
+    }
+
+
+    .brand {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+    }
+
+
+    .brand-mark {
+
+      width: 40px;
+
+      height: 40px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 13px;
+
+      background: #201b17;
+
+      color: white;
+
+      font-size: 20px;
+    }
+
+
+    .brand strong {
+      display: block;
+
+      font-size: 15px;
+    }
+
+
+    .brand small {
+
+      display: block;
+
+      margin-top: 2px;
+
+      color: #81766b;
+
+      font-size: 10px;
+    }
+
+
+    /* Desktop navigation */
+
+    .desktop-nav {
+
+      display: flex;
+
+      gap: 28px;
+
+      color: #6d6258;
+
+      font-size: 13px;
+
+      font-weight: 700;
+    }
+
+
+    .desktop-nav a {
+      transition: color .2s ease;
+    }
+
+
+    .desktop-nav a:hover {
+      color: #f04b23;
+    }
+
+
+    /* =====================================================
+       4. HERO VIDEO SECTION
+       ===================================================== */
+
+    .hero-video {
+
+      position: relative;
+
+      min-height: 100vh;
+
+      height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 80px 25px;
+
+      overflow: hidden;
+
+      color: white;
+
+      background: #111;
+    }
+
+
+    /* Background video */
+
+    .hero-video-bg {
+
+      position: absolute;
+
+      inset: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: cover;
+
+      z-index: 0;
+
+      pointer-events: none;
+    }
+
+
+    /* Dark layer */
+
+    .hero-video-overlay {
+
+      position: absolute;
+
+      inset: 0;
+
+      z-index: 1;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(0,0,0,.38) 0%,
+          rgba(0,0,0,.30) 35%,
+          rgba(0,0,0,.70) 100%
+        );
+    }
+
+
+    /* Center glow */
+
+    .hero-video-overlay::after {
+
+      content: "";
+
+      position: absolute;
+
+      inset: 0;
+
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(0,0,0,.03),
+          rgba(0,0,0,.38)
+        );
+    }
+
+
+    /* Hero content */
+
+    .hero-video-content {
+
+      position: relative;
+
+      z-index: 2;
+
+      width: min(900px, 94%);
+
+      text-align: center;
+
+      margin-top: 20px;
+    }
+
+
+    /* Vegetarian badge */
+
+    .hero-badge {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 8px;
+
+      padding: 9px 16px;
+
+      border-radius: 100px;
+
+      background:
+        rgba(255,255,255,.14);
+
+      border:
+        1px solid rgba(255,255,255,.30);
+
+      backdrop-filter: blur(10px);
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 1.7px;
+
+      margin-bottom: 22px;
+
+      animation:
+        fadeUp 1s ease both;
+    }
+
+
+    /* Hero title */
+
+    .hero-video-content h1 {
+
+      margin: 0;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(55px, 9vw, 110px);
+
+      line-height: .90;
+
+      letter-spacing: -4px;
+
+      font-weight: 800;
+
+      color: white;
+
+      text-shadow:
+        0 4px 25px
+        rgba(0,0,0,.45);
+
+      animation:
+        fadeUp 1s ease .15s both;
+    }
+
+
+    .hero-video-content h1 span {
+      color: #ff5428;
+    }
+
+
+    /* Hindi tagline */
+
+    .hero-subtitle {
+
+      margin:
+        25px 0 8px;
+
+      font-size:
+        clamp(20px, 3vw, 30px);
+
+      font-weight: 700;
+
+      text-shadow:
+        0 3px 15px
+        rgba(0,0,0,.5);
+
+      animation:
+        fadeUp 1s ease .25s both;
+    }
+
+
+    /* Hero description */
+
+    .hero-description {
+
+      max-width: 600px;
+
+      margin: 0 auto;
+
+      color:
+        rgba(255,255,255,.88);
+
+      font-size: 15px;
+
+      line-height: 1.7;
+
+      animation:
+        fadeUp 1s ease .35s both;
+    }
+
+
+    /* Hero buttons */
+
+    .hero-order-buttons {
+
+      display: flex;
+
+      justify-content: center;
+
+      gap: 14px;
+
+      margin-top: 32px;
+
+      animation:
+        fadeUp 1s ease .45s both;
+    }
+
+
+    .hero-order-btn {
+
+      min-width: 205px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      padding: 14px 22px;
+
+      border-radius: 14px;
+
+      color: white;
+
+      font-weight: 800;
+
+      box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.25);
+
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+    }
+
+
+    .hero-order-btn:hover {
+
+      transform: translateY(-4px);
+
+      box-shadow:
+        0 16px 35px
+        rgba(0,0,0,.35);
+    }
+
+
+    .order-icon {
+      font-size: 22px;
+    }
+
+
+    .hero-order-btn small {
+
+      display: block;
+
+      font-size: 8px;
+
+      letter-spacing: 1.3px;
+
+      opacity: .85;
+
+      margin-bottom: 2px;
+    }
+
+
+    .hero-order-btn span:last-child {
+
+      font-size: 15px;
+
+      letter-spacing: .4px;
+    }
+
+
+    .call-btn {
+      background: #ef4b23;
+    }
+
+
+    .whatsapp-btn {
+      background: #1ca957;
+    }
+
+
+    .hero-location {
+
+      margin-top: 22px;
+
+      color:
+        rgba(255,255,255,.82);
+
+      font-size: 11px;
+
+      animation:
+        fadeUp 1s ease .55s both;
+    }
+
+
+    /* Scroll indicator */
+
+    .scroll-down {
+
+      position: absolute;
+
+      z-index: 3;
+
+      bottom: 28px;
+
+      left: 50%;
+
+      transform:
+        translateX(-50%);
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      gap: 8px;
+
+      color: white;
+
+      font-size: 12px;
+
+      font-weight: 600;
+
+      text-shadow:
+        0 2px 8px
+        rgba(0,0,0,.5);
+
+      animation:
+        scrollFloat 1.8s ease-in-out infinite;
+    }
+
+
+    .scroll-arrow {
+      font-size: 26px;
+    }
+
+
+    /* =====================================================
+       5. EXPERIENCE SECTION
+       ===================================================== */
+
+    .experience-section {
+
+      position: relative;
+
+      padding:
+        110px 7vw;
+
+      overflow: hidden;
+
+      text-align: center;
+
+      background: #fff7f1;
+    }
+
+
+    .experience-label {
+
+      margin-bottom: 12px;
+
+      color: #ed4b25;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 2px;
+    }
+
+
+    .experience-title {
+
+      margin: 0;
+
+      color: #201b17;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(42px, 5vw, 68px);
+
+      line-height: 1.05;
+
+      letter-spacing: -2px;
+    }
+
+
+    .experience-title span {
+      color: #ed4b25;
+    }
+
+
+    .experience-description {
+
+      max-width: 560px;
+
+      margin:
+        20px auto 60px;
+
+      color: #776c63;
+
+      font-size: 16px;
+
+      line-height: 1.7;
+    }
+
+
+    /* Feature layout */
+
+    .experience-content {
+
+      max-width: 1100px;
+
+      margin: auto;
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 300px 1fr;
+
+      align-items: center;
+
+      gap: 55px;
+    }
+
+
+    .feature-column {
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 22px;
+    }
+
+
+    /* Feature card */
+
+    .feature-card {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 14px;
+
+      padding: 18px;
+
+      text-align: left;
+
+      background: white;
+
+      border:
+        1px solid #eee2d8;
+
+      border-radius: 20px;
+
+      box-shadow:
+        0 12px 30px
+        rgba(45,29,18,.08);
+
+      transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+    }
+
+
+    .feature-card:hover {
+
+      transform:
+        translateY(-6px);
+
+      box-shadow:
+        0 20px 40px
+        rgba(45,29,18,.13);
+    }
+
+
+    .feature-icon {
+
+      flex-shrink: 0;
+
+      width: 55px;
+
+      height: 55px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 17px;
+
+      background: #fff0e7;
+
+      font-size: 25px;
+    }
+
+
+    .feature-card strong {
+
+      display: block;
+
+      font-size: 14px;
+    }
+
+
+    .feature-card small {
+
+      display: block;
+
+      margin-top: 4px;
+
+      color: #8a7e74;
+
+      font-size: 10px;
+    }
+
+
+    /* =====================================================
+       6. PHONE MOCKUP
+       ===================================================== */
+
+    .food-phone {
+
+      display: flex;
+
+      justify-content: center;
+    }
+
+
+    .phone-frame {
+
+      position: relative;
+
+      width: 250px;
+
+      height: 480px;
+
+      padding: 9px;
+
+      background: #171717;
+
+      border-radius: 38px;
+
+      box-shadow:
+        0 30px 70px
+        rgba(30,20,10,.25);
+
+      transform: rotate(-2deg);
+
+      animation:
+        phoneFloat 4s ease-in-out infinite;
+    }
+
+
+    .phone-speaker {
+
+      position: absolute;
+
+      top: 16px;
+
+      left: 50%;
+
+      transform:
+        translateX(-50%);
+
+      width: 70px;
+
+      height: 20px;
+
+      border-radius: 20px;
+
+      background: #171717;
+
+      z-index: 5;
+    }
+
+
+    .phone-screen {
+
+      width: 100%;
+
+      height: 100%;
+
+      padding:
+        35px 16px 15px;
+
+      overflow: hidden;
+
+      background: #fffaf5;
+
+      border-radius: 30px;
+    }
+
+
+    .phone-logo {
+
+      width: 42px;
+
+      height: 42px;
+
+      margin: auto;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 13px;
+
+      background: #ed4b25;
+
+      font-size: 20px;
+    }
+
+
+    .phone-small {
+
+      margin: 9px 0;
+
+      text-align: center;
+
+      color: #71675f;
+
+      font-size: 7px;
+
+      font-weight: 800;
+
+      letter-spacing: 1px;
+    }
+
+
+    .phone-screen h3 {
+
+      margin:
+        10px 0 15px;
+
+      text-align: center;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size: 23px;
+
+      line-height: 1;
+    }
+
+
+    .phone-screen h3 span {
+      color: #ed4b25;
+    }
+
+
+    .phone-screen img {
+
+      width: 100%;
+
+      height: 220px;
+
+      object-fit: contain;
+
+      border-radius: 17px;
+
+      background: #fff;
+    }
+
+
+    .phone-menu-button {
+
+      display: block;
+
+      margin-top: 13px;
+
+      padding: 11px;
+
+      text-align: center;
+
+      color: white;
+
+      background: #ed4b25;
+
+      border-radius: 10px;
+
+      font-size: 11px;
+
+      font-weight: 800;
+    }
+
+
+    .experience-bottom {
+
+      display: flex;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      margin-top: 55px;
+
+      color: #80746b;
+
+      font-size: 11px;
+
+      font-weight: 600;
+    }
+
+
+    /* =====================================================
+       7. STORY SECTION
+       ===================================================== */
+
+    .story-section {
+
+      position: relative;
+
+      min-height: 760px;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding:
+        120px 7vw;
+
+      overflow: hidden;
+
+      background: white;
+    }
+
+
+    /* Large decorative circle */
+
+    .story-section::before {
+
+      content: "";
+
+      position: absolute;
+
+      width: 850px;
+
+      height: 850px;
+
+      left: -560px;
+
+      top: -180px;
+
+      border:
+        1px solid #f4b8a8;
+
+      border-radius: 50%;
+
+      opacity: .6;
+    }
+
+
+    .story-section::after {
+
+      content: "";
+
+      position: absolute;
+
+      width: 750px;
+
+      height: 750px;
+
+      right: -500px;
+
+      bottom: -300px;
+
+      border:
+        1px solid #f4b8a8;
+
+      border-radius: 50%;
+
+      opacity: .6;
+    }
+
+
+    .story-content {
+
+      position: relative;
+
+      z-index: 10;
+
+      max-width: 730px;
+
+      text-align: center;
+    }
+
+
+    .story-content h2 {
+
+      margin: 0;
+
+      color: #201b17;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(44px, 6vw, 72px);
+
+      line-height: 1;
+
+      letter-spacing: -3px;
+    }
+
+
+    .story-content h2 span {
+      color: #ed4b25;
+    }
+
+
+    .story-content > p {
+
+      max-width: 610px;
+
+      margin:
+        22px auto 0;
+
+      color: #70665d;
+
+      font-size: 16px;
+
+      line-height: 1.7;
+    }
+
+
+    /* =====================================================
+       8. STORY STATISTICS
+       ===================================================== */
+
+    .story-stats {
+
+      max-width: 720px;
+
+      margin:
+        50px auto 35px;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      overflow: hidden;
+
+      background: #fffaf5;
+
+      border:
+        1px solid #f0e1d6;
+
+      border-radius: 24px;
+
+      box-shadow:
+        0 18px 45px
+        rgba(40,25,10,.08);
+    }
+
+
+    .story-stat {
+
+      padding:
+        24px 10px;
+
+      border-right:
+        1px solid #eadfd5;
+    }
+
+
+    .story-stat:last-child {
+      border-right: 0;
+    }
+
+
+    .story-stat strong {
+
+      display: block;
+
+      color: #ed4b25;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size: 29px;
+    }
+
+
+    .story-stat span {
+
+      display: block;
+
+      margin-top: 5px;
+
+      color: #81766c;
+
+      font-size: 10px;
+    }
+
+
+    .story-button {
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 12px;
+
+      padding:
+        14px 22px;
+
+      color: white;
+
+      background: #201b17;
+
+      border-radius: 13px;
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      transition:
+        transform .25s ease,
+        background .25s ease;
+    }
+
+
+    .story-button:hover {
+
+      transform:
+        translateY(-4px);
+
+      background: #ed4b25;
+    }
+
+
+    /* =====================================================
+       9. FLOATING FOOD IMAGES
+
+       YOUR ACTUAL FOOD PHOTOS
+       ===================================================== */
+
+    .floating-food {
+
+      position: absolute;
+
+      z-index: 3;
+
+      object-fit: contain;
+
+      pointer-events: none;
+
+      filter:
+        drop-shadow(
+          0 22px 25px
+          rgba(0,0,0,.16)
+        );
+    }
+
+
+    /* Roti */
+
+    .food-roti {
+
+      width: 230px;
+
+      height: 230px;
+
+      left: 3%;
+
+      top: 25%;
+
+      animation:
+        rotiFloat 5s ease-in-out infinite;
+    }
+
+
+    /* Dal */
+
+    .food-dal {
+
+      width: 210px;
+
+      height: 210px;
+
+      right: 5%;
+
+      top: 7%;
+
+      animation:
+        dalFloat 6s ease-in-out infinite;
+    }
+
+
+    /* Rajma rice */
+
+    .food-rajma {
+
+      width: 260px;
+
+      height: 260px;
+
+      right: 2%;
+
+      top: 43%;
+
+      animation:
+        rajmaFloat 6s ease-in-out infinite;
+    }
+
+
+    /* Paratha */
+
+    .food-paratha {
+
+      width: 245px;
+
+      height: 245px;
+
+      left: 6%;
+
+      bottom: 2%;
+
+      animation:
+        parathaFloat 6s ease-in-out infinite;
+    }
+
+
+    /* Water bottle */
+
+    .floating-water {
+
+      position: absolute;
+
+      z-index: 2;
+
+      width: 85px;
+
+      height: 145px;
+
+      left: 18%;
+
+      bottom: 8%;
+
+      object-fit: contain;
+
+      filter:
+        drop-shadow(
+          0 15px 20px
+          rgba(0,0,0,.12)
+        );
+
+      animation:
+        waterFloat 4s ease-in-out infinite;
+    }
+
+
+    /* =====================================================
+       10. TRUST STRIP
+       ===================================================== */
+
+    .trust-strip {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 20px;
+
+      padding:
+        25px clamp(20px, 7vw, 100px);
+
+      color: white;
+
+      background: #201b17;
+    }
+
+
+    .trust-strip div {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 10px;
+    }
+
+
+    .trust-strip strong {
+      font-size: 17px;
+    }
+
+
+    .trust-strip span {
+
+      color: #c9bfb5;
+
+      font-size: 11px;
+    }
+
+
+    /* =====================================================
+       11. COMMON SECTION
+       ===================================================== */
+
+    .section {
+
+      padding:
+        100px clamp(20px, 7vw, 100px);
+    }
+
+
+    .section-heading {
+
+      display: flex;
+
+      align-items: end;
+
+      justify-content: space-between;
+
+      gap: 30px;
+
+      margin-bottom: 38px;
+    }
+
+
+    .section-heading h2,
+    .about-copy h2,
+    .contact-section h2 {
+
+      margin:
+        8px 0;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(34px, 4vw, 52px);
+
+      line-height: 1.05;
+    }
+
+
+    .section-heading p,
+    .about-copy > p {
+
+      margin: 8px 0;
+
+      color: #766c63;
+
+      line-height: 1.7;
+    }
+
+
+    .eyebrow {
+
+      color: #d54a27;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 1.5px;
+    }
+
+
+    .centered {
+
+      display: block;
+
+      text-align: center;
+    }
+
+
+    /* =====================================================
+       12. MENU
+       ===================================================== */
+
+    .menu-section {
+      background: #fffaf4;
+    }
+
+
+    .cart-button {
+
+      padding:
+        13px 18px;
+
+      color: white;
+
+      background: #201b17;
+
+      border-radius: 14px;
+
+      font-weight: 800;
+    }
+
+
+    .cart-button span {
+
+      display: inline-grid;
+
+      place-items: center;
+
+      width: 22px;
+
+      height: 22px;
+
+      margin-left: 6px;
+
+      color: white;
+
+      background: #f04b23;
+
+      border-radius: 50%;
+
+      font-size: 11px;
+    }
+
+
+    .category-tabs {
+
+      display: flex;
+
+      gap: 9px;
+
+      overflow-x: auto;
+
+      padding-bottom: 10px;
+
+      margin-bottom: 28px;
+    }
+
+
+    .category-tabs button {
+
+      white-space: nowrap;
+
+      padding:
+        11px 17px;
+
+      color: #6f645a;
+
+      background: white;
+
+      border:
+        1px solid #e9ded2;
+
+      border-radius: 100px;
+
+      font-size: 12px;
+
+      font-weight: 800;
+    }
+
+
+    .category-tabs button.active {
+
+      color: white;
+
+      background: #f04b23;
+
+      border-color: #f04b23;
+    }
+
+
+    .menu-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 20px;
+    }
+
+
+    .menu-card {
+
+      overflow: hidden;
+
+      background: white;
+
+      border:
+        1px solid #eee4d9;
+
+      border-radius: 23px;
+
+      box-shadow:
+        0 8px 24px
+        rgba(52,37,20,.05);
+    }
+
+
+    .menu-img {
+
+      width: 100%;
+
+      height: 190px;
+
+      object-fit: cover;
+    }
+
+
+    .menu-body {
+      padding: 17px;
+    }
+
+
+    .menu-body h3 {
+
+      margin:
+        0 0 5px;
+
+      font-size: 16px;
+    }
+
+
+    .menu-body p {
+
+      min-height: 36px;
+
+      margin:
+        0 0 15px;
+
+      color: #857a71;
+
+      font-size: 12px;
+
+      line-height: 1.5;
+    }
+
+
+    .menu-bottom {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+    }
+
+
+    .price {
+
+      font-size: 17px;
+
+      font-weight: 800;
+    }
+
+
+    .add-btn {
+
+      padding:
+        8px 13px;
+
+      color: #e84922;
+
+      background: #fff0e7;
+
+      border-radius: 10px;
+
+      font-size: 12px;
+
+      font-weight: 800;
+    }
+
+
+    /* =====================================================
+       13. ABOUT
+       ===================================================== */
+
+    .about-section {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 70px;
+
+      align-items: center;
+
+      background: white;
+    }
+
+
+    .about-image {
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      min-height: 500px;
+
+      padding: 20px;
+
+      background: #fff7f1;
+
+      border-radius: 30px;
+    }
+
+
+    .about-image img {
+
+      width: 100%;
+
+      height: 480px;
+
+      object-fit: contain;
+
+      border-radius: 25px;
+    }
+
+
+    .about-points {
+
+      display: grid;
+
+      gap: 16px;
+
+      margin-top: 28px;
+    }
+
+
+    .about-points div {
+
+      display: flex;
+
+      gap: 12px;
+    }
+
+
+    .about-points > div > span {
+
+      flex-shrink: 0;
+
+      width: 29px;
+
+      height: 29px;
+
+      display: grid;
+
+      place-items: center;
+
+      color: #17924c;
+
+      background: #e8f7ee;
+
+      border-radius: 50%;
+
+      font-weight: 800;
+    }
+
+
+    .about-points p {
+      margin: 0;
+    }
+
+
+    .about-points strong,
+    .about-points small {
+      display: block;
+    }
+
+
+    .about-points small {
+
+      margin-top: 3px;
+
+      color: #81766b;
+
+      font-size: 12px;
+    }
+
+
+    /* =====================================================
+       14. PHOTOS
+       ===================================================== */
+
+    .photos-section {
+      background: #fffaf4;
+    }
+
+
+    .photo-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        2fr 1fr 1fr;
+
+      grid-template-rows:
+        230px 230px;
+
+      gap: 14px;
+    }
+
+
+    .photo-grid img {
+
+      width: 100%;
+
+      height: 100%;
+
+      object-fit: contain;
+
+      padding: 10px;
+
+      background: white;
+
+      border-radius: 20px;
+
+      transition:
+        transform .25s ease;
+    }
+
+
+    .photo-grid img:hover {
+      transform: scale(1.02);
+    }
+
+
+    .photo-grid img:first-child {
+      grid-row: span 2;
+    }
+
+
+    /* =====================================================
+       15. REVIEWS
+       ===================================================== */
+
+    .reviews-section {
+      background: white;
+    }
+
+
+    .reviews-grid {
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap: 18px;
+    }
+
+
+    .review {
+
+      padding: 25px;
+
+      background: #fffaf4;
+
+      border:
+        1px solid #eee4d9;
+
+      border-radius: 22px;
+    }
+
+
+    .stars {
+
+      color: #e99a2a;
+
+      letter-spacing: 2px;
+    }
+
+
+    .review p {
+
+      margin:
+        18px 0 25px;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size: 18px;
+
+      line-height: 1.55;
+
+      font-weight: 600;
+    }
+
+
+    .reviewer {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+    }
+
+
+    .reviewer > span {
+
+      width: 38px;
+
+      height: 38px;
+
+      display: grid;
+
+      place-items: center;
+
+      color: white;
+
+      background: #201b17;
+
+      border-radius: 50%;
+
+      font-weight: 800;
+    }
+
+
+    .reviewer strong,
+    .reviewer small {
+      display: block;
+    }
+
+
+    .reviewer small {
+
+      margin-top: 2px;
+
+      color: #887d73;
+
+      font-size: 10px;
+    }
+
+
+    /* =====================================================
+       16. CONTACT
+       ===================================================== */
+
+    .contact-section {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 30px;
+
+      margin:
+        0 clamp(20px, 7vw, 100px) 90px;
+
+      padding:
+        55px 60px;
+
+      color: white;
+
+      background: #f04b23;
+
+      border-radius: 30px;
+    }
+
+
+    .contact-section .eyebrow {
+      color: #ffd4c6;
+    }
+
+
+    .contact-section h2 {
+      margin:
+        7px 0;
+    }
+
+
+    .contact-section p {
+      margin: 0;
+
+      color: #ffe8df;
+    }
+
+
+    .contact-actions {
+
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 10px;
+    }
+
+
+    .contact-actions .btn-light {
+      background: white;
+    }
+
+
+    /* =====================================================
+       17. FOOTER
+       ===================================================== */
+
+    footer {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      flex-wrap: wrap;
+
+      gap: 25px;
+
+      padding:
+        45px clamp(20px, 7vw, 100px);
+
+      color: white;
+
+      background: #201b17;
+    }
+
+
+    .footer-brand {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+    }
+
+
+    .footer-brand small {
+
+      display: block;
+
+      margin-top: 3px;
+
+      color: #a99e94;
+
+      font-size: 10px;
+    }
+
+
+    .footer-links {
+
+      display: flex;
+
+      gap: 22px;
+
+      color: #c7bcb2;
+
+      font-size: 12px;
+    }
+
+
+    .footer-links a:hover {
+      color: white;
+    }
+
+
+    footer > p {
+
+      margin: 0;
+
+      color: #9d9288;
+
+      font-size: 10px;
+    }
+
+
+    /* =====================================================
+       18. MOBILE NAVIGATION
+       ===================================================== */
+
+    .mobile-nav {
+      display: none;
+    }
+
+
+    /* =====================================================
+       19. CART
+       ===================================================== */
+
+    .cart-overlay {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 200;
+
+      background:
+        rgba(20,14,10,.45);
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transition: opacity .25s ease;
+    }
+
+
+    .cart-overlay.open {
+
+      opacity: 1;
+
+      pointer-events: auto;
+    }
+
+
+    .cart-panel {
+
+      width:
+        min(440px, 100%);
+
+      height: 100%;
+
+      margin-left: auto;
+
+      display: flex;
+
+      flex-direction: column;
+
+      padding: 26px;
+
+      background: #fffaf4;
+
+      box-shadow:
+        -20px 0 60px
+        rgba(0,0,0,.15);
+    }
+
+
+    .cart-head {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding-bottom: 17px;
+
+      border-bottom:
+        1px solid #eadfd3;
+    }
+
+
+    .cart-head h3 {
+
+      margin:
+        5px 0;
+
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
+
+      font-size: 32px;
+    }
+
+
+    .cart-head button {
+
+      color: #756b62;
+
+      background: none;
+
+      font-size: 32px;
+    }
+
+
+    .cart-items {
+
+      flex: 1;
+
+      overflow: auto;
+
+      padding:
+        15px 0;
+    }
+
+
+    .cart-row {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr auto auto;
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding:
+        13px 0;
+
+      border-bottom:
+        1px solid #eee4d9;
+    }
+
+
+    .cart-row strong {
+      font-size: 13px;
+    }
+
+
+    .cart-row small {
+
+      display: block;
+
+      margin-top: 3px;
+
+      color: #887d73;
+    }
+
+
+    .qty {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+    }
+
+
+    .qty button {
+
+      width: 27px;
+
+      height: 27px;
+
+      color: #201b17;
+
+      background: white;
+
+      border:
+        1px solid #ddd1c5;
+
+      border-radius: 8px;
+    }
+
+
+    .cart-empty {
+
+      display: none;
+
+      padding:
+        70px 20px;
+
+      text-align: center;
+
+      color: #8a8076;
+    }
+
+
+    .cart-empty a {
+
+      color: #e94b25;
+
+      font-weight: 800;
+    }
+
+
+    .cart-footer {
+
+      padding-top: 17px;
+
+      border-top:
+        1px solid #eadfd3;
+    }
+
+
+    .cart-total {
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      margin-bottom: 15px;
+    }
+
+
+    .cart-total strong {
+      font-size: 20px;
+    }
+
+
+    .full {
+      width: 100%;
+    }
+
+
+    .cart-footer > small {
+
+      display: block;
+
+      margin-top: 10px;
+
+      text-align: center;
+
+      color: #8a8076;
+
+      font-size: 10px;
+    }
+
+
+    .no-items .cart-empty {
+      display: block;
+    }
+
+
+    .no-items .cart-items {
+      display: none;
+    }
+
+
+    /* =====================================================
+       20. ANIMATIONS
+       ===================================================== */
+
+    @keyframes fadeUp {
+
+      from {
+        opacity: 0;
+
+        transform:
+          translateY(25px);
+      }
+
+      to {
+        opacity: 1;
+
+        transform:
+          translateY(0);
+      }
+    }
+
+
+    @keyframes scrollFloat {
+
+      0%,
+      100% {
+        transform:
+          translateX(-50%)
+          translateY(0);
+      }
+
+      50% {
+        transform:
+          translateX(-50%)
+          translateY(9px);
+      }
+    }
+
+
+    @keyframes phoneFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(-2deg);
+      }
+
+      50% {
+        transform:
+          translateY(-12px)
+          rotate(1deg);
+      }
+    }
+
+
+    @keyframes rotiFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(-7deg);
+      }
+
+      50% {
+        transform:
+          translateY(-20px)
+          rotate(-2deg);
+      }
+    }
+
+
+    @keyframes dalFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(5deg);
+      }
+
+      50% {
+        transform:
+          translateY(16px)
+          rotate(9deg);
+      }
+    }
+
+
+    @keyframes rajmaFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(5deg);
+      }
+
+      50% {
+        transform:
+          translateY(-18px)
+          rotate(1deg);
+      }
+    }
+
+
+    @keyframes parathaFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0)
+          rotate(-5deg);
+      }
+
+      50% {
+        transform:
+          translateY(18px)
+          rotate(2deg);
+      }
+    }
+
+
+    @keyframes waterFloat {
+
+      0%,
+      100% {
+        transform:
+          translateY(0);
+      }
+
+      50% {
+        transform:
+          translateY(-12px);
+      }
+    }
+
+
+    /* =====================================================
+       21. TABLET
+       ===================================================== */
+
+    @media (max-width: 1000px) {
+
+      .desktop-nav {
+        display: none;
+      }
+
+
+      .nav-order {
+        display: none;
+      }
+
+
+      .experience-content {
+
+        grid-template-columns:
+          1fr;
+
+        gap: 30px;
+      }
+
+
+      .food-phone {
+        order: -1;
+      }
+
+
+      .feature-column {
+
+        display: grid;
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+
+      .floating-water {
+        display: none;
+      }
+
+
+      .food-roti {
+
+        width: 170px;
+
+        height: 170px;
+
+        left: -20px;
+      }
+
+
+      .food-dal {
+
+        width: 150px;
+
+        height: 150px;
+
+        right: -10px;
+      }
+
+
+      .food-rajma {
+
+        width: 180px;
+
+        height: 180px;
+
+        right: -25px;
+      }
+
+
+      .food-paratha {
+
+        width: 180px;
+
+        height: 180px;
+
+        left: -20px;
+      }
+
+
+      .menu-grid {
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+
+      .about-section {
+
+        grid-template-columns:
+          1fr;
+
+        gap: 40px;
+      }
+
+
+      .reviews-grid {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .contact-section {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+      }
+
+
+      .photo-grid {
+
+        grid-template-columns:
+          1fr 1fr;
+
+        grid-template-rows:
+          220px 180px;
+      }
+
+
+      .photo-grid img:first-child {
+
+        grid-row: auto;
+
+        grid-column:
+          span 2;
+      }
+
+
+      .trust-strip {
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+
+      .mobile-nav {
+
+        position: fixed;
+
+        left: 0;
+
+        right: 0;
+
+        bottom: 0;
+
+        z-index: 150;
+
+        height: 66px;
+
+        display: flex;
+
+        justify-content:
+          space-around;
+
+        background:
+          rgba(255,255,255,.97);
+
+        backdrop-filter:
+          blur(12px);
+
+        border-top:
+          1px solid #e8ddd1;
+      }
+
+
+      .mobile-nav a,
+      .mobile-nav button {
+
+        position: relative;
+
+        min-width: 60px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 2px;
+
+        color: #756a60;
+
+        background: none;
+
+        font-size: 18px;
+      }
+
+
+      .mobile-nav span {
+
+        font-size: 9px;
+
+        font-weight: 800;
+      }
+
+
+      .mobile-nav b {
+
+        position: absolute;
+
+        top: 6px;
+
+        right: 12px;
+
+        padding:
+          2px 5px;
+
+        color: white;
+
+        background: #f04b23;
+
+        border-radius: 20px;
+
+        font-size: 8px;
+      }
+
+    }
+
+
+    /* =====================================================
+       22. MOBILE
+       ===================================================== */
+
+    @media (max-width: 600px) {
+
+      .topbar {
+        height: 66px;
+      }
+
+
+      .brand-mark {
+
+        width: 36px;
+
+        height: 36px;
+      }
+
+
+      .hero-video {
+
+        min-height: 100svh;
+
+        height: 100svh;
+
+        padding:
+          70px 18px 90px;
+      }
+
+
+      .hero-video-content {
+        width: 100%;
+      }
+
+
+      .hero-video-content h1 {
+
+        font-size:
+          clamp(52px, 16vw, 76px);
+
+        letter-spacing: -3px;
+      }
+
+
+      .hero-subtitle {
+        font-size: 21px;
+
+        margin-top: 20px;
+      }
+
+
+      .hero-description {
+
+        max-width: 330px;
+
+        font-size: 13px;
+      }
+
+
+      .hero-order-buttons {
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-top: 25px;
+      }
+
+
+      .hero-order-btn {
+
+        width:
+          min(330px, 90%);
+
+        min-width: 0;
+      }
+
+
+      .hero-location {
+
+        margin-top: 17px;
+
+        font-size: 10px;
+      }
+
+
+      .scroll-down {
+        bottom: 22px;
+      }
+
+
+      .experience-section {
+
+        padding:
+          80px 20px;
+      }
+
+
+      .experience-title {
+        font-size: 42px;
+      }
+
+
+      .experience-description {
+
+        margin-bottom: 40px;
+
+        font-size: 14px;
+      }
+
+
+      .phone-frame {
+
+        width: 220px;
+
+        height: 430px;
+      }
+
+
+      .phone-screen img {
+        height: 190px;
+      }
+
+
+      .feature-column {
+
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .experience-bottom {
+
+        flex-wrap: wrap;
+
+        gap: 7px;
+      }
+
+
+      .story-section {
+
+        min-height: auto;
+
+        padding:
+          90px 20px 120px;
+      }
+
+
+      .story-content h2 {
+        font-size: 46px;
+      }
+
+
+      .story-content > p {
+        font-size: 14px;
+      }
+
+
+      .story-stats {
+
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+
+      .story-stat {
+
+        padding:
+          20px 8px;
+      }
+
+
+      .story-stat:nth-child(2) {
+        border-right: 0;
+      }
+
+
+      .story-stat:nth-child(1),
+      .story-stat:nth-child(2) {
+
+        border-bottom:
+          1px solid #eadfd5;
+      }
+
+
+      .floating-food,
+      .floating-water {
+        display: none;
+      }
+
+
+      .section {
+
+        padding:
+          70px 20px;
+      }
+
+
+      .section-heading {
+
+        flex-direction: column;
+
+        align-items:
+          flex-start;
+      }
+
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+
+      .menu-img {
+        height: 210px;
+      }
+
+
+      .trust-strip {
+
+        padding:
+          22px 15px;
+
+        gap: 12px;
+      }
+
+
+      .trust-strip div {
+
+        flex-direction: column;
+
+        gap: 2px;
+
+        text-align: center;
+      }
+
+
+      .trust-strip strong {
+        font-size: 14px;
+      }
+
+
+      .contact-section {
+
+        margin:
+          0 20px 70px;
+
+        padding:
+          38px 25px;
+      }
+
+
+      .contact-actions {
+
+        width: 100%;
+
+        display: grid;
+      }
+
+
+      .contact-actions .btn {
+        width: 100%;
+      }
+
+
+      .photo-grid {
+
+        grid-template-columns:
+          1fr 1fr;
+
+        grid-template-rows:
+          160px 160px;
+      }
+
+
+      .photo-grid img:first-child {
+
+        grid-column:
+          span 2;
+      }
+
+
+      .about-image {
+
+        min-height: 300px;
+
+        padding: 10px;
+      }
+
+
+      .about-image img {
+        height: 300px;
+      }
+
+
+      footer {
+
+        padding-bottom:
+          90px;
+      }
+
+
+      .footer-links {
+
+        width: 100%;
+
+        justify-content:
+          space-between;
+      }
+
+
+      .cart-panel {
+        padding: 20px;
+      }
+
+    }
+
+
+    /* =====================================================
+       23. VERY SMALL PHONES
+       ===================================================== */
+
+    @media (max-width: 400px) {
+
+      .story-content h2 {
+        font-size: 40px;
+      }
+
+
+      .hero-video-content h1 {
+        font-size: 50px;
+      }
+
+
+      .story-stat strong {
+        font-size: 24px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="#home"
+      aria-label="Home"
+    >
+
+      <span class="brand-mark">
+        🍽️
+      </span>
+
+      <span>
+
+        <strong data-shop-name>
+          Sudh Vaishno Tandoor
+        </strong>
+
+        <small>
+          Pure Vegetarian • Since 1996
+        </small>
+
+      </span>
+
+    </a>
+
+
+    <nav class="desktop-nav">
+
+      <a href="#home">
+        Home
+      </a>
+
+      <a href="#menu">
+        Menu
+      </a>
+
+      <a href="#photos">
+        Photos
+      </a>
+
+      <a href="#about">
+        About
+      </a>
+
+      <a href="#reviews">
+        Reviews
+      </a>
+
+      <a href="#contact">
+        Contact
+      </a>
+
+    </nav>
+
+
+    <a
+      class="btn btn-primary nav-order"
+      href="#menu"
+    >
+      Order Food
+    </a>
+
+  </header>
+
+
+
+  <main>
+
+
+    <!-- =====================================================
+         SECTION 1 — HERO
+         ===================================================== -->
+
+    <section
+      id="home"
+      class="hero-video"
+    >
+
+      <!-- Background food video -->
+
+      <video
+        class="hero-video-bg"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        poster="thali.png"
+        aria-hidden="true"
+      >
+
+        <source
+          src="food-video.mp4"
+          type="video/mp4"
+        >
+
+      </video>
+
+
+      <!-- Dark overlay -->
+
+      <div class="hero-video-overlay"></div>
+
+
+      <!-- Hero content -->
+
+      <div class="hero-video-content">
+
+        <div class="hero-badge">
+
+          <span>
+            🍃
+          </span>
+
+          PURE VEGETARIAN
+
         </div>
 
-        <div>
-          <strong>100% Veg</strong>
 
-          <small>
-            Pure vegetarian food
-          </small>
-        </div>
+        <h1>
 
-      </div>
+          Sudh Vaishno
+          <br>
 
+          <span>
+            Tandoor
+          </span>
 
-      <!-- Feature 2 -->
-
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          🫓
-        </div>
-
-        <div>
-          <strong>Tandoor Fresh</strong>
-
-          <small>
-            Fresh roti & paratha
-          </small>
-        </div>
-
-      </div>
+        </h1>
 
 
-      <!-- Feature 3 -->
-
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          ⭐
-        </div>
-
-        <div>
-          <strong>Customer Favourite</strong>
-
-          <small>
-            Loved by local customers
-          </small>
-        </div>
-
-      </div>
-
-    </div>
+        <p class="hero-subtitle">
+          दिल से बना, स्वाद घर जैसा
+        </p>
 
 
+        <p class="hero-description">
 
-    <!-- ================= CENTRE PHONE ================= -->
+          Pure vegetarian food serving Chandigarh
+          since 1996. Fresh, tasty and made with care.
 
-    <div class="food-phone">
-
-      <div class="phone-frame">
-
-        <!-- Phone speaker -->
-
-        <div class="phone-speaker"></div>
+        </p>
 
 
-        <!-- Phone screen -->
+        <!-- Order buttons -->
 
-        <div class="phone-screen">
-
-          <div class="phone-logo">
-            🍽️
-          </div>
-
-
-          <p class="phone-small">
-            SUDH VAISHNO TANDOOR
-          </p>
-
-
-          <h3>
-            Fresh Food
-            <br>
-            <span>Since 1996</span>
-          </h3>
-
-
-          <!-- Food image -->
-
-          <img
-            src="menu-poster.jpg"
-            alt="Sudh Vaishno Tandoor menu"
-          >
-
-
-          <!-- Phone button -->
+        <div class="hero-order-buttons">
 
           <a
-            href="#menu"
-            class="phone-menu-button"
+            class="hero-order-btn call-btn"
+            href="tel:+919779159680"
           >
-            View Menu
+
+            <span class="order-icon">
+              📞
+            </span>
+
+            <span>
+
+              <small>
+                ORDER BY
+              </small>
+
+              CALL
+
+            </span>
+
+          </a>
+
+
+          <a
+            class="hero-order-btn whatsapp-btn"
+            href="https://wa.me/919779159680?text=Hello%20Sudh%20Vaishno%20Tandoor,%20I%20would%20like%20to%20place%20an%20order."
+            target="_blank"
+            rel="noopener"
+          >
+
+            <span class="order-icon">
+              💬
+            </span>
+
+            <span>
+
+              <small>
+                ORDER VIA
+              </small>
+
+              WHATSAPP
+
+            </span>
+
           </a>
 
         </div>
 
-      </div>
 
-    </div>
+        <div class="hero-location">
 
+          📍 Gate No. 2, GMCH, Chandigarh
 
-
-    <!-- ================= RIGHT FEATURES ================= -->
-
-    <div class="feature-column feature-right">
-
-
-      <!-- Feature 4 -->
-
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          💰
-        </div>
-
-        <div>
-          <strong>Great Value</strong>
-
-          <small>
-            Honest prices
-          </small>
         </div>
 
       </div>
 
 
-      <!-- Feature 5 -->
+      <!-- Scroll -->
 
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          💬
-        </div>
-
-        <div>
-          <strong>WhatsApp Order</strong>
-
-          <small>
-            Easy & quick ordering
-          </small>
-        </div>
-
-      </div>
-
-
-      <!-- Feature 6 -->
-
-      <div class="feature-card">
-
-        <div class="feature-icon">
-          📍
-        </div>
-
-        <div>
-          <strong>Easy to Find</strong>
-
-          <small>
-            Gate No. 2, GMCH
-          </small>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- Bottom text -->
-
-  <div class="experience-bottom">
-
-    <span>🌱 Pure Vegetarian</span>
-
-    <span>•</span>
-
-    <span>Since 1996</span>
-
-    <span>•</span>
-
-    <span>Chandigarh</span>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     NEW SECTION 2
-     ABOUT / "BETTER FOOD FOR MORE PEOPLE"
-     ========================================================= -->
-
-<section class="story-section">
-
-
-  <!-- Decorative food images -->
-
-  <img
-    class="floating-food food-one"
-    src="menu-poster.jpg"
-    alt="Sudh Vaishno Tandoor food"
-  >
-
-
-  <img
-    class="floating-food food-two"
-    src="menu-poster.jpg"
-    alt="Indian vegetarian food"
-  >
-
-
-
-  <!-- Main story -->
-
-  <div class="story-content">
-
-    <div class="experience-label">
-      OUR STORY
-    </div>
-
-
-    <h2>
-      Better food for
-      <br>
-      <span>everyday life</span>
-    </h2>
-
-
-    <p>
-      Since 1996, Sudh Vaishno Tandoor has been serving
-      pure vegetarian food in Chandigarh with a simple
-      promise — fresh food, honest prices and a taste
-      that feels like home.
-    </p>
-
-
-    <p>
-      From hot rotis and parathas to dal, sabji and rice,
-      we prepare everyday favourites for students,
-      families, hospital visitors and local customers.
-    </p>
-
-
-
-    <!-- Business information -->
-
-    <div class="story-stats">
-
-
-      <div class="story-stat">
-
-        <strong>1996</strong>
+      <a
+        href="#experience"
+        class="scroll-down"
+      >
 
         <span>
-          Serving since
+          Scroll down
         </span>
 
-      </div>
-
-
-      <div class="story-stat">
-
-        <strong>100%</strong>
-
-        <span>
-          Vegetarian
+        <span class="scroll-arrow">
+          ↓
         </span>
 
-      </div>
+      </a>
 
-
-      <div class="story-stat">
-
-        <strong>2</strong>
-
-        <span>
-          Contact numbers
-        </span>
-
-      </div>
-
-
-      <div class="story-stat">
-
-        <strong>7 AM</strong>
-
-        <span>
-          Opens daily
-        </span>
-
-      </div>
-
-    </div>
+    </section>
 
 
 
-    <!-- Learn more button -->
+    <!-- =====================================================
+         SECTION 2 — WHAT'S WAITING FOR YOU?
+         ===================================================== -->
 
-    <a
-      href="#about"
-      class="story-button"
+    <section
+      id="experience"
+      class="experience-section"
     >
-      Discover Our Story
-      <span>→</span>
-    </a>
 
-  </div>
-
+      <div class="experience-label">
+        SUDH VAISHNO TANDOOR
+      </div>
 
 
-  <!-- Location card -->
+      <h2 class="experience-title">
 
-  <div class="story-location">
+        What's waiting for you
 
-    <span class="location-icon">
-      📍
-    </span>
+        <br>
 
-    <div>
+        <span>
+          at our shop?
+        </span>
 
-      <strong>
-        Visit us
-      </strong>
-
-      <small>
-        Gate No. 2, GMCH, Chandigarh
-      </small>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     TRUST STRIP
-     ========================================================= -->
-
-<section class="trust-strip">
-
-  <div>
-    <strong>100%</strong>
-    <span>Freshly prepared</span>
-  </div>
-
-  <div>
-    <strong>★★★★★</strong>
-    <span>Happy customers</span>
-  </div>
-
-  <div>
-    <strong>Fast</strong>
-    <span>WhatsApp ordering</span>
-  </div>
-
-  <div>
-    <strong>Local</strong>
-    <span>Made for our community</span>
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     MENU SECTION
-     ========================================================= -->
-
-<section id="menu" class="section menu-section">
-
-  <div class="section-heading">
-
-    <div>
-
-      <span class="eyebrow">
-        OUR MENU
-      </span>
-
-      <h2>
-        What are you craving?
       </h2>
 
-      <p>
-        Choose a category and add items to your cart.
+
+      <p class="experience-description">
+
+        Fresh vegetarian food, homely taste and simple
+        ordering — all in one place.
+
       </p>
 
-    </div>
+
+      <div class="experience-content">
 
 
-    <button
-      class="cart-button"
-      id="openCart"
-    >
-      🛒 Cart
-      <span id="cartCount">0</span>
-    </button>
+        <!-- LEFT FEATURES -->
 
-  </div>
+        <div class="feature-column">
 
 
-  <div
-    class="category-tabs"
-    id="categoryTabs"
-  ></div>
+          <div class="feature-card">
+
+            <div class="feature-icon">
+              🌱
+            </div>
+
+            <div>
+
+              <strong>
+                100% Veg
+              </strong>
+
+              <small>
+                Pure vegetarian food
+              </small>
+
+            </div>
+
+          </div>
 
 
-  <div
-    class="menu-grid"
-    id="menuGrid"
-  ></div>
+          <div class="feature-card">
 
-</section>
+            <div class="feature-icon">
+              🫓
+            </div>
 
+            <div>
 
+              <strong>
+                Tandoor Fresh
+              </strong>
 
-<!-- =========================================================
-     ABOUT SECTION
-     ========================================================= -->
+              <small>
+                Fresh roti & paratha
+              </small>
 
-<section id="about" class="section about-section">
+            </div>
 
-  <div class="about-image">
-
-    <img
-      src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1000&q=85"
-      alt="Fresh Indian food being prepared"
-    />
-
-  </div>
+          </div>
 
 
-  <div class="about-copy">
+          <div class="feature-card">
 
-    <span class="eyebrow">
-      ABOUT US
-    </span>
+            <div class="feature-icon">
+              ⭐
+            </div>
 
-    <h2>
-      Pure vegetarian food since 1996.
-    </h2>
+            <div>
+
+              <strong>
+                Customer Favourite
+              </strong>
+
+              <small>
+                Loved by local customers
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
 
 
-    <p>
-      <strong>Sudh Vaishno Tandoor</strong> is a pure
-      vegetarian food shop at Gate No. 2, GMCH,
-      Chandigarh, serving simple, satisfying and
-      homely meals. Owned by
-      <strong data-owner>Sudhir Mandal</strong>
-      and serving customers since 1996.
-    </p>
+
+        <!-- CENTER PHONE -->
+
+        <div class="food-phone">
+
+          <div class="phone-frame">
+
+            <div class="phone-speaker"></div>
 
 
-    <div class="about-points">
+            <div class="phone-screen">
+
+              <div class="phone-logo">
+                🍽️
+              </div>
+
+
+              <p class="phone-small">
+                SUDH VAISHNO TANDOOR
+              </p>
+
+
+              <h3>
+
+                Fresh Food
+
+                <br>
+
+                <span>
+                  Since 1996
+                </span>
+
+              </h3>
+
+
+              <!-- YOUR THALI IMAGE -->
+
+              <img
+                src="thali.png"
+                alt="Sudh Vaishno Tandoor thali"
+              >
+
+
+              <a
+                href="#menu"
+                class="phone-menu-button"
+              >
+                View Menu
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- RIGHT FEATURES -->
+
+        <div class="feature-column">
+
+
+          <div class="feature-card">
+
+            <div class="feature-icon">
+              💰
+            </div>
+
+            <div>
+
+              <strong>
+                Great Value
+              </strong>
+
+              <small>
+                Honest prices
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="feature-card">
+
+            <div class="feature-icon">
+              💬
+            </div>
+
+            <div>
+
+              <strong>
+                WhatsApp Order
+              </strong>
+
+              <small>
+                Easy & quick ordering
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <div class="feature-card">
+
+            <div class="feature-icon">
+              📍
+            </div>
+
+            <div>
+
+              <strong>
+                Easy to Find
+              </strong>
+
+              <small>
+                Gate No. 2, GMCH
+              </small>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="experience-bottom">
+
+        <span>
+          🌱 Pure Vegetarian
+        </span>
+
+        <span>•</span>
+
+        <span>
+          Since 1996
+        </span>
+
+        <span>•</span>
+
+        <span>
+          Chandigarh
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SECTION 3 — OUR STORY
+
+         YOUR ACTUAL FOOD IMAGES ARE USED HERE
+         ===================================================== -->
+
+    <section class="story-section">
+
+
+      <!-- LEFT ROTI -->
+
+      <img
+        class="floating-food food-roti"
+        src="roti.png"
+        alt="Fresh roti"
+      >
+
+
+      <!-- TOP RIGHT DAL -->
+
+      <img
+        class="floating-food food-dal"
+        src="dal.png"
+        alt="Dal"
+      >
+
+
+      <!-- RIGHT RAJMA RICE -->
+
+      <img
+        class="floating-food food-rajma"
+        src="rajma-rice.png"
+        alt="Rajma rice"
+      >
+
+
+      <!-- LOWER LEFT PARATHA -->
+
+      <img
+        class="floating-food food-paratha"
+        src="paratha.png"
+        alt="Fresh paratha"
+      >
+
+
+      <!-- WATER -->
+
+      <img
+        class="floating-water"
+        src="water.png"
+        alt="Drinking water"
+      >
+
+
+
+      <!-- MAIN STORY -->
+
+      <div class="story-content">
+
+        <div class="experience-label">
+          OUR STORY
+        </div>
+
+
+        <h2>
+
+          Better food for
+
+          <br>
+
+          <span>
+            everyday life
+          </span>
+
+        </h2>
+
+
+        <p>
+
+          Since 1996, Sudh Vaishno Tandoor has been
+          serving pure vegetarian food in Chandigarh
+          with a simple promise — fresh food, honest
+          prices and a taste that feels like home.
+
+        </p>
+
+
+        <p>
+
+          From hot rotis and parathas to dal, sabji
+          and rice, we prepare everyday favourites
+          for students, families, hospital visitors
+          and local customers.
+
+        </p>
+
+
+        <!-- Statistics -->
+
+        <div class="story-stats">
+
+
+          <div class="story-stat">
+
+            <strong>
+              1996
+            </strong>
+
+            <span>
+              Serving since
+            </span>
+
+          </div>
+
+
+          <div class="story-stat">
+
+            <strong>
+              100%
+            </strong>
+
+            <span>
+              Vegetarian
+            </span>
+
+          </div>
+
+
+          <div class="story-stat">
+
+            <strong>
+              2
+            </strong>
+
+            <span>
+              Contact numbers
+            </span>
+
+          </div>
+
+
+          <div class="story-stat">
+
+            <strong>
+              7 AM
+            </strong>
+
+            <span>
+              Opens daily
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <a
+          href="#about"
+          class="story-button"
+        >
+
+          Discover Our Story
+
+          <span>
+            →
+          </span>
+
+        </a>
+
+      </div>
+
+
+      <!-- LOCATION CARD -->
+
+      <div class="story-location">
+
+        <span class="location-icon">
+          📍
+        </span>
+
+        <div>
+
+          <strong>
+            Visit us
+          </strong>
+
+          <small>
+            Gate No. 2, GMCH, Chandigarh
+          </small>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         TRUST STRIP
+         ===================================================== -->
+
+    <section class="trust-strip">
 
       <div>
 
-        <span>✓</span>
+        <strong>
+          100%
+        </strong>
+
+        <span>
+          Freshly prepared
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <strong>
+          ★★★★★
+        </strong>
+
+        <span>
+          Happy customers
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <strong>
+          Fast
+        </strong>
+
+        <span>
+          WhatsApp ordering
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <strong>
+          Local
+        </strong>
+
+        <span>
+          Made for our community
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         MENU
+         ===================================================== -->
+
+    <section
+      id="menu"
+      class="section menu-section"
+    >
+
+      <div class="section-heading">
+
+        <div>
+
+          <span class="eyebrow">
+            OUR MENU
+          </span>
+
+          <h2>
+            What are you craving?
+          </h2>
+
+          <p>
+            Choose a category and add items to your cart.
+          </p>
+
+        </div>
+
+
+        <button
+          class="cart-button"
+          id="openCart"
+        >
+
+          🛒 Cart
+
+          <span id="cartCount">
+            0
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <!-- Categories are created by app.js -->
+
+      <div
+        class="category-tabs"
+        id="categoryTabs"
+      ></div>
+
+
+      <!-- Menu items are created by app.js -->
+
+      <div
+        class="menu-grid"
+        id="menuGrid"
+      ></div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ABOUT US
+         ===================================================== -->
+
+    <section
+      id="about"
+      class="section about-section"
+    >
+
+
+      <!-- YOUR THALI IMAGE -->
+
+      <div class="about-image">
+
+        <img
+          src="thali.png"
+          alt="Pure vegetarian thali at Sudh Vaishno Tandoor"
+        >
+
+      </div>
+
+
+      <div class="about-copy">
+
+        <span class="eyebrow">
+          ABOUT US
+        </span>
+
+
+        <h2>
+          Pure vegetarian food since 1996.
+        </h2>
+
 
         <p>
-          <strong>Fresh ingredients</strong>
-          <small>Prepared with care every day.</small>
+
+          <strong>
+            Sudh Vaishno Tandoor
+          </strong>
+
+          is a pure vegetarian food shop at Gate
+          No. 2, GMCH, Chandigarh, serving simple,
+          satisfying and homely meals.
+
+          Owned by
+
+          <strong data-owner>
+            Sudhir Mandal
+          </strong>
+
+          and serving customers since 1996.
+
+        </p>
+
+
+        <div class="about-points">
+
+
+          <div>
+
+            <span>
+              ✓
+            </span>
+
+            <p>
+
+              <strong>
+                Fresh ingredients
+              </strong>
+
+              <small>
+                Prepared with care every day.
+              </small>
+
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              ✓
+            </span>
+
+            <p>
+
+              <strong>
+                Great value
+              </strong>
+
+              <small>
+                Good portions at honest prices.
+              </small>
+
+            </p>
+
+          </div>
+
+
+          <div>
+
+            <span>
+              ✓
+            </span>
+
+            <p>
+
+              <strong>
+                Made for you
+              </strong>
+
+              <small>
+                Easy ordering through WhatsApp.
+              </small>
+
+            </p>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PHOTOS
+         ===================================================== -->
+
+    <section
+      id="photos"
+      class="section photos-section"
+    >
+
+      <div class="section-heading centered">
+
+        <span class="eyebrow">
+          FOOD & MOMENTS
+        </span>
+
+        <h2>
+          A taste of our kitchen
+        </h2>
+
+      </div>
+
+
+      <div class="photo-grid">
+
+
+        <img
+          src="thali.png"
+          alt="Vegetarian thali"
+        >
+
+
+        <img
+          src="roti.png"
+          alt="Fresh roti"
+        >
+
+
+        <img
+          src="dal.png"
+          alt="Dal"
+        >
+
+
+        <img
+          src="rajma-rice.png"
+          alt="Rajma rice"
+        >
+
+
+        <img
+          src="paratha.png"
+          alt="Paratha"
+        >
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         REVIEWS
+         ===================================================== -->
+
+    <section
+      id="reviews"
+      class="section reviews-section"
+    >
+
+      <div class="section-heading centered">
+
+        <span class="eyebrow">
+          CUSTOMER REVIEWS
+        </span>
+
+        <h2>
+          What people say
+        </h2>
+
+        <p>
+          Real feedback makes a local food business stronger.
         </p>
 
       </div>
 
 
+      <div class="reviews-grid">
+
+
+        <article class="review">
+
+          <div class="stars">
+            ★★★★★
+          </div>
+
+          <p>
+
+            “Very tasty food, generous portions
+            and quick service. Definitely coming back.”
+
+          </p>
+
+          <div class="reviewer">
+
+            <span>
+              R
+            </span>
+
+            <div>
+
+              <strong>
+                Rahul
+              </strong>
+
+              <small>
+                Local customer
+              </small>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <article class="review">
+
+          <div class="stars">
+            ★★★★★
+          </div>
+
+          <p>
+
+            “The food tastes fresh and homely.
+            Ordering on WhatsApp was super easy.”
+
+          </p>
+
+          <div class="reviewer">
+
+            <span>
+              P
+            </span>
+
+            <div>
+
+              <strong>
+                Priya
+              </strong>
+
+              <small>
+                Local customer
+              </small>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+
+        <article class="review">
+
+          <div class="stars">
+            ★★★★★
+          </div>
+
+          <p>
+
+            “Good value for money and friendly
+            service. One of my favourite food spots.”
+
+          </p>
+
+          <div class="reviewer">
+
+            <span>
+              A
+            </span>
+
+            <div>
+
+              <strong>
+                Aman
+              </strong>
+
+              <small>
+                Local customer
+              </small>
+
+            </div>
+
+          </div>
+
+        </article>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CONTACT
+         ===================================================== -->
+
+    <section
+      id="contact"
+      class="contact-section"
+    >
+
       <div>
 
-        <span>✓</span>
+        <span class="eyebrow">
+          VISIT OR ORDER
+        </span>
+
+        <h2>
+          Hungry? Let's fix that.
+        </h2>
 
         <p>
-          <strong>Great value</strong>
-          <small>Good portions at honest prices.</small>
+          Call us, message us on WhatsApp, or visit the shop.
         </p>
 
       </div>
 
 
-      <div>
+      <div class="contact-actions">
 
-        <span>✓</span>
 
-        <p>
-          <strong>Made for you</strong>
-          <small>Easy ordering through WhatsApp.</small>
-        </p>
+        <a
+          class="btn btn-light"
+          data-phone-link
+          href="tel:+919779159680"
+        >
+          📞 9779159680
+        </a>
+
+
+        <a
+          class="btn btn-light"
+          data-phone-link
+          href="tel:+918264621901"
+        >
+          📞 8264621901
+        </a>
+
+
+        <a
+          class="btn btn-whatsapp"
+          data-whatsapp-link
+          href="https://wa.me/919779159680"
+          target="_blank"
+          rel="noopener"
+        >
+          💬 WhatsApp Order
+        </a>
+
+
+        <a
+          class="btn btn-light"
+          data-map-link
+          href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
+          target="_blank"
+          rel="noopener"
+        >
+          📍 Get Directions
+        </a>
+
 
       </div>
 
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     PHOTOS SECTION
-     ========================================================= -->
-
-<section id="photos" class="section photos-section">
-
-  <div class="section-heading centered">
-
-    <span class="eyebrow">
-      FOOD & MOMENTS
-    </span>
-
-    <h2>
-      A taste of our kitchen
-    </h2>
-
-  </div>
-
-
-  <div class="photo-grid">
-
-    <img
-      src="https://images.unsplash.com/photo-1601050690117-94f5f6fa8bd7?auto=format&fit=crop&w=900&q=85"
-      alt="Indian dish"
-    />
-
-    <img
-      src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=900&q=85"
-      alt="Indian curry"
-    />
-
-    <img
-      src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=85"
-      alt="Indian food"
-    />
-
-    <img
-      src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=900&q=85"
-      alt="Rice and curry"
-    />
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     REVIEWS SECTION
-     ========================================================= -->
-
-<section id="reviews" class="section reviews-section">
-
-  <div class="section-heading centered">
-
-    <span class="eyebrow">
-      CUSTOMER REVIEWS
-    </span>
-
-    <h2>
-      What people say
-    </h2>
-
-    <p>
-      Real feedback makes a local food business stronger.
-    </p>
-
-  </div>
-
-
-  <div class="reviews-grid">
-
-
-    <article class="review">
-
-      <div class="stars">
-        ★★★★★
-      </div>
-
-      <p>
-        “Very tasty food, generous portions and quick
-        service. Definitely coming back.”
-      </p>
-
-      <div class="reviewer">
-
-        <span>R</span>
-
-        <div>
-          <strong>Rahul</strong>
-          <small>Local customer</small>
-        </div>
-
-      </div>
-
-    </article>
-
-
-
-    <article class="review">
-
-      <div class="stars">
-        ★★★★★
-      </div>
-
-      <p>
-        “The food tastes fresh and homely. Ordering on
-        WhatsApp was super easy.”
-      </p>
-
-      <div class="reviewer">
-
-        <span>P</span>
-
-        <div>
-          <strong>Priya</strong>
-          <small>Local customer</small>
-        </div>
-
-      </div>
-
-    </article>
-
-
-
-    <article class="review">
-
-      <div class="stars">
-        ★★★★★
-      </div>
-
-      <p>
-        “Good value for money and friendly service.
-        One of my favourite food spots.”
-      </p>
-
-      <div class="reviewer">
-
-        <span>A</span>
-
-        <div>
-          <strong>Aman</strong>
-          <small>Local customer</small>
-        </div>
-
-      </div>
-
-    </article>
-
-  </div>
-
-</section>
-
-
-
-<!-- =========================================================
-     CONTACT SECTION
-     ========================================================= -->
-
-<section id="contact" class="contact-section">
-
-  <div>
-
-    <span class="eyebrow">
-      VISIT OR ORDER
-    </span>
-
-    <h2>
-      Hungry? Let's fix that.
-    </h2>
-
-    <p>
-      Call us, message us on WhatsApp, or visit the shop.
-    </p>
-
-  </div>
-
-
-  <div class="contact-actions">
-
-    <a
-      class="btn btn-light"
-      data-phone-link
-      href="tel:+919779159680"
-    >
-      📞 9779159680
-    </a>
-
-
-    <a
-      class="btn btn-light"
-      data-phone-link
-      href="tel:+918264621901"
-    >
-      📞 8264621901
-    </a>
-
-
-    <a
-      class="btn btn-whatsapp"
-      data-whatsapp-link
-      href="#"
-      target="_blank"
-      rel="noopener"
-    >
-      💬 WhatsApp Order
-    </a>
-
-
-    <a
-      class="btn btn-light"
-      data-map-link
-      href="#"
-      target="_blank"
-      rel="noopener"
-    >
-      📍 Get Directions
-    </a>
-
-  </div>
-
-</section>
-```
+    </section>
 
   </main>
 
-  <!-- =========================================================
+
+
+  <!-- =====================================================
        FOOTER
-       ========================================================= -->
+       ===================================================== -->
 
   <footer>
 
-```
-<div class="footer-brand">
 
-  <span class="brand-mark">
-    🍽️
-  </span>
+    <div class="footer-brand">
 
-  <div>
+      <span class="brand-mark">
+        🍽️
+      </span>
 
-    <strong data-shop-name>
-      Sudh Vaishno Tandoor
-    </strong>
+      <div>
 
-    <small>
-      Pure Vegetarian • Since 1996
-    </small>
+        <strong data-shop-name>
+          Sudh Vaishno Tandoor
+        </strong>
 
-  </div>
+        <small>
+          Pure Vegetarian • Since 1996
+        </small>
 
-</div>
+      </div>
 
-
-<div class="footer-links">
-
-  <a href="#menu">Menu</a>
-  <a href="#about">About</a>
-  <a href="#reviews">Reviews</a>
-  <a href="#contact">Contact</a>
-
-</div>
+    </div>
 
 
-<p>
-  © <span id="year"></span>
-  <span data-shop-name>Sudh Vaishno Tandoor</span>.
-  All rights reserved.
-</p>
-```
+    <div class="footer-links">
+
+      <a href="#menu">
+        Menu
+      </a>
+
+      <a href="#about">
+        About
+      </a>
+
+      <a href="#reviews">
+        Reviews
+      </a>
+
+      <a href="#contact">
+        Contact
+      </a>
+
+    </div>
+
+
+    <p>
+
+      ©
+      <span id="year"></span>
+
+      <span data-shop-name>
+        Sudh Vaishno Tandoor
+      </span>.
+
+      All rights reserved.
+
+    </p>
 
   </footer>
 
-  <!-- =========================================================
+
+
+  <!-- =====================================================
        MOBILE NAVIGATION
-       ========================================================= -->
+       ===================================================== -->
 
   <div class="mobile-nav">
 
-```
-<a href="#home">
-  ⌂
-  <span>Home</span>
-</a>
+
+    <a href="#home">
+
+      ⌂
+
+      <span>
+        Home
+      </span>
+
+    </a>
 
 
-<a href="#menu">
-  ☷
-  <span>Menu</span>
-</a>
+    <a href="#menu">
+
+      ☷
+
+      <span>
+        Menu
+      </span>
+
+    </a>
 
 
-<button id="mobileCart">
+    <button id="mobileCart">
 
-  🛒
+      🛒
 
-  <span>
-    Cart
-  </span>
+      <span>
+        Cart
+      </span>
 
-  <b id="mobileCartCount">
-    0
-  </b>
+      <b id="mobileCartCount">
+        0
+      </b>
 
-</button>
-
-
-<a href="#photos">
-  ▧
-  <span>Photos</span>
-</a>
+    </button>
 
 
-<a href="#contact">
-  ☎
-  <span>Contact</span>
-</a>
-```
+    <a href="#photos">
+
+      ▧
+
+      <span>
+        Photos
+      </span>
+
+    </a>
+
+
+    <a href="#contact">
+
+      ☎
+
+      <span>
+        Contact
+      </span>
+
+    </a>
+
 
   </div>
 
-  <!-- =========================================================
+
+
+  <!-- =====================================================
        CART
-       ========================================================= -->
+       ===================================================== -->
 
   <div
     class="cart-overlay"
@@ -1067,99 +4417,115 @@
     aria-hidden="true"
   >
 
-```
-<aside class="cart-panel">
+
+    <aside class="cart-panel">
 
 
-  <div class="cart-head">
+      <div class="cart-head">
 
-    <div>
+        <div>
 
-      <span class="eyebrow">
-        YOUR ORDER
-      </span>
+          <span class="eyebrow">
+            YOUR ORDER
+          </span>
 
-      <h3>
-        Cart
-      </h3>
+          <h3>
+            Cart
+          </h3>
 
-    </div>
+        </div>
 
 
-    <button
-      id="closeCart"
-      aria-label="Close"
-    >
-      ×
-    </button>
+        <button
+          id="closeCart"
+          aria-label="Close cart"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- Cart items created by app.js -->
+
+      <div
+        id="cartItems"
+        class="cart-items"
+      ></div>
+
+
+      <div
+        class="cart-empty"
+        id="cartEmpty"
+      >
+
+        Your cart is empty.
+
+        <br>
+
+        <a
+          href="#menu"
+          id="browseMenu"
+        >
+          Browse the menu →
+        </a>
+
+      </div>
+
+
+      <div class="cart-footer">
+
+
+        <div class="cart-total">
+
+          <span>
+            Total
+          </span>
+
+          <strong>
+
+            ₹<span id="cartTotal">
+              0
+            </span>
+
+          </strong>
+
+        </div>
+
+
+        <button
+          class="btn btn-whatsapp full"
+          id="checkoutBtn"
+        >
+
+          💬 Send Order on WhatsApp
+
+        </button>
+
+
+        <small>
+          We'll send your selected items and total to the shop.
+        </small>
+
+      </div>
+
+
+    </aside>
 
   </div>
 
 
-  <div
-    id="cartItems"
-    class="cart-items"
-  ></div>
 
-
-  <div
-    class="cart-empty"
-    id="cartEmpty"
-  >
-    Your cart is empty.
-    <br>
-
-    <a
-      href="#menu"
-      id="browseMenu"
-    >
-      Browse the menu →
-    </a>
-
-  </div>
-
-
-  <div class="cart-footer">
-
-    <div class="cart-total">
-
-      <span>
-        Total
-      </span>
-
-      <strong>
-        ₹<span id="cartTotal">0</span>
-      </strong>
-
-    </div>
-
-
-    <button
-      class="btn btn-whatsapp full"
-      id="checkoutBtn"
-    >
-      💬 Send Order on WhatsApp
-    </button>
-
-
-    <small>
-      We'll send your selected items and total to the shop.
-    </small>
-
-  </div>
-
-</aside>
-```
-
-  </div>
-
-  <!-- =========================================================
+  <!-- =====================================================
        JAVASCRIPT
-       ========================================================= -->
+       KEEP YOUR EXISTING FILES
+       ===================================================== -->
 
   <script src="config.js"></script>
 
   <script src="app.js"></script>
 
+
 </body>
+
 </html>
