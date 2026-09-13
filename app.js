@@ -6,9 +6,11 @@ const save = () => localStorage.setItem("foodShopCart", JSON.stringify(cart));
 
 document.querySelectorAll("[data-shop-name]").forEach(el => el.textContent = SHOP_CONFIG.shopName);
 document.querySelectorAll("[data-address]").forEach(el => el.textContent = SHOP_CONFIG.address);
-document.querySelectorAll("[data-phone-link]").forEach(el => el.href = `tel:+${SHOP_CONFIG.phone}`);
+document.querySelectorAll("[data-hours]").forEach(el => el.textContent = SHOP_CONFIG.hours);
+document.querySelectorAll("[data-owner]").forEach(el => el.textContent = SHOP_CONFIG.owner);
+document.querySelectorAll("[data-phone-link]").forEach((el, i) => el.href = `tel:+${SHOP_CONFIG.phone[i] || SHOP_CONFIG.phone[0]}`);
 document.querySelectorAll("[data-map-link]").forEach(el => el.href = SHOP_CONFIG.mapsUrl);
-document.querySelectorAll("[data-whatsapp-link]").forEach(el => el.href = `https://wa.me/${SHOP_CONFIG.phone}`);
+document.querySelectorAll("[data-whatsapp-link]").forEach(el => el.href = `https://wa.me/${SHOP_CONFIG.whatsapp}`);
 document.getElementById("year").textContent = new Date().getFullYear();
 
 const categories = ["All", ...new Set(SHOP_CONFIG.menu.map(x => x.category))];
