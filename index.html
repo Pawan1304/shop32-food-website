@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -159,70 +159,61 @@
 
 
     /* =====================================================
-       3. HEADER
+       3. MODERN HEADER
        ===================================================== */
 
     .topbar {
-
       position: sticky;
-
-      top: 0;
-
+      top: 14px;
       z-index: 100;
-
+      width: min(1380px, calc(100% - 32px));
       height: 76px;
-
+      margin: 14px auto 0;
+      padding: 8px 10px 8px 18px;
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
-
-      padding:
-        0 clamp(20px, 5vw, 76px);
-
-      background:
-        rgba(255, 250, 244, .96);
-
-      backdrop-filter: blur(14px);
-
-      border-bottom:
-        1px solid #eee4d9;
+      gap: 18px;
+      background: rgba(255,252,248,.88);
+      backdrop-filter: blur(22px) saturate(150%);
+      -webkit-backdrop-filter: blur(22px) saturate(150%);
+      border: 1px solid rgba(255,255,255,.80);
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(45,29,18,.10), inset 0 1px 0 rgba(255,255,255,.9);
+      transition: width .3s ease, top .3s ease, margin .3s ease, box-shadow .3s ease, background .3s ease;
     }
 
+    .topbar.scrolled {
+      top: 8px;
+      margin-top: 8px;
+      height: 68px;
+      width: min(1320px, calc(100% - 24px));
+      background: rgba(255,250,244,.94);
+      box-shadow: 0 10px 30px rgba(45,29,18,.13);
+    }
 
     .brand {
-
+      position: relative;
+      min-width: max-content;
       display: flex;
-
       align-items: center;
-
-      gap: 10px;
+      gap: 11px;
     }
-
 
     .brand-mark {
-
-      width: 40px;
-
-      height: 40px;
-
+      width: 46px;
+      height: 46px;
+      flex-shrink: 0;
       display: grid;
-
       place-items: center;
-
-      border-radius: 13px;
-
+      border-radius: 15px;
       background: #201b17;
-
       color: white;
-
       font-size: 20px;
-
       overflow: hidden;
+      box-shadow: 0 7px 18px rgba(32,27,23,.18);
     }
 
-    /* Real logo inside the small header logo box */
     .brand-mark img {
       width: 100%;
       height: 100%;
@@ -230,51 +221,144 @@
       padding: 3px;
     }
 
-
     .brand strong {
       display: block;
-
-      font-size: 15px;
+      color: #201b17;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      white-space: nowrap;
     }
-
 
     .brand small {
-
       display: block;
-
-      margin-top: 2px;
-
-      color: #81766b;
-
-      font-size: 10px;
+      margin-top: 3px;
+      color: #8a7d73;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .35px;
+      white-space: nowrap;
     }
 
-
-    /* Desktop navigation */
+    .brand::before {
+      content: "";
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      margin: 0 0 34px 35px;
+      border-radius: 50%;
+      background: #1ca957;
+      box-shadow: 0 0 0 4px rgba(28,169,87,.12);
+      z-index: 2;
+    }
 
     .desktop-nav {
-
       display: flex;
-
-      gap: 28px;
-
-      color: #6d6258;
-
-      font-size: 13px;
-
-      font-weight: 700;
+      align-items: center;
+      gap: 4px;
+      padding: 5px;
+      margin-left: auto;
+      background: rgba(247,240,233,.72);
+      border: 1px solid #eee3d8;
+      border-radius: 16px;
     }
-
 
     .desktop-nav a {
-      transition: color .2s ease;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 0 13px;
+      color: #6d6258;
+      border-radius: 11px;
+      font-size: 12px;
+      font-weight: 800;
+      transition: color .2s ease, background .2s ease, transform .2s ease;
     }
-
 
     .desktop-nav a:hover {
-      color: #f04b23;
+      color: #201b17;
+      background: white;
+      transform: translateY(-1px);
     }
 
+    .desktop-nav a.active {
+      color: white;
+      background: #201b17;
+      box-shadow: 0 6px 15px rgba(32,27,23,.15);
+    }
+
+    .nav-order {
+      position: relative;
+      min-height: 48px;
+      padding: 0 19px;
+      border-radius: 15px;
+      white-space: nowrap;
+      box-shadow: 0 8px 20px rgba(240,75,35,.20);
+    }
+
+    .nav-order::after {
+      content: "↗";
+      margin-left: 5px;
+      font-size: 13px;
+      transition: transform .2s ease;
+    }
+
+    .nav-order:hover::after {
+      transform: translate(2px,-2px);
+    }
+
+    .mobile-header-actions {
+      display: none;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .mobile-header-actions a,
+    .mobile-menu-button {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: white;
+      color: #201b17;
+      border: 1px solid #eadfd5;
+      box-shadow: 0 5px 14px rgba(45,29,18,.07);
+    }
+
+    .mobile-header-actions .mobile-call {
+      color: white;
+      background: #f04b23;
+      border-color: #f04b23;
+    }
+
+    .mobile-menu-button {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .mobile-menu-button .menu-lines {
+      width: 18px;
+      height: 12px;
+      position: relative;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+    }
+
+    .mobile-menu-button .menu-lines::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 4px;
+      border-top: 2px solid currentColor;
+    }
+
+    .mobile-dropdown {
+      display: none;
+    }
 
     /* =====================================================
        4. HERO VIDEO SECTION
@@ -1098,33 +1182,7 @@
       opacity: .6;
     }
 
-.story-location {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
 
-  margin: 18px auto 0;
-
-  color: #6f655d;
-
-  font-size: 12px;
-
-  text-align: center;
-}
-
-.story-location strong {
-  color: #201b17;
-  font-size: 13px;
-}
-
-.story-location span:last-child {
-  color: #70665d;
-}
-
-.location-icon {
-  font-size: 15px;
-}
     .story-content {
 
       position: relative;
@@ -1181,30 +1239,31 @@
        8. STORY STATISTICS
        ===================================================== */
 
-.story-stats {
+    .story-stats {
 
-  width: min(820px, 100%);
+      max-width: 720px;
 
-  margin: 40px auto 35px;
+      margin:
+        50px auto 35px;
 
-  display: grid;
+      display: grid;
 
-  grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+      grid-template-columns:
+        repeat(4, 1fr);
 
-  overflow: hidden;
+      overflow: hidden;
 
-  background: #fffaf5;
+      background: #fffaf5;
 
-  border:
-    1px solid #f0e1d6;
+      border:
+        1px solid #f0e1d6;
 
-  border-radius: 24px;
+      border-radius: 24px;
 
-  box-shadow:
-    0 18px 45px
-    rgba(40,25,10,.08);
-}
+      box-shadow:
+        0 18px 45px
+        rgba(40,25,10,.08);
+    }
 
 
     .story-stat {
@@ -1222,23 +1281,19 @@
     }
 
 
-.story-stat strong {
+    .story-stat strong {
 
-  display: block;
+      display: block;
 
-  color: #ed4b25;
+      color: #ed4b25;
 
-  font-family:
-    "Playfair Display",
-    Georgia,
-    serif;
+      font-family:
+        "Playfair Display",
+        Georgia,
+        serif;
 
-  font-size: clamp(20px, 2.5vw, 29px);
-
-  white-space: nowrap;
-
-  line-height: 1.1;
-}
+      font-size: 29px;
+    }
 
 
     .story-stat span {
@@ -2137,6 +2192,54 @@
     }
 
 
+    .mobile-dropdown {
+      position: fixed;
+      top: 84px;
+      right: 16px;
+      z-index: 120;
+      width: min(300px, calc(100% - 32px));
+      padding: 9px;
+      background: rgba(255,252,248,.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid #eadfd5;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(45,29,18,.16);
+      opacity: 0;
+      transform: translateY(-8px) scale(.98);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .mobile-dropdown.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .mobile-dropdown a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 11px;
+      color: #5f554d;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .mobile-dropdown a:hover {
+      color: #201b17;
+      background: #fff1e9;
+    }
+
+    .mobile-dropdown .mobile-dropdown-order {
+      justify-content: center;
+      margin-top: 5px;
+      color: white;
+      background: #f04b23;
+    }
+
     /* =====================================================
        19. CART
        ===================================================== */
@@ -2527,9 +2630,22 @@
         display: none;
       }
 
-
       .nav-order {
         display: none;
+      }
+
+      .topbar {
+        top: 8px;
+        width: calc(100% - 24px);
+        margin-top: 8px;
+      }
+
+      .mobile-header-actions {
+        display: flex;
+      }
+
+      .mobile-dropdown {
+        display: block;
       }
 
 
@@ -2751,15 +2867,42 @@
     @media (max-width: 600px) {
 
       .topbar {
-        height: 66px;
+        height: 62px;
+        padding: 7px 8px 7px 10px;
+        border-radius: 18px;
       }
 
+      .topbar.scrolled {
+        height: 58px;
+      }
+
+      .brand {
+        gap: 8px;
+      }
 
       .brand-mark {
+        width: 39px;
+        height: 39px;
+        border-radius: 13px;
+      }
 
-        width: 36px;
+      .brand strong {
+        font-size: 12px;
+      }
 
-        height: 36px;
+      .brand small {
+        font-size: 8px;
+      }
+
+      .brand::before {
+        margin: 0 0 28px 29px;
+      }
+
+      .mobile-header-actions a,
+      .mobile-menu-button {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
       }
 
 
@@ -2905,16 +3048,10 @@
 
 
       .story-stats {
-    width: 100%;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
-  .story-stat strong {
-    font-size: 20px;
-    white-space: nowrap;
-  }
-
-}
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
 
 
       .story-stat {
@@ -3103,74 +3240,47 @@
        HEADER
        ===================================================== -->
 
-  <header class="topbar">
+  <header class="topbar" id="siteHeader">
 
-    <a
-      class="brand"
-      href="#home"
-      aria-label="Home"
-    >
-
+    <a class="brand" href="#home" aria-label="Sudh Vaishno Tandoor home">
       <span class="brand-mark">
-        <!-- Your real shop logo -->
-        <img
-          src="assets/photos/logo.png"
-          alt="Sudh Vaishno Tandoor logo"
-        >
+        <img src="assets/photos/logo.png" alt="Sudh Vaishno Tandoor logo">
       </span>
-
       <span>
-
-        <strong data-shop-name>
-          Sudh Vaishno Tandoor
-        </strong>
-
-        <small>
-          Pure Vegetarian • Since 1996
-        </small>
-
+        <strong data-shop-name>Sudh Vaishno Tandoor</strong>
+        <small>PURE VEG • SINCE 1996</small>
       </span>
-
     </a>
 
-
-    <nav class="desktop-nav">
-
-      <a href="#home">
-        Home
-      </a>
-
-      <a href="#menu">
-        Menu
-      </a>
-
-      <a href="#photos">
-        Photos
-      </a>
-
-      <a href="#about">
-        About
-      </a>
-
-      <a href="#reviews">
-        Reviews
-      </a>
-
-      <a href="#contact">
-        Contact
-      </a>
-
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#home" data-nav-link>Home</a>
+      <a href="#menu" data-nav-link>Menu</a>
+      <a href="#photos" data-nav-link>Photos</a>
+      <a href="#about" data-nav-link>About</a>
+      <a href="#reviews" data-nav-link>Reviews</a>
+      <a href="#contact" data-nav-link>Contact</a>
     </nav>
 
+    <a class="btn btn-primary nav-order" href="#menu">Order Food</a>
 
-    <a
-      class="btn btn-primary nav-order"
-      href="#menu"
-    >
-      Order Food
-    </a>
+    <div class="mobile-header-actions">
+      <a class="mobile-call" href="tel:+919779159680" aria-label="Call Sudh Vaishno Tandoor">☎</a>
+      <button class="mobile-menu-button" id="mobileMenuButton" aria-label="Open navigation" aria-expanded="false" type="button">
+        <span class="menu-lines"></span>
+      </button>
+    </div>
 
   </header>
+
+  <div class="mobile-dropdown" id="mobileDropdown">
+    <a href="#home">Home</a>
+    <a href="#menu">Menu</a>
+    <a href="#photos">Photos</a>
+    <a href="#about">About</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#contact">Contact</a>
+    <a class="mobile-dropdown-order" href="#menu">🍽️ Order Food</a>
+  </div>
 
 
 
@@ -3696,23 +3806,7 @@
 
         </p>
 
-         <div class="story-location">
 
-        <span class="location-icon">
-          📍
-        </span>
-
-          <strong>
-              Visit us
-          </strong>
-
-        <span>
-          Gate No. 2, GMCH, Chandigarh
-        </span>
-
-</div>
-
-        
         <!-- Statistics -->
 
         <div class="story-stats">
@@ -3738,7 +3832,7 @@
             </strong>
 
             <span>
-             🍀 Vegetarian 🌿
+              Vegetarian
             </span>
 
           </div>
@@ -3747,11 +3841,11 @@
           <div class="story-stat">
 
             <strong>
-              4.9 ✨
+              2
             </strong>
 
             <span>
-              Rating
+              Contact numbers
             </span>
 
           </div>
@@ -3760,11 +3854,11 @@
           <div class="story-stat">
 
             <strong>
-              7 AM to 11 PM
+              7 AM
             </strong>
 
             <span>
-              Opens daily ⌚
+              Opens daily
             </span>
 
           </div>
@@ -3784,6 +3878,29 @@
           </span>
 
         </a>
+
+      </div>
+
+
+      <!-- LOCATION CARD -->
+
+      <div class="story-location">
+
+        <span class="location-icon">
+          📍
+        </span>
+
+        <div>
+
+          <strong>
+            Visit us
+          </strong>
+
+          <small>
+            Gate No. 2, GMCH, Chandigarh
+          </small>
+
+        </div>
 
       </div>
 
@@ -4580,6 +4697,67 @@
        JAVASCRIPT
        KEEP YOUR EXISTING FILES
        ===================================================== -->
+
+  <script>
+    /* =====================================================
+       MODERN HEADER BEHAVIOUR
+       ===================================================== */
+
+    (function () {
+      const header = document.getElementById("siteHeader");
+      const navLinks = document.querySelectorAll("[data-nav-link]");
+      const mobileButton = document.getElementById("mobileMenuButton");
+      const mobileDropdown = document.getElementById("mobileDropdown");
+
+      function updateHeader() {
+        header.classList.toggle("scrolled", window.scrollY > 30);
+      }
+
+      window.addEventListener("scroll", updateHeader, { passive: true });
+      updateHeader();
+
+      const sections = [...document.querySelectorAll("main section[id]")];
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach((link) => {
+            link.classList.toggle(
+              "active",
+              link.getAttribute("href") === "#" + entry.target.id
+            );
+          });
+        });
+      }, {
+        rootMargin: "-35% 0px -55% 0px",
+        threshold: 0
+      });
+
+      sections.forEach((section) => observer.observe(section));
+
+      if (mobileButton && mobileDropdown) {
+        mobileButton.addEventListener("click", () => {
+          const open = mobileDropdown.classList.toggle("open");
+          mobileButton.setAttribute("aria-expanded", String(open));
+        });
+
+        mobileDropdown.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            mobileDropdown.classList.remove("open");
+            mobileButton.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!mobileDropdown.contains(event.target) &&
+              !mobileButton.contains(event.target)) {
+            mobileDropdown.classList.remove("open");
+            mobileButton.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+    })();
+  </script>
 
   <script src="config.js"></script>
 
