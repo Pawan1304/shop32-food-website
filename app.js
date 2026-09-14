@@ -229,8 +229,8 @@ async function loadLiveMenuItems(){
     // Keep the original config items that have not yet been migrated to Supabase,
     // then add all new database-created items.
     const dbNames=new Set(dbItems.map(x=>String(x.name).trim().toLowerCase()));
-    const localOnly=(SHOP_CONFIG.menu||[]).filter(x=>!dbNames.has(String(x.name).trim().toLowerCase()));
-    SHOP_CONFIG.menu=[...localOnly,...dbItems];
+    const localOnly=(SHOP_CONFIG.menu||[]).map((x,i)=>({...x,sort_order:(i+1)*10})).filter(x=>!dbNames.has(String(x.name).trim().toLowerCase()));
+    SHOP_CONFIG.menu=[...localOnly,...dbItems].sort((a,b)=>(Number(a.sort_order)||999999)-(Number(b.sort_order)||999999) || String(a.name).localeCompare(String(b.name)));
     rebuildMenuCategories();
     renderMenu();
     updateCart();
