@@ -4041,10 +4041,21 @@
       scroll-behavior: smooth;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
-      touch-action: pan-x;
+      /* Allow BOTH vertical page scrolling and horizontal photo swiping.
+         Previously this was `pan-x`, which trapped finger gestures on photos
+         and made the page feel stuck while scrolling down. */
+      touch-action: pan-x pan-y;
     }
 
     .swipe-track::-webkit-scrollbar { display: none; }
+
+    /* Photos should behave like part of the page, not like draggable files. */
+    .swipe-track img,
+    .swipe-track video {
+      -webkit-user-drag: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
 
     .swipe-slide {
       flex: 0 0 100%;
@@ -6094,6 +6105,18 @@
           }
         });
       }
+    })();
+
+    /* =====================================================
+       PHOTO GESTURE UX
+       Keep images swipeable without trapping vertical scrolling.
+       IMPORTANT: no preventDefault() is used here, so normal page
+       scrolling always remains available when the finger starts on a photo.
+       ===================================================== */
+    (function () {
+      document.querySelectorAll('.swipe-track img').forEach(img => {
+        img.addEventListener('dragstart', event => event.preventDefault());
+      });
     })();
 
     /* =====================================================
