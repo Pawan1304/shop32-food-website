@@ -31,6 +31,8 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 @media(max-width:600px){.toolbar{align-items:stretch}.toolbar>div{min-width:100%}.actions button{width:100%}}
 
 .edit-modal{position:fixed;inset:0;background:rgba(20,10,5,.68);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}.edit-box{width:min(560px,100%);background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.edit-preview{display:flex;gap:12px;align-items:center;margin:10px 0 14px;padding:10px;background:#fff8f1;border-radius:12px}.edit-preview img,.edit-preview video{width:110px;height:85px;object-fit:cover;border-radius:10px}.edit-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+
+.dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.dash-stat{padding:15px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}.dash-stat .num{font-size:28px;font-weight:900;line-height:1.1}.dash-stat .label{font-size:12px;color:#756960;margin-top:5px;font-weight:700}.dash-status{display:flex;align-items:center;gap:8px;font-weight:800}.dash-dot{width:10px;height:10px;border-radius:50%;background:#999;display:inline-block}.dash-dot.ok{background:#1f9d55}.dash-dot.bad{background:#d64545}.dash-latest{margin-top:14px;padding:12px 14px;border-radius:12px;background:#fff7f1}.quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.quick-actions a{display:inline-flex;text-decoration:none}.quick-actions button{margin:0}@media(max-width:700px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:450px){.dashboard-grid{grid-template-columns:1fr 1fr}.dash-stat .num{font-size:24px}}
 </style>
 </head>
 <body>
@@ -50,7 +52,27 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 </section>
 
 <section id="adminPanel" class="hidden">
-  <div class="card">
+<section id="dashboard" class="card">
+  <h2>📊 Admin Dashboard</h2>
+  <p class="muted">Quick overview of your website content and Supabase data.</p>
+  <div class="dashboard-grid">
+    <div class="dash-stat"><div id="dashMenu" class="num">—</div><div class="label">🍽️ Active Menu Items</div></div>
+    <div class="dash-stat"><div id="dashGallery" class="num">—</div><div class="label">📸 Gallery Photos</div></div>
+    <div class="dash-stat"><div id="dashLangar" class="num">—</div><div class="label">🙏 Langar Photos</div></div>
+    <div class="dash-stat"><div id="dashMenuMedia" class="num">—</div><div class="label">🍛 Menu Item Photos</div></div>
+    <div class="dash-stat"><div class="num">4.9 ⭐</div><div class="label">Google Rating · 17 Reviews</div></div>
+    <div class="dash-stat"><div id="dashStatus" class="dash-status"><span class="dash-dot"></span>Checking...</div><div class="label">Supabase Status</div></div>
+  </div>
+  <div id="dashLatest" class="dash-latest">Latest upload: checking...</div>
+  <div class="quick-actions">
+    <a href="#uploadCard"><button class="green" type="button">➕ Upload Photo</button></a>
+    <a href="#menuItemsCard"><button class="light" type="button">🍽️ Manage Menu</button></a>
+    <a href="#photoManagementCard"><button class="light" type="button">🗂️ Photo Management</button></a>
+    <a href="index.html" target="_blank"><button class="dark" type="button">🌐 Open Website</button></a>
+  </div>
+</section>
+
+  <div id="uploadCard" class="card">
     <h2>📤 Upload Photos</h2>
     <div class="form-grid">
       <div>
@@ -96,7 +118,7 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
     <div id="uploadStatus" class="status">Choose photos to begin.</div>
   </div>
 
-  <div class="card">
+  <div id="menuItemsCard" class="card">
     <h2>🍽️ Manage Menu Items</h2>
     <p class="muted">Add a new food item once. It will appear automatically on the public Menu and in the photo-upload dropdown.</p>
     <div class="form-grid">
@@ -117,7 +139,7 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
     </div>
   </div>
 
-  <div class="card">
+  <div id="photoManagementCard" class="card">
     <h2>🗂️ Photo Management</h2>
     <div class="toolbar">
       <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option></select></div>
@@ -329,6 +351,34 @@ function normalizeYouTubeUrl(value){
   } catch { return ''; }
 }
 
+async function loadDashboard(){
+  const status=$('dashStatus');
+  try{
+    const [menuRes,galleryRes,langarRes,menuMediaRes,latestRes]=await Promise.all([
+      supabaseClient.from('menu_items').select('id',{count:'exact',head:true}).eq('is_active',true),
+      supabaseClient.from('site_photos').select('id',{count:'exact',head:true}).eq('category','gallery'),
+      supabaseClient.from('site_photos').select('id',{count:'exact',head:true}).eq('category','langar'),
+      supabaseClient.from('site_photos').select('id',{count:'exact',head:true}).eq('category','menu_item'),
+      supabaseClient.from('site_photos').select('id,title,category,media_type,created_at').order('id',{ascending:false}).limit(1)
+    ]);
+    const firstError=[menuRes,galleryRes,langarRes,menuMediaRes,latestRes].find(x=>x.error);
+    if(firstError) throw firstError.error;
+    $('dashMenu').textContent=menuRes.count ?? 0;
+    $('dashGallery').textContent=galleryRes.count ?? 0;
+    $('dashLangar').textContent=langarRes.count ?? 0;
+    $('dashMenuMedia').textContent=menuMediaRes.count ?? 0;
+    status.innerHTML='<span class="dash-dot ok"></span>Connected';
+    const latest=latestRes.data?.[0];
+    if(latest){
+      const when=latest.created_at?new Date(latest.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'';
+      $('dashLatest').textContent=`Latest upload: ${latest.title||'Untitled'} · ${latest.category||''}${when?' · '+when:''}`;
+    }else $('dashLatest').textContent='Latest upload: No uploads found yet.';
+  }catch(e){
+    status.innerHTML='<span class="dash-dot bad"></span>Connection / query error';
+    $('dashLatest').textContent='Dashboard could not load: '+(e.message||String(e));
+  }
+}
+
 async function login(){
   if(typeof supabaseClient === 'undefined' || !supabaseClient){
     msg('loginStatus','Supabase is not connected. Please check supabase-config.js.',true);
@@ -344,7 +394,7 @@ async function updateUI(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   const ok=!!session;
   $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
-  if(ok){ loadPhotos(); populateMenuItems(); }
+  if(ok){ loadPhotos(); populateMenuItems(); loadDashboard(); }
 }
 
 async function addMenuItem(){
