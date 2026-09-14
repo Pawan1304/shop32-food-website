@@ -1,10 +1,12 @@
 /* =========================================================
    SUPABASE CONFIGURATION
+   Public browser key only.
+   NEVER put the service_role / secret key in this file.
    ========================================================= */
 
 const SUPABASE_URL = "https://wnntlkuhtldkxfynjoxg.supabase.co";
 
-const SUPABASE_ANON_KEY = "sb_publishable_YWcRJj7Ihh3Osu4tG_HVXw_kZLB5RCv";
+const SUPABASE_ANON_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
 
 const SUPABASE_BUCKET = "site-photos";
 
