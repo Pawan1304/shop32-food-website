@@ -66,6 +66,10 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
         <label>Choose menu item</label>
         <select id="menuItem"></select>
       </div>
+      <div id="newMenuItemWrap" class="hidden">
+        <label>New / other food item name</label>
+        <input id="newMenuItemName" placeholder="e.g. Rajma Chawal">
+      </div>
       <div><label>Photo title</label><input id="title" placeholder="e.g. Langar Seva — 14 Sep 2026"></div>
       <div id="mediaTypeWrap" class="hidden">
         <label id="mediaTypeLabel">Upload type</label>
@@ -125,7 +129,10 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function populateMenuItems(){
   const select=$('menuItem');
   if(!select) return;
-  select.innerHTML=SHOP_CONFIG.menu.map(item=>`<option value="${esc(String(item.id))}">${esc(item.name)} — ₹${esc(item.price)}</option>`).join('');
+  select.innerHTML =
+    SHOP_CONFIG.menu.map(item=>`<option value="${esc(String(item.id))}">${esc(item.name)} — ₹${esc(item.price)}</option>`).join('') +
+    `<option value="__new__">➕ Other / New item</option>`;
+  select.value=String(SHOP_CONFIG.menu[0]?.id ?? '__new__');
 }
 
 $('files').addEventListener('change',()=>{
@@ -148,6 +155,7 @@ $('category').addEventListener('change',()=>{
   const isLangar=cat==='langar';
 
   $('menuItemWrap').classList.toggle('hidden',!isMenuItem);
+  $('newMenuItemWrap').classList.add('hidden');
   $('makeTodayRow').classList.toggle('hidden',!isMenu);
   $('makeToday').disabled=!isMenu;
   $('makeToday').checked=isMenu;
@@ -163,7 +171,21 @@ $('category').addEventListener('change',()=>{
   updateUploadMode();
 });
 $('menuItem').addEventListener('change',()=>{
-  if($('category').value==='menu_item') $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
+  if($('category').value!=='menu_item') return;
+  const isNew=$('menuItem').value==='__new__';
+  $('newMenuItemWrap').classList.toggle('hidden',!isNew);
+  if(isNew){
+    $('title').value='';
+    $('title').placeholder='e.g. Rajma Chawal';
+    $('newMenuItemName').focus();
+  }else{
+    $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
+    $('title').placeholder='Photo title';
+  }
+  updateUploadMode();
+});
+$('newMenuItemName').addEventListener('input',()=>{
+  if($('category').value==='menu_item' && $('menuItem').value==='__new__') $('title').value=$('newMenuItemName').value.trim();
 });
 $('mediaType').addEventListener('change', updateUploadMode);
 
@@ -173,8 +195,10 @@ function updateUploadMode(){
   const isMenuItem=cat==='menu_item';
   const isLangar=cat==='langar';
 
-  if(isMenuItem && !$('title').value.trim()){
-    $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
+  if(isMenuItem){
+    const isNew=$('menuItem').value==='__new__';
+    $('newMenuItemWrap').classList.toggle('hidden',!isNew);
+    if(!isNew && !$('title').value.trim()) $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
   }
 
   $('youtubeUrlWrap').classList.toggle('hidden',!(isLangar && type==='youtube'));
@@ -236,11 +260,13 @@ async function uploadFiles(){
   const category=$('category').value;
   const type=$('mediaType').value;
   const title=$('title').value.trim();
-  const menuItemId=Number($('menuItem').value);
-  const menuItem=SHOP_CONFIG.menu.find(x=>x.id===menuItemId);
+  const menuItemId=$('menuItem').value==='__new__' ? null : Number($('menuItem').value);
+  const menuItem=menuItemId ? SHOP_CONFIG.menu.find(x=>x.id===menuItemId) : null;
+  const customMenuItemName=$('newMenuItemName').value.trim();
 
   if(category==='menu_item'){
-    if(!menuItem){msg('uploadStatus','Please choose a menu item.',true);return}
+    const menuItemName=menuItem ? menuItem.name : customMenuItemName;
+    if(!menuItemName){msg('uploadStatus','Please choose a menu item or enter a new item name.',true);return}
     if(type==='video' && files.length!==1){msg('uploadStatus','For a menu video, select exactly one video.',true);return}
     if(type==='photo' && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','Menu photo mode accepts image files only.',true);return}
     if(type==='video' && !files[0].type.startsWith('video/')){msg('uploadStatus','Please select a video file.',true);return}
@@ -276,8 +302,8 @@ async function uploadFiles(){
 
       const {data:urlData}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
       const row={
-        title:category==='menu_item' ? menuItem.name : (title || file.name.replace(/\.[^/.]+$/,'')),
-        short_title:category==='menu_item' ? menuItem.name : (title || file.name.replace(/\.[^/.]+$/,'')),
+        title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        short_title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
         category,
         storage_path:path,
         public_url:urlData.publicUrl,
@@ -292,9 +318,10 @@ async function uploadFiles(){
 
     $('files').value='';$('preview').innerHTML='';
     if(category!=='menu_item') $('title').value='';
+    $('newMenuItemName').value='';
     $('youtubeUrl').value='';
     msg('uploadStatus',category==='menu_item'
-      ? `${files.length} media item(s) uploaded for ${menuItem.name}. They are now available on the website.`
+      ? `${files.length} media item(s) uploaded for ${menuItem ? menuItem.name : customMenuItemName}. They are now available in your media library.`
       : 'Upload successful. The media item is now live in Supabase.');
     await loadPhotos();
   }catch(e){msg('uploadStatus',e.message||String(e),true)}
