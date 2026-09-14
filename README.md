@@ -8,3 +8,11 @@ Upload/replace these files in your GitHub repository:
 - app.js
 - config.js
 - menu-poster.jpg
+
+
+## SEO files
+- `robots.txt` — allows search engine crawling and points to the sitemap.
+- `sitemap.xml` — lists the public homepage for search engines.
+- `index.html` — contains canonical URL, Open Graph/Twitter metadata, and Restaurant structured data.
+
+Master website URL: https://sudhirtandoor32.vercel.app/
