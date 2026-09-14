@@ -97,6 +97,19 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
   </div>
 
   <div class="card">
+    <h2>🍽️ Manage Menu Items</h2>
+    <p class="muted">Add a new food item once. It will appear automatically on the public Menu and in the photo-upload dropdown.</p>
+    <div class="form-grid">
+      <div><label>Food item name</label><input id="newMenuName" placeholder="e.g. Rajma Chawal"></div>
+      <div><label>Category</label><select id="newMenuCategory"><option>Thali & Combos</option><option>Rice</option><option>Roti & Paratha</option><option>Extras</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div>
+      <div><label>Price (₹)</label><input id="newMenuPrice" type="number" min="0" step="1" placeholder="60"></div>
+      <div><label>Description</label><input id="newMenuDescription" placeholder="Freshly prepared..."></div>
+    </div>
+    <br><button id="addMenuItemBtn" class="green" type="button">➕ Add New Food Item</button>
+    <div id="menuItemStatus" class="status">Add a new food item here when it is not already listed.</div>
+  </div>
+
+  <div class="card">
     <h2>🗂️ Photo Management</h2>
     <div class="toolbar">
       <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option></select></div>
@@ -121,19 +134,29 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 const BUCKET = SUPABASE_BUCKET;
 const $ = id => document.getElementById(id);
 let allPhotos = [];
+let dbMenuItems = [];
 
 function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=error?'#ffe5e0':'#f5eee9';}
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
-function populateMenuItems(){
+async function populateMenuItems(){
   const select=$('menuItem');
   if(!select) return;
-  select.innerHTML =
-    SHOP_CONFIG.menu.map(item=>`<option value="${esc(String(item.id))}">${esc(item.name)} — ₹${esc(item.price)}</option>`).join('') +
-    `<option value="__new__">➕ Other / New item</option>`;
-  select.value=String(SHOP_CONFIG.menu[0]?.id ?? '__new__');
+  const localItems=SHOP_CONFIG.menu||[];
+  let dbItems=[];
+  try{
+    const {data,error}=await supabaseClient.from('menu_items').select('id,name,category,description,price,sort_order,is_active').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true});
+    if(!error && data) dbItems=data;
+  }catch(e){}
+  dbMenuItems=dbItems;
+  const merged=[...localItems];
+  dbItems.forEach(item=>{ if(!merged.some(x=>String(x.name).trim().toLowerCase()===String(item.name).trim().toLowerCase())) merged.push({...item,image:'',images:[]}); });
+  select.innerHTML=merged.map(item=>`<option value="${esc(String(item.id))}">${esc(item.name)} — ₹${esc(item.price)}</option>`).join('')+`<option value="__new__">➕ Other / New item</option>`;
+  if(merged.length) select.value=String(merged[0].id);
+  $('newMenuItemWrap').classList.add('hidden');
 }
+
 
 $('files').addEventListener('change',()=>{
   const files=[...$('files').files]; $('preview').innerHTML='';
@@ -250,7 +273,33 @@ async function updateUI(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   const ok=!!session;
   $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
-  if(ok) loadPhotos();
+  if(ok){ loadPhotos(); populateMenuItems(); }
+}
+
+async function addMenuItem(){
+  const name=$('newMenuName').value.trim();
+  const category=$('newMenuCategory').value;
+  const price=Number($('newMenuPrice').value);
+  const description=$('newMenuDescription').value.trim() || 'Freshly prepared and served hot.';
+  if(!name){msg('menuItemStatus','Please enter the food item name.',true);return}
+  if(!Number.isFinite(price)||price<0){msg('menuItemStatus','Please enter a valid price.',true);return}
+  const exists=[...(SHOP_CONFIG.menu||[]),...(dbMenuItems||[])].some(x=>String(x.name).trim().toLowerCase()===name.toLowerCase());
+  if(exists){msg('menuItemStatus','This food item already exists.',true);return}
+  $('addMenuItemBtn').disabled=true; msg('menuItemStatus','Adding new food item...');
+  try{
+    const {data,error}=await supabaseClient.from('menu_items').insert({name,category,price,description,sort_order:999,is_active:true}).select().single();
+    if(error) throw error;
+    dbMenuItems.push(data);
+    await populateMenuItems();
+    $('menuItem').value=String(data.id);
+    $('category').value='menu_item';
+    $('menuItemWrap').classList.remove('hidden');
+    $('newMenuItemWrap').classList.add('hidden');
+    $('title').value=data.name;
+    msg('menuItemStatus',`✅ ${data.name} added to the public menu. You can now upload its photos above.`);
+    $('newMenuName').value='';$('newMenuPrice').value='';$('newMenuDescription').value='';
+  }catch(e){msg('menuItemStatus',e.message||String(e),true)}
+  finally{$('addMenuItemBtn').disabled=false}
 }
 
 async function uploadFiles(){
@@ -261,7 +310,7 @@ async function uploadFiles(){
   const type=$('mediaType').value;
   const title=$('title').value.trim();
   const menuItemId=$('menuItem').value==='__new__' ? null : Number($('menuItem').value);
-  const menuItem=menuItemId ? SHOP_CONFIG.menu.find(x=>x.id===menuItemId) : null;
+  const menuItem=menuItemId ? ([...(SHOP_CONFIG.menu||[]), ...(dbMenuItems||[])].find(x=>Number(x.id)===menuItemId) || null) : null;
   const customMenuItemName=$('newMenuItemName').value.trim();
 
   if(category==='menu_item'){
@@ -430,6 +479,7 @@ if($('editCancel') && $('editSave') && $('editModal')){
   $('editSave').onclick=saveEdit;
   $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
 }
+$('addMenuItemBtn').onclick=addMenuItem;
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
