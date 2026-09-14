@@ -25,6 +25,9 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 .actions button{padding:8px 9px;font-size:12px}
 .badge{display:inline-block;background:#fff0e8;color:#c9471c;border-radius:20px;padding:4px 8px;font-size:11px;font-weight:800}
 @media(max-width:900px){.photos{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.photos{grid-template-columns:repeat(2,1fr)}.photo-card img{height:140px}}
+
+.langar-form-note{padding:10px 12px;border-radius:10px;background:#fff7f1;color:#6f5b50;font-size:13px}.youtube-badge{background:#ffe6e2;color:#b42318}.youtube-link{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:800;color:#b42318;text-decoration:none}
+@media(max-width:600px){.toolbar{align-items:stretch}.toolbar>div{min-width:100%}.actions button{width:100%}}
 </style>
 </head>
 <body>
@@ -57,14 +60,25 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
       </div>
       <div><label>Photo title</label><input id="title" placeholder="e.g. Dal Makhani — 14 Sep 2026"></div>
       <div><label>Display date</label><input id="displayDate" type="date"></div>
-      <div><label>Select photo(s)</label><input id="files" type="file" accept="image/*" multiple></div>
+      <div id="mediaTypeWrap" class="hidden">
+        <label>Langar upload type</label>
+        <select id="mediaType">
+          <option value="photo">🍲 Food & Langar Seva distribution</option>
+          <option value="youtube">▶️ YouTube video thumbnail</option>
+        </select>
+      </div>
+      <div id="youtubeUrlWrap" class="hidden">
+        <label>YouTube video link</label>
+        <input id="youtubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+      <div><label id="fileLabel">Select photo(s)</label><input id="files" type="file" accept="image/*" multiple></div>
     </div>
     <br>
     <label style="display:flex;gap:8px;align-items:center;font-weight:700">
       <input id="makeToday" type="checkbox" style="width:auto" checked>
       Set uploaded Menu photo as <strong>Today's Menu</strong> (and replace the previous one)
     </label>
-    <div class="hint">For Langar/Gallery, multiple photos can be selected. Menu uploads are treated as one active Today's Menu.</div>
+    <div class="hint">For Langar Seva, choose either normal distribution photos or a YouTube thumbnail. A YouTube item stores the thumbnail in Supabase and opens the video on YouTube when customers tap it.</div>
     <div id="preview" class="preview"></div>
     <br><button id="uploadBtn">Upload Selected Photos</button>
     <div id="uploadStatus" class="status">Choose photos to begin.</div>
@@ -118,7 +132,40 @@ $('category').addEventListener('change',()=>{
   $('makeToday').parentElement.style.opacity=$('category').value==='menu'?'1':'.5';
   if($('category').value!=='menu') $('makeToday').checked=false;
   else $('makeToday').checked=true;
+  updateLangarUploadMode();
 });
+$('mediaType').addEventListener('change', updateLangarUploadMode);
+
+function updateLangarUploadMode(){
+  const isLangar = $('category').value === 'langar';
+  $('mediaTypeWrap').classList.toggle('hidden', !isLangar);
+  if (!isLangar) {
+    $('youtubeUrlWrap').classList.add('hidden');
+    $('mediaType').value = 'photo';
+    $('youtubeUrl').value = '';
+    $('fileLabel').textContent = $('category').value === 'menu' ? 'Select photo' : 'Select photo(s)';
+    $('files').multiple = $('category').value !== 'menu';
+    return;
+  }
+  const yt = $('mediaType').value === 'youtube';
+  $('youtubeUrlWrap').classList.toggle('hidden', !yt);
+  $('fileLabel').textContent = yt ? 'Select YouTube thumbnail (1 image)' : 'Select food/distribution photo(s)';
+  $('files').multiple = !yt;
+  if (yt && $('files').files.length > 1) {
+    $('files').value = '';
+    $('preview').innerHTML = '';
+  }
+}
+
+function normalizeYouTubeUrl(value){
+  const url = String(value || '').trim();
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    if (!['youtube.com','www.youtube.com','m.youtube.com','youtu.be','www.youtu.be'].includes(u.hostname.toLowerCase())) return '';
+    return u.toString();
+  } catch { return ''; }
+}
 
 async function login(){
   msg('loginStatus','Signing in...');
@@ -137,9 +184,24 @@ async function updateUI(){
 async function uploadFiles(){
   const files=[...$('files').files];
   if(!files.length){msg('uploadStatus','Please choose at least one image.',true);return}
-  const category=$('category').value, title=$('title').value.trim(), date=$('displayDate').value||todayISO(), makeToday=$('makeToday').checked;
+
+  const category=$('category').value;
+  const mediaType=category==='langar' ? $('mediaType').value : 'photo';
+  const title=$('title').value.trim();
+  const date=$('displayDate').value||todayISO();
+
   if(category==='menu' && files.length>1){msg('uploadStatus','For Menu, select only one photo.',true);return}
-  $('uploadBtn').disabled=true; msg('uploadStatus',`Uploading ${files.length} photo(s)...`);
+  if(category==='langar' && mediaType==='youtube'){
+    if(files.length!==1){msg('uploadStatus','For a YouTube item, select exactly one thumbnail image.',true);return}
+    if(!normalizeYouTubeUrl($('youtubeUrl').value)){
+      msg('uploadStatus','Please enter a valid YouTube link.',true);return
+    }
+    if(!title){msg('uploadStatus','Please enter a short title for the YouTube video.',true);return}
+  }
+
+  const makeToday=$('makeToday').checked;
+  $('uploadBtn').disabled=true; msg('uploadStatus',`Uploading ${files.length} item(s)...`);
+
   try{
     if(category==='menu' && makeToday){
       const {data:old,error:e1}=await supabaseClient.from('site_photos').select('id,storage_path').eq('category','menu').eq('is_today',true);
@@ -151,19 +213,36 @@ async function uploadFiles(){
         if(e2) throw e2;
       }
     }
+
     for(const file of files){
       if(!file.type.startsWith('image/')) continue;
       const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-');
       const path=`${category}/${Date.now()}-${crypto.randomUUID()}-${safe}`;
       const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
       if(ue) throw ue;
+
       const {data:urlData}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
-      const row={title:title || file.name.replace(/\.[^/.]+$/,''),category,storage_path:path,public_url:urlData.publicUrl,display_date:date,is_today:category==='menu' && makeToday};
+      const row={
+        title:title || file.name.replace(/\.[^/.]+$/,''),
+        short_title:title || file.name.replace(/\.[^/.]+$/,''),
+        category,
+        storage_path:path,
+        public_url:urlData.publicUrl,
+        display_date:date,
+        is_today:category==='menu' && makeToday,
+        media_type:mediaType,
+        youtube_url:mediaType==='youtube' ? normalizeYouTubeUrl($('youtubeUrl').value) : null
+      };
+
       const {error:de}=await supabaseClient.from('site_photos').insert(row);
-      if(de){await supabaseClient.storage.from(BUCKET).remove([path]);throw de}
+      if(de){
+        await supabaseClient.storage.from(BUCKET).remove([path]);
+        throw de;
+      }
     }
-    $('files').value='';$('preview').innerHTML='';$('title').value='';
-    msg('uploadStatus','Upload successful. Photo management has been refreshed.');
+
+    $('files').value='';$('preview').innerHTML='';$('title').value='';$('youtubeUrl').value='';
+    msg('uploadStatus','Upload successful. The Langar/YouTube item is now live in Supabase.');
     await loadPhotos();
   }catch(e){msg('uploadStatus',e.message||String(e),true)}
   finally{$('uploadBtn').disabled=false}
@@ -179,7 +258,8 @@ function renderPhotos(){
       <img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">
       <div class="photo-body">
         <div class="photo-title">${esc(p.title||'Untitled')}</div>
-        <div class="meta">${esc(p.category)} · ${esc(date)} ${today?' · ':''}${today?'<span class="badge">TODAY</span>':''}</div>
+        <div class="meta">${esc(p.category)} · ${esc(date)} ${p.media_type==='youtube'?' · <span class="badge youtube-badge">YOUTUBE</span>':''} ${today?' · ':''}${today?'<span class="badge">TODAY</span>':''}</div>
+        ${p.media_type==='youtube'&&p.youtube_url?`<a class="youtube-link" href="${esc(p.youtube_url)}" target="_blank" rel="noopener noreferrer">▶ Watch video on YouTube ↗</a>`:''}
         <div class="actions">
           ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
           <button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button>
@@ -192,7 +272,7 @@ function renderPhotos(){
 
 async function loadPhotos(){
   msg('listStatus','Loading photos...');
-  const {data,error}=await supabaseClient.from('site_photos').select('id,title,category,storage_path,public_url,display_date,is_today,created_at').order('created_at',{ascending:false}).limit(200);
+  const {data,error}=await supabaseClient.from('site_photos').select('id,title,short_title,category,media_type,youtube_url,storage_path,public_url,display_date,is_today,created_at').order('created_at',{ascending:false}).limit(200);
   if(error){msg('listStatus',error.message,true);return}
   allPhotos=data||[];renderPhotos();
 }
@@ -221,6 +301,7 @@ $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 supabaseClient.auth.onAuthStateChange(()=>updateUI());
+updateLangarUploadMode();
 updateUI();
 </script>
 </body>
