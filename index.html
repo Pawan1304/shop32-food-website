@@ -3987,7 +3987,435 @@
       }
     }
 
-</style>
+
+
+    /* =====================================================
+       V2 UX UPGRADE — MOBILE + SWIPE + FLOATING CART
+       ===================================================== */
+
+    body { overflow-x: hidden; }
+
+    /* HERO: fit the complete first screen on phones */
+    .hero-video {
+      min-height: 100svh;
+      height: 100svh;
+      padding: 100px 24px 92px;
+    }
+
+    .hero-video-content { max-width: 850px; }
+
+    .hero-location { margin-bottom: 2px; }
+
+    /* Floating cart only while user is inside the menu */
+    #openCart {
+      position: fixed;
+      left: 20px;
+      bottom: 92px;
+      z-index: 145;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px) scale(.96);
+      box-shadow: 0 16px 38px rgba(32,27,23,.22);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    body.menu-visible #openCart {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Generic swipe carousel */
+    .swipe-carousel {
+      position: relative;
+      width: 100%;
+    }
+
+    .swipe-track {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+    }
+
+    .swipe-track::-webkit-scrollbar { display: none; }
+
+    .swipe-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+    }
+
+    .swipe-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .swipe-dot {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border-radius: 50%;
+      background: #d8cec4;
+      transition: width .2s ease, background .2s ease;
+    }
+
+    .swipe-dot.active {
+      width: 22px;
+      border-radius: 999px;
+      background: #ef4b23;
+    }
+
+    .swipe-arrow {
+      position: absolute;
+      top: 50%;
+      z-index: 5;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #201b17;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 8px 20px rgba(32,27,23,.14);
+      transform: translateY(-50%);
+      opacity: .9;
+    }
+
+    .swipe-arrow.prev { left: 10px; }
+    .swipe-arrow.next { right: 10px; }
+
+    /* Phone showcase */
+    .phone-media-carousel {
+      margin-top: 4px;
+    }
+
+    .phone-media-carousel .swipe-track {
+      border-radius: 17px;
+    }
+
+    .phone-media-carousel .swipe-slide {
+      height: 210px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 17px;
+      background: #fff;
+    }
+
+    .phone-media-carousel img,
+    .phone-media-carousel video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 17px;
+      background: #fff;
+    }
+
+    .phone-media-carousel .swipe-arrow { width: 30px; height: 30px; font-size: 13px; }
+
+    /* Menu card image carousel */
+    .menu-card .menu-carousel {
+      position: relative;
+      overflow: hidden;
+      background: #fff7f1;
+    }
+
+    .menu-card .menu-carousel .swipe-track { gap: 0; }
+
+    .menu-card .menu-carousel .swipe-slide { flex-basis: 100%; }
+
+    .menu-card .menu-img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      padding: 8px;
+      background: #fff7f1;
+    }
+
+    .menu-card .menu-carousel .swipe-arrow { width: 32px; height: 32px; }
+
+    /* About image carousel */
+    .about-image {
+      min-height: 0;
+      padding: 14px;
+      display: block;
+      overflow: hidden;
+    }
+
+    .about-image .swipe-slide {
+      height: 480px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff7f1;
+      border-radius: 25px;
+      overflow: hidden;
+    }
+
+    .about-image .swipe-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 25px;
+    }
+
+    /* Langar gallery */
+    .langar-gallery .swipe-slide {
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-radius: 21px;
+      background: #fff7f1;
+    }
+
+    .langar-gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 21px;
+    }
+
+    /* Food & moments becomes a swipe gallery */
+    .food-moments-carousel .swipe-slide {
+      height: 420px;
+      border-radius: 24px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .food-moments-carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 12px;
+      border-radius: 24px;
+      background: white;
+    }
+
+    /* Google reviews: continuous horizontal marquee */
+    .reviews-marquee {
+      position: relative;
+      width: 100vw;
+      margin-left: calc(50% - 50vw);
+      overflow: hidden;
+      padding: 8px 0 18px;
+      mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent);
+    }
+
+    .reviews-track {
+      display: flex;
+      width: max-content;
+      gap: 18px;
+      animation: reviewMarquee 42s linear infinite;
+      will-change: transform;
+    }
+
+    .reviews-marquee:hover .reviews-track,
+    .reviews-marquee:focus-within .reviews-track {
+      animation-play-state: paused;
+    }
+
+    .reviews-track .review {
+      flex: 0 0 350px;
+      width: 350px;
+      min-height: 245px;
+      padding: 25px;
+    }
+
+    @keyframes reviewMarquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(-50% - 9px)); }
+    }
+
+    /* Compact modern contact */
+    .contact-section.v2-contact {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 28px;
+      align-items: stretch;
+      margin: 0 clamp(20px, 7vw, 100px) 90px;
+      padding: 34px;
+      border-radius: 32px;
+      color: white;
+      background: radial-gradient(circle at 85% 20%, rgba(255,116,67,.25), transparent 34%), linear-gradient(135deg,#171311,#2b1d17);
+      box-shadow: 0 25px 70px rgba(45,29,18,.16);
+    }
+
+    .v2-contact-main { position: relative; z-index: 2; }
+
+    .v2-contact-main .eyebrow { color: #ff9a6c; }
+
+    .v2-contact-main h2 {
+      margin: 10px 0 12px;
+      color: white;
+      font-size: clamp(40px, 5vw, 68px);
+      line-height: .95;
+    }
+
+    .v2-contact-main h2 span { color: #ff7043; }
+
+    .v2-contact-main > p {
+      max-width: 540px;
+      margin: 0;
+      color: rgba(255,255,255,.68);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .v2-contact-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+
+    .v2-meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 13px;
+      color: rgba(255,255,255,.82);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.055);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .v2-contact-actions {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: center;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 24px;
+      background: rgba(255,255,255,.055);
+      backdrop-filter: blur(16px);
+    }
+
+    .v2-action {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 800;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .v2-action:hover { transform: translateY(-3px); opacity: .94; }
+    .v2-action.call { color: white; background: #f04b23; }
+    .v2-action.whatsapp { color: white; background: #1ca957; }
+    .v2-action.map { color: #201b17; background: #fff5ed; }
+    .v2-action.menu { color: #201b17; background: white; }
+    .v2-action.review { grid-column: 1 / -1; color: #201b17; background: #ffcf67; }
+
+    @media (max-width: 900px) {
+      .contact-section.v2-contact {
+        grid-template-columns: 1fr;
+        margin: 0 20px 70px;
+        padding: 27px;
+      }
+      .v2-contact-actions { grid-template-columns: 1fr 1fr; }
+      .about-image .swipe-slide { height: 360px; }
+    }
+
+    @media (max-width: 600px) {
+      /* Keep “Better food for / everyday life” on exactly two lines */
+      .story-content h2 br { display: none; }
+      .story-content h2 {
+        font-size: clamp(38px, 11vw, 48px);
+        line-height: .98;
+        letter-spacing: -2px;
+      }
+      .story-content h2 span {
+        display: block;
+        white-space: nowrap;
+      }
+
+      .hero-video {
+        min-height: 100svh;
+        height: 100svh;
+        padding: 88px 16px 78px;
+      }
+
+      .hero-video-content { margin-top: 0; }
+      .hero-badge { margin-bottom: 13px; padding: 7px 13px; font-size: 9px; }
+      .hero-video-content h1 { font-size: clamp(47px, 15vw, 64px); line-height: .88; letter-spacing: -2.6px; }
+      .hero-subtitle { margin: 12px 0 5px; font-size: 18px; }
+      .hero-description { max-width: 320px; font-size: 12px; line-height: 1.45; }
+      .hero-order-buttons { gap: 8px; margin-top: 15px; }
+      .hero-order-btn { width: min(320px, 94%); min-height: 58px; padding: 10px 17px; border-radius: 14px; }
+      .hero-order-btn span:last-child { font-size: 14px; }
+      .order-icon { font-size: 20px; }
+      .hero-location { margin-top: 10px; font-size: 9px; }
+      .scroll-down { bottom: 11px; gap: 2px; font-size: 10px; }
+      .scroll-arrow { font-size: 22px; line-height: 1; }
+
+      #openCart { left: 14px; bottom: 77px; padding: 11px 14px; border-radius: 13px; }
+
+      .phone-frame { width: 230px; height: 455px; }
+      .phone-screen { padding: 30px 12px 12px; }
+      .phone-screen h3 { margin: 8px 0 10px; font-size: 21px; }
+      .phone-media-carousel .swipe-slide { height: 195px; }
+      .phone-media-carousel .swipe-dots { margin-top: 7px; }
+      .phone-media-carousel .swipe-arrow { display: none; }
+
+      .menu-card .menu-img { height: 215px; }
+      .menu-card .menu-carousel .swipe-arrow { display: none; }
+      .menu-card .swipe-dots { margin-top: 8px; }
+
+      .about-image { padding: 10px; border-radius: 24px; }
+      .about-image .swipe-slide { height: 300px; border-radius: 19px; }
+      .about-image .swipe-arrow { display: none; }
+
+      .langar-gallery .swipe-slide { height: 240px; }
+      .langar-gallery .swipe-arrow { display: none; }
+
+      .food-moments-carousel .swipe-slide { height: 300px; }
+      .food-moments-carousel .swipe-arrow { display: none; }
+
+      .reviews-marquee { mask-image: none; -webkit-mask-image: none; }
+      .reviews-track { animation-duration: 55s; }
+      .reviews-track .review { flex-basis: 300px; width: 300px; min-height: 220px; padding: 21px; }
+      .review p { font-size: 14px; }
+
+      .v2-contact-main h2 { font-size: 44px; }
+      .v2-contact-main > p { font-size: 13px; }
+      .v2-contact-meta { gap: 7px; }
+      .v2-meta-chip { font-size: 10px; padding: 8px 10px; }
+      .v2-contact-actions { padding: 12px; gap: 8px; border-radius: 19px; }
+      .v2-action { min-height: 52px; font-size: 11px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reviews-track, .phone-frame { animation: none !important; }
+      html { scroll-behavior: auto; }
+    }
+
+  </style>
 
 </head>
 
@@ -4311,69 +4739,28 @@
           </div>
 
         </div>
-
-
-
-        <!-- CENTER PHONE -->
-
+        <!-- CENTER PHONE — SWIPEABLE FOOD SHOWCASE -->
         <div class="food-phone">
-
           <div class="phone-frame">
-
             <div class="phone-speaker"></div>
-
-
             <div class="phone-screen">
-
               <div class="phone-logo">
-                <!-- Your real shop logo -->
-                <img
-                  src="assets/photos/logo.png"
-                  alt="Sudh Vaishno Tandoor logo"
-                >
+                <img src="assets/photos/logo.png" alt="Sudh Vaishno Tandoor logo">
+              </div>
+              <p class="phone-small">SUDH VAISHNO TANDOOR</p>
+              <h3>See it. <span>Crave it.</span></h3>
+
+              <div class="swipe-carousel phone-media-carousel" id="phoneMediaCarousel">
+                <div class="swipe-track" id="phoneMediaTrack"></div>
+                <button class="swipe-arrow prev" type="button" data-carousel-prev="phoneMediaCarousel" aria-label="Previous food">‹</button>
+                <button class="swipe-arrow next" type="button" data-carousel-next="phoneMediaCarousel" aria-label="Next food">›</button>
+                <div class="swipe-dots" id="phoneMediaDots"></div>
               </div>
 
-
-              <p class="phone-small">
-                SUDH VAISHNO TANDOOR
-              </p>
-
-
-              <h3>
-
-                Fresh Food
-
-                <br>
-
-                <span>
-                  Since 1996
-                </span>
-
-              </h3>
-
-
-              <!-- YOUR THALI IMAGE -->
-
-              <img
-                src="assets/photos/thali.png"
-                alt="Sudh Vaishno Tandoor thali"
-              >
-
-
-              <a
-                href="#menu"
-                class="phone-menu-button"
-              >
-                View Menu
-              </a>
-
+              <a href="#menu" class="phone-menu-button">Explore Menu →</a>
             </div>
-
           </div>
-
         </div>
-
-
 
         <!-- RIGHT FEATURES -->
 
@@ -4772,6 +5159,8 @@
         <button
           class="cart-button"
           id="openCart"
+          title="Open your cart"
+          aria-label="Open your cart"
         >
 
           🛒 Cart
@@ -4866,12 +5255,13 @@
 
       </div>
 
-      <div class="langar-visual">
-        <img
-          src="assets/photos/langar.png"
-          alt="Langar and bulk vegetarian food service"
-          loading="lazy"
-        >
+      <div class="langar-visual langar-gallery">
+        <div class="swipe-carousel" id="langarCarousel">
+          <div class="swipe-track" id="langarTrack"></div>
+          <button class="swipe-arrow prev" type="button" data-carousel-prev="langarCarousel" aria-label="Previous Langar photo">‹</button>
+          <button class="swipe-arrow next" type="button" data-carousel-next="langarCarousel" aria-label="Next Langar photo">›</button>
+          <div class="swipe-dots" id="langarDots"></div>
+        </div>
       </div>
 
     </section>
@@ -4890,12 +5280,12 @@
       <!-- YOUR THALI IMAGE -->
 
       <div class="about-image">
-
-        <img
-          src="assets/photos/thali.png"
-          alt="Pure vegetarian thali at Sudh Vaishno Tandoor"
-        >
-
+        <div class="swipe-carousel" id="aboutCarousel">
+          <div class="swipe-track" id="aboutTrack"></div>
+          <button class="swipe-arrow prev" type="button" data-carousel-prev="aboutCarousel" aria-label="Previous About photo">‹</button>
+          <button class="swipe-arrow next" type="button" data-carousel-next="aboutCarousel" aria-label="Next About photo">›</button>
+          <div class="swipe-dots" id="aboutDots"></div>
+        </div>
       </div>
 
 
@@ -5028,39 +5418,11 @@
       </div>
 
 
-      <div class="photo-grid">
-
-
-        <img
-          src="assets/photos/thali.png"
-          alt="Vegetarian thali"
-        >
-
-
-        <img
-          src="assets/photos/roti.png"
-          alt="Fresh roti"
-        >
-
-
-        <img
-          src="assets/photos/dal.png"
-          alt="Dal"
-        >
-
-
-        <img
-          src="assets/photos/rajma-rice.png"
-          alt="Rajma rice"
-        >
-
-
-        <img
-          src="assets/photos/paratha.png"
-          alt="Paratha"
-        >
-
-
+      <div class="food-moments-carousel swipe-carousel" id="galleryCarousel">
+        <div class="swipe-track" id="galleryTrack"></div>
+        <button class="swipe-arrow prev" type="button" data-carousel-prev="galleryCarousel" aria-label="Previous food photo">‹</button>
+        <button class="swipe-arrow next" type="button" data-carousel-next="galleryCarousel" aria-label="Next food photo">›</button>
+        <div class="swipe-dots" id="galleryDots"></div>
       </div>
 
     </section>
@@ -5111,9 +5473,9 @@
         </a>
       </div>
 
-      <div class="reviews-grid">
-
-        <article class="review">
+      <div class="reviews-marquee" aria-label="Customer reviews scrolling from right to left">
+        <div class="reviews-track">
+          <article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Nice experience with family, tasty and healthy food available here at very minimum price of 60 rupees only. Loving the food and serving staff.”
@@ -5126,8 +5488,7 @@
             </div>
           </div>
         </article>
-
-        <article class="review">
+<article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Amazing taste, feels like homemade food. Food is prepared in a hygienic measures. Worth every rupees.”
@@ -5140,8 +5501,7 @@
             </div>
           </div>
         </article>
-
-        <article class="review">
+<article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Highly recommend for family. Home made taste food.”
@@ -5154,8 +5514,7 @@
             </div>
           </div>
         </article>
-
-        <article class="review">
+<article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Tasty food, home made.”
@@ -5168,8 +5527,7 @@
             </div>
           </div>
         </article>
-
-        <article class="review">
+<article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Valuable for money. Tasty kadhi chawal and rajma chawal. Breakfast Lunch Dinner available.”
@@ -5182,8 +5540,7 @@
             </div>
           </div>
         </article>
-
-        <article class="review">
+<article class="review">
           <div class="stars">★★★★★</div>
           <p>
             “Tasty food.”
@@ -5196,7 +5553,85 @@
             </div>
           </div>
         </article>
-
+          <article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Nice experience with family, tasty and healthy food available here at very minimum price of 60 rupees only. Loving the food and serving staff.”
+          </p>
+          <div class="reviewer">
+            <span>A</span>
+            <div>
+              <strong>Ashok Kumar</strong>
+              <small>Google reviewer · 1 review</small>
+            </div>
+          </div>
+        </article>
+<article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Amazing taste, feels like homemade food. Food is prepared in a hygienic measures. Worth every rupees.”
+          </p>
+          <div class="reviewer">
+            <span>C</span>
+            <div>
+              <strong>Chaman Baghel</strong>
+              <small>Google reviewer · 1 review</small>
+            </div>
+          </div>
+        </article>
+<article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Highly recommend for family. Home made taste food.”
+          </p>
+          <div class="reviewer">
+            <span>L</span>
+            <div>
+              <strong>Ladsahab Alam</strong>
+              <small>Google reviewer · 1 review</small>
+            </div>
+          </div>
+        </article>
+<article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Tasty food, home made.”
+          </p>
+          <div class="reviewer">
+            <span>R</span>
+            <div>
+              <strong>RITIK Kumar</strong>
+              <small>Google reviewer · 1 review</small>
+            </div>
+          </div>
+        </article>
+<article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Valuable for money. Tasty kadhi chawal and rajma chawal. Breakfast Lunch Dinner available.”
+          </p>
+          <div class="reviewer">
+            <span>M</span>
+            <div>
+              <strong>Murle Murle</strong>
+              <small>Google reviewer · 1 review</small>
+            </div>
+          </div>
+        </article>
+<article class="review">
+          <div class="stars">★★★★★</div>
+          <p>
+            “Tasty food.”
+          </p>
+          <div class="reviewer">
+            <span>T</span>
+            <div>
+              <strong>Tarkesh 99</strong>
+              <small>Google reviewer · 4 reviews</small>
+            </div>
+          </div>
+        </article>
+        </div>
       </div>
 
       <div class="reviews-cta">
@@ -5231,131 +5666,27 @@
          CONTACT — VISIT / CALL / WHATSAPP
          ===================================================== -->
 
-    <section id="contact" class="contact-section">
+    <section id="contact" class="contact-section v2-contact">
 
-      <div class="contact-copy">
+      <div class="v2-contact-main">
+        <span class="eyebrow">VISIT • ORDER • ENJOY</span>
+        <h2>Good food.<br><span>Good mood.</span></h2>
+        <p>Pure vegetarian food, homemade taste and easy ordering — all from Gate No. 2, GMCH, Chandigarh.</p>
 
-        <span class="eyebrow">
-          VISIT OR ORDER
-        </span>
-
-        <h2>
-          Hungry?
-          <br>
-          <span>We're here.</span>
-        </h2>
-
-        <p class="contact-description">
-          Fresh vegetarian food, homely taste and quick
-          ordering. Call us, message us on WhatsApp,
-          or visit us at Gate No. 2, GMCH, Chandigarh.
-        </p>
-
-        <div class="contact-info-grid">
-
-          <a class="contact-info-card" href="tel:+919779159680">
-            <span class="contact-info-icon">☎</span>
-            <span>
-              <strong>9779159680</strong>
-              <small>Tap to call</small>
-            </span>
-          </a>
-
-          <a class="contact-info-card" href="tel:+918264621901">
-            <span class="contact-info-icon">☎</span>
-            <span>
-              <strong>8264621901</strong>
-              <small>Tap to call</small>
-            </span>
-          </a>
-
-          <div class="contact-info-card">
-            <span class="contact-info-icon">⏰</span>
-            <span>
-              <strong>7AM – 11PM</strong>
-              <small>Opening hours</small>
-            </span>
-          </div>
-
-          <a
-            class="contact-info-card"
-            data-map-link
-            href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-            target="_blank"
-            rel="noopener"
-          >
-            <span class="contact-info-icon">📍</span>
-            <span>
-              <strong>Gate No. 2, GMCH</strong>
-              <small>Open in Google Maps</small>
-            </span>
-          </a>
-
+        <div class="v2-contact-meta">
+          <span class="v2-meta-chip">📍 Gate No. 2, GMCH</span>
+          <span class="v2-meta-chip">🕐 7 AM – 11 PM</span>
+          <span class="v2-meta-chip">🌱 Pure Veg</span>
+          <span class="v2-meta-chip">⭐ 4.9 on Google</span>
         </div>
-
       </div>
 
-      <div class="contact-action-panel">
-
-        <span class="contact-action-label">
-          LET'S CONNECT
-        </span>
-
-        <h3>
-          Choose your way.
-        </h3>
-
-        <p>
-          Want food now? Call us or send your order
-          directly on WhatsApp.
-        </p>
-
-        <div class="contact-actions">
-
-          <a class="btn btn-primary" href="tel:+919779159680">
-            📞 Call Now
-          </a>
-
-          <a
-            class="btn btn-whatsapp"
-            data-whatsapp-link
-            href="https://wa.me/919779159680"
-            target="_blank"
-            rel="noopener"
-          >
-            💬 WhatsApp
-          </a>
-
-          <a
-            class="btn btn-light map-button"
-            data-map-link
-            href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-            target="_blank"
-            rel="noopener"
-          >
-            📍 Get Directions
-          </a>
-
-          <a class="btn btn-light" href="#menu">
-            🍽️ View Menu
-          </a>
-
-          <a
-            class="btn btn-light"
-            href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-            target="_blank"
-            rel="noopener"
-          >
-            ⭐ Google Reviews
-          </a>
-
-        </div>
-
-        <div class="contact-hours">
-          <strong>Open daily</strong>
-          <span>7:00 AM – 11:00 PM</span>
-        </div>
-
+      <div class="v2-contact-actions">
+        <a class="v2-action call" href="tel:+919779159680">📞 Call 9779159680</a>
+        <a class="v2-action whatsapp" data-whatsapp-link href="https://wa.me/919779159680" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a class="v2-action map" data-map-link href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">📍 Directions</a>
+        <a class="v2-action menu" href="#menu">🍽️ Explore Menu</a>
+        <a class="v2-action review" href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">⭐ See Google Reviews</a>
       </div>
 
     </section>
