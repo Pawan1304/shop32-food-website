@@ -104,24 +104,11 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 </section>
 </main>
 
+<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title</label><input id="editTitle" placeholder="Enter the title"><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
+
 <script>
-const BUCKET = (typeof SUPABASE_BUCKET !== 'undefined' && SUPABASE_BUCKET) ? SUPABASE_BUCKET : 'site-photos';
+const BUCKET = SUPABASE_BUCKET;
 const $ = id => document.getElementById(id);
-
-function hasSupabaseClient(){
-  return typeof supabaseClient !== 'undefined' && !!supabaseClient;
-}
-
-function requireSupabase(){
-  if(!hasSupabaseClient()){
-    msg('loginStatus',
-      'Supabase is not connected. Please make sure supabase-config.js is in the same GitHub folder as admin.html and contains your Publishable key.',
-      true
-    );
-    return false;
-  }
-  return true;
-}
 let allPhotos = [];
 
 function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=error?'#ffe5e0':'#f5eee9';}
@@ -179,49 +166,20 @@ function normalizeYouTubeUrl(value){
 }
 
 async function login(){
-  if(!requireSupabase()) return;
-  const email=$('email').value.trim();
-  const password=$('password').value;
-  if(!email || !password){
-    msg('loginStatus','Please enter your email and password.',true);
+  if(typeof supabaseClient === 'undefined' || !supabaseClient){
+    msg('loginStatus','Supabase is not connected. Please check supabase-config.js.',true);
     return;
   }
   msg('loginStatus','Signing in...');
-  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-  if(error){
-    msg('loginStatus',error.message,true);
-    return;
-  }
+  const {error}=await supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+  if(error){msg('loginStatus',error.message,true);return}
   await updateUI();
 }
-async function logout(){
-  if(!requireSupabase()) return;
-  await supabaseClient.auth.signOut();
-  await updateUI();
-}
+async function logout(){await supabaseClient.auth.signOut();await updateUI();}
 async function updateUI(){
-  if(!hasSupabaseClient()){
-    $('loginCard').classList.remove('hidden');
-    $('adminPanel').classList.add('hidden');
-    $('logoutBtn').classList.add('hidden');
-    msg('loginStatus',
-      'Admin connection is not ready. Check that supabase-config.js is uploaded beside admin.html.',
-      true
-    );
-    return;
-  }
-  const {data:{session},error}=await supabaseClient.auth.getSession();
-  if(error){
-    $('loginCard').classList.remove('hidden');
-    $('adminPanel').classList.add('hidden');
-    $('logoutBtn').classList.add('hidden');
-    msg('loginStatus',error.message,true);
-    return;
-  }
+  const {data:{session}}=await supabaseClient.auth.getSession();
   const ok=!!session;
-  $('loginCard').classList.toggle('hidden',ok);
-  $('adminPanel').classList.toggle('hidden',!ok);
-  $('logoutBtn').classList.toggle('hidden',!ok);
+  $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
   if(ok) loadPhotos();
 }
 
@@ -384,17 +342,19 @@ $('photos').addEventListener('click',async e=>{
   }
 });
 
-$('editCancel').onclick=closeEdit; $('editSave').onclick=saveEdit; $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
+if($('editCancel') && $('editSave') && $('editModal')){
+  $('editCancel').onclick=closeEdit;
+  $('editSave').onclick=saveEdit;
+  $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
+}
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
-if(hasSupabaseClient()){
-  supabaseClient.auth.onAuthStateChange(()=>updateUI());
-}
+supabaseClient.auth.onAuthStateChange(()=>updateUI());
 updateLangarUploadMode();
 updateUI();
 </script>
 
-<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title</label><input id="editTitle" placeholder="Enter the title"><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div></div>
+</div>
 </body>
 </html>
