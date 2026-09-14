@@ -542,35 +542,175 @@ updateCart();
      LANGAR SEVA
      ===================================================== */
 
-  async function loadLangarPhotos() {
+async function loadLangarPhotos() {
 
-    const photos =
-      await getPhotos("langar", 6);
+  const { data: items, error } = await supabaseClient
+    .from("site_photos")
+    .select(`
+      id,
+      title,
+      short_title,
+      category,
+      media_type,
+      youtube_url,
+      public_url,
+      display_date,
+      created_at
+    `)
+    .eq("category", "langar")
+    .order("created_at", { ascending: false })
+    .limit(12);
 
-    const track =
-      document.getElementById("langarTrack");
+  if (error) {
+    console.warn("Langar Supabase error:", error.message);
+    return;
+  }
 
-    if (!track || !photos.length) return;
+  const track = document.getElementById("langarTrack");
+  const dots = document.getElementById("langarDots");
 
-    track.innerHTML = photos.map(photo => `
-      <div class="swipe-slide">
+  if (!track || !items || !items.length) return;
 
-        <img
-          src="${photo.public_url}"
-          alt="${photo.title || "Langar Seva"}"
-          loading="lazy"
-        >
+  track.innerHTML = items.map((item) => {
+
+    const title =
+      item.short_title ||
+      item.title ||
+      "Langar Seva";
+
+    const date =
+      item.display_date || "";
+
+    /* ==========================================
+       YOUTUBE VIDEO THUMBNAIL
+       ========================================== */
+
+    if (
+      item.media_type === "youtube" &&
+      item.youtube_url
+    ) {
+
+      return `
+        <div class="swipe-slide langar-media-slide">
+
+          <a
+            class="langar-youtube-card"
+            href="${escapeHtml(item.youtube_url)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Watch ${escapeHtml(title)} on YouTube"
+          >
+
+            <img
+              src="${escapeHtml(item.public_url)}"
+              alt="${escapeHtml(title)}"
+              loading="lazy"
+            >
+
+            <span class="langar-youtube-play">
+              ▶
+            </span>
+
+            <div class="langar-youtube-info">
+
+              <strong>
+                ${escapeHtml(title)}
+              </strong>
+
+              ${
+                date
+                  ? `<small>${escapeHtml(date)}</small>`
+                  : ""
+              }
+
+              <em>
+                ▶ Watch on YouTube ↗
+              </em>
+
+            </div>
+
+          </a>
+
+        </div>
+      `;
+    }
+
+
+    /* ==========================================
+       NORMAL LANGAR PHOTO
+       ========================================== */
+
+    return `
+      <div class="swipe-slide langar-media-slide">
+
+        <div class="langar-photo-card">
+
+          <img
+            src="${escapeHtml(item.public_url)}"
+            alt="${escapeHtml(title)}"
+            loading="lazy"
+          >
+
+          <div class="langar-photo-caption">
+
+            <strong>
+              ${escapeHtml(title)}
+            </strong>
+
+            ${
+              date
+                ? `<small>${escapeHtml(date)}</small>`
+                : ""
+            }
+
+          </div>
+
+        </div>
 
       </div>
-    `).join("");
+    `;
 
-    const root =
-      track.closest(".swipe-carousel");
+  }).join("");
 
-    if (root && typeof setupSwipeCarousel === "function") {
-      setupSwipeCarousel(root.id);
-    }
+
+  /* ==========================================
+     SWIPE DOTS
+     ========================================== */
+
+  if (dots) {
+
+    dots.innerHTML = items.map((_, index) => {
+
+      return `
+        <button
+          class="swipe-dot ${index === 0 ? "active" : ""}"
+          type="button"
+          aria-label="Go to Langar item ${index + 1}"
+        ></button>
+      `;
+
+    }).join("");
+
   }
+
+
+  /* ==========================================
+     INITIALIZE EXISTING SWIPE CAROUSEL
+     ========================================== */
+
+  const root =
+    track.closest(".swipe-carousel");
+
+  if (
+    root &&
+    typeof setupSwipeCarousel === "function"
+  ) {
+
+    setupSwipeCarousel(root.id);
+
+  }
+
+}
 
 
   /* =====================================================
