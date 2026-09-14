@@ -1,422 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sudh Vaishno Tandoor — Admin</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fff8f1;
-      color: #241914;
-    }
-
-    .wrap {
-      max-width: 1050px;
-      margin: auto;
-      padding: 28px 18px 60px;
-    }
-
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 24px;
-    }
-
-    h1 { margin: 0; font-size: 28px; }
-    .muted { color: #756960; }
-
-    .card {
-      background: #fff;
-      border: 1px solid #eaded5;
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 12px 35px rgba(50,25,10,.08);
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    @media(max-width:800px) {
-      .grid { grid-template-columns: 1fr; }
-      .top { align-items: flex-start; flex-direction: column; }
-    }
-
-    label {
-      display: block;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    input[type=email],
-    input[type=password],
-    input[type=file] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d9c9be;
-      border-radius: 12px;
-      background: #fff;
-    }
-
-    button {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      cursor: pointer;
-      font-weight: 800;
-      background: #ef5b2a;
-      color: white;
-    }
-
-    button.secondary { background: #241914; }
-    button.light { background: #f0e7e0; color: #241914; }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-
-    .status {
-      margin-top: 12px;
-      padding: 11px 13px;
-      border-radius: 10px;
-      background: #f5eee9;
-    }
-
-    .hidden { display: none !important; }
-
-    .preview {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    @media(max-width:600px) {
-      .preview { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    .preview img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      border-radius: 12px;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #756960;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudh Vaishno Tandoor — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+*{box-sizing:border-box} body{margin:0;background:#fff8f1;color:#241914;font-family:Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:24px 16px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
+h1,h2{margin-top:0}.muted{color:#756960}.card{background:#fff;border:1px solid #eaded5;border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 8px 25px rgba(50,25,10,.07)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid,.form-grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+label{display:block;font-weight:800;margin:0 0 7px}input,select{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;background:#fff;font:inherit}
+input[type=file]{padding:9px}button{border:0;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:800;background:#ef5b2a;color:#fff}
+button.dark{background:#241914}button.light{background:#f0e7e0;color:#241914}button.green{background:#198754}button.danger{background:#b42318}
+button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f5eee9;min-height:40px}
+.hidden{display:none!important}.hint{font-size:13px;color:#756960}.preview{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+.preview img{width:150px;height:120px;object-fit:cover;border-radius:10px;border:1px solid #eaded5}.preview-item{width:150px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.toolbar>div{min-width:150px;flex:1}
+.photos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:15px}
+.photo-card{border:1px solid #eaded5;border-radius:14px;overflow:hidden;background:#fff}.photo-card img{width:100%;height:170px;object-fit:cover;display:block}
+.photo-body{padding:10px}.photo-title{font-weight:800;word-break:break-word}.meta{font-size:12px;color:#756960;margin:5px 0 9px}.actions{display:flex;gap:7px;flex-wrap:wrap}
+.actions button{padding:8px 9px;font-size:12px}
+.badge{display:inline-block;background:#fff0e8;color:#c9471c;border-radius:20px;padding:4px 8px;font-size:11px;font-weight:800}
+@media(max-width:900px){.photos{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){.photos{grid-template-columns:repeat(2,1fr)}.photo-card img{height:140px}}
+</style>
 </head>
-
 <body>
-  <main class="wrap">
+<main class="wrap">
+<div class="top">
+  <div><h1>📸 Sudh Vaishno Tandoor</h1><div class="muted">Admin photo manager</div></div>
+  <button id="logoutBtn" class="dark hidden">Logout</button>
+</div>
 
-    <div class="top">
+<section id="loginCard" class="card">
+  <h2>Admin Login</h2><p class="muted">Only the authorised admin account can manage photos.</p>
+  <div class="form-grid">
+    <div><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+  </div>
+  <br><button id="loginBtn">Login</button><div id="loginStatus" class="status"></div>
+</section>
+
+<section id="adminPanel" class="hidden">
+  <div class="card">
+    <h2>📤 Upload Photos</h2>
+    <div class="form-grid">
       <div>
-        <h1>📸 Sudh Vaishno Tandoor</h1>
-        <div class="muted">Photo Admin — upload without touching website code</div>
+        <label>Category</label>
+        <select id="category">
+          <option value="menu">Today's Menu</option>
+          <option value="langar">Langar Seva</option>
+          <option value="gallery">Photos / Gallery</option>
+        </select>
       </div>
-      <button id="logoutBtn" class="secondary hidden">Logout</button>
+      <div><label>Photo title</label><input id="title" placeholder="e.g. Dal Makhani — 14 Sep 2026"></div>
+      <div><label>Display date</label><input id="displayDate" type="date"></div>
+      <div><label>Select photo(s)</label><input id="files" type="file" accept="image/*" multiple></div>
     </div>
+    <br>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:700">
+      <input id="makeToday" type="checkbox" style="width:auto" checked>
+      Set uploaded Menu photo as <strong>Today's Menu</strong> (and replace the previous one)
+    </label>
+    <div class="hint">For Langar/Gallery, multiple photos can be selected. Menu uploads are treated as one active Today's Menu.</div>
+    <div id="preview" class="preview"></div>
+    <br><button id="uploadBtn">Upload Selected Photos</button>
+    <div id="uploadStatus" class="status">Choose photos to begin.</div>
+  </div>
 
-    <!-- LOGIN -->
-    <section id="loginCard" class="card">
-      <h2>Admin Login</h2>
-      <p class="muted">Only your admin account can upload or delete photos.</p>
+  <div class="card">
+    <h2>🗂️ Photo Management</h2>
+    <div class="toolbar">
+      <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option></select></div>
+      <div><label>Search title</label><input id="searchTitle" placeholder="Search photos..."></div>
+      <div><button id="refreshBtn" class="light">Refresh</button></div>
+    </div>
+    <div id="listStatus" class="status">Loading photos...</div>
+    <div id="photos" class="photos"></div>
+  </div>
 
-      <label>Email</label>
-      <input id="email" type="email" autocomplete="username">
+  <div class="card">
+    <h2>🌐 Website</h2>
+    <p class="muted">Open the public website to verify your latest photos.</p>
+    <a href="index.html" target="_blank"><button class="light" type="button">Open Website</button></a>
+  </div>
+</section>
+</main>
 
-      <br><br>
+<script>
+const BUCKET = SUPABASE_BUCKET;
+const $ = id => document.getElementById(id);
+let allPhotos = [];
 
-      <label>Password</label>
-      <input id="password" type="password" autocomplete="current-password">
+function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=error?'#ffe5e0':'#f5eee9';}
 
-      <br><br>
+function todayISO(){
+  const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
+}
+$('displayDate').value=todayISO();
 
-      <button id="loginBtn">Login</button>
-      <div id="loginStatus" class="status"></div>
-    </section>
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
-    <!-- ADMIN PANEL -->
-    <section id="adminPanel" class="hidden">
+$('files').addEventListener('change',()=>{
+  const files=[...$('files').files]; $('preview').innerHTML='';
+  files.forEach(f=>{
+    const url=URL.createObjectURL(f);
+    const d=document.createElement('div'); d.className='preview-item';
+    d.innerHTML=`<img src="${url}" alt=""><div class="hint">${esc(f.name)}</div>`;
+    $('preview').appendChild(d);
+  });
+});
 
-      <div class="card">
-        <h2>🍽️ Today's Menu</h2>
-        <p class="muted">
-          Upload one new menu photo. The newest one automatically appears
-          in the website's Menu section.
-        </p>
+$('category').addEventListener('change',()=>{
+  $('makeToday').disabled=$('category').value!=='menu';
+  $('makeToday').parentElement.style.opacity=$('category').value==='menu'?'1':'.5';
+  if($('category').value!=='menu') $('makeToday').checked=false;
+  else $('makeToday').checked=true;
+});
 
-        <input id="menuFiles" type="file" accept="image/*">
-        <br><br>
+async function login(){
+  msg('loginStatus','Signing in...');
+  const {error}=await supabaseClient.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+  if(error){msg('loginStatus',error.message,true);return}
+  await updateUI();
+}
+async function logout(){await supabaseClient.auth.signOut();await updateUI();}
+async function updateUI(){
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  const ok=!!session;
+  $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
+  if(ok) loadPhotos();
+}
 
-        <button id="uploadMenuBtn">Upload Menu Photo</button>
+async function uploadFiles(){
+  const files=[...$('files').files];
+  if(!files.length){msg('uploadStatus','Please choose at least one image.',true);return}
+  const category=$('category').value, title=$('title').value.trim(), date=$('displayDate').value||todayISO(), makeToday=$('makeToday').checked;
+  if(category==='menu' && files.length>1){msg('uploadStatus','For Menu, select only one photo.',true);return}
+  $('uploadBtn').disabled=true; msg('uploadStatus',`Uploading ${files.length} photo(s)...`);
+  try{
+    if(category==='menu' && makeToday){
+      const {data:old,error:e1}=await supabaseClient.from('site_photos').select('id,storage_path').eq('category','menu').eq('is_today',true);
+      if(e1) throw e1;
+      if(old?.length){
+        const paths=old.map(x=>x.storage_path).filter(Boolean);
+        if(paths.length) await supabaseClient.storage.from(BUCKET).remove(paths);
+        const {error:e2}=await supabaseClient.from('site_photos').delete().eq('category','menu').eq('is_today',true);
+        if(e2) throw e2;
+      }
+    }
+    for(const file of files){
+      if(!file.type.startsWith('image/')) continue;
+      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-');
+      const path=`${category}/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+      const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+      if(ue) throw ue;
+      const {data:urlData}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+      const row={title:title || file.name.replace(/\.[^/.]+$/,''),category,storage_path:path,public_url:urlData.publicUrl,display_date:date,is_today:category==='menu' && makeToday};
+      const {error:de}=await supabaseClient.from('site_photos').insert(row);
+      if(de){await supabaseClient.storage.from(BUCKET).remove([path]);throw de}
+    }
+    $('files').value='';$('preview').innerHTML='';$('title').value='';
+    msg('uploadStatus','Upload successful. Photo management has been refreshed.');
+    await loadPhotos();
+  }catch(e){msg('uploadStatus',e.message||String(e),true)}
+  finally{$('uploadBtn').disabled=false}
+}
+
+function renderPhotos(){
+  const cat=$('filterCategory').value, q=$('searchTitle').value.trim().toLowerCase();
+  const rows=allPhotos.filter(p=>(cat==='all'||p.category===cat)&&(!q||(p.title||'').toLowerCase().includes(q)));
+  $('photos').innerHTML=rows.map(p=>{
+    const date=p.display_date||p.created_at?.slice(0,10)||'';
+    const today=p.category==='menu'&&p.is_today;
+    return `<article class="photo-card">
+      <img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">
+      <div class="photo-body">
+        <div class="photo-title">${esc(p.title||'Untitled')}</div>
+        <div class="meta">${esc(p.category)} · ${esc(date)} ${today?' · ':''}${today?'<span class="badge">TODAY</span>':''}</div>
+        <div class="actions">
+          ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
+          <button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button>
+        </div>
       </div>
+    </article>`;
+  }).join('');
+  msg('listStatus',`${rows.length} photo(s) shown.`);
+}
 
-      <div class="grid">
+async function loadPhotos(){
+  msg('listStatus','Loading photos...');
+  const {data,error}=await supabaseClient.from('site_photos').select('id,title,category,storage_path,public_url,display_date,is_today,created_at').order('created_at',{ascending:false}).limit(200);
+  if(error){msg('listStatus',error.message,true);return}
+  allPhotos=data||[];renderPhotos();
+}
 
-        <div class="card">
-          <h2>🙏 Langar Seva</h2>
-          <p class="muted">
-            Select several photos at once. The newest 6 appear in the Langar section.
-          </p>
+$('photos').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-action]');if(!b)return;
+  const id=Number(b.dataset.id);
+  if(b.dataset.action==='today'){
+    if(!confirm("Set this photo as Today's Menu?"))return;
+    const {error:e1}=await supabaseClient.from('site_photos').update({is_today:false}).eq('category','menu');
+    if(e1){msg('listStatus',e1.message,true);return}
+    const {error:e2}=await supabaseClient.from('site_photos').update({is_today:true}).eq('id',id).eq('category','menu');
+    if(e2){msg('listStatus',e2.message,true);return}
+    await loadPhotos();
+  }
+  if(b.dataset.action==='delete'){
+    if(!confirm('Delete this photo permanently?'))return;
+    const {error:e1}=await supabaseClient.from('site_photos').delete().eq('id',id);
+    if(e1){msg('listStatus',e1.message,true);return}
+    if(b.dataset.path) await supabaseClient.storage.from(BUCKET).remove([b.dataset.path]);
+    await loadPhotos();
+  }
+});
 
-          <input id="langarFiles" type="file" accept="image/*" multiple>
-          <br><br>
-
-          <button id="uploadLangarBtn">Upload Langar Photos</button>
-        </div>
-
-        <div class="card">
-          <h2>🖼️ Gallery</h2>
-          <p class="muted">
-            Upload daily food, customer, shop or event photos.
-          </p>
-
-          <input id="galleryFiles" type="file" accept="image/*" multiple>
-          <br><br>
-
-          <button id="uploadGalleryBtn">Upload Gallery Photos</button>
-        </div>
-
-        <div class="card">
-          <h2>🌐 Website</h2>
-          <p class="muted">
-            After upload, the public website can read photos directly from Supabase.
-          </p>
-
-          <a href="index.html" target="_blank">
-            <button class="light" type="button">Open Website</button>
-          </a>
-        </div>
-
-      </div>
-
-      <div class="card">
-        <h2>Latest Uploads</h2>
-        <div id="uploadStatus" class="status">Loading...</div>
-        <div id="preview" class="preview"></div>
-      </div>
-
-    </section>
-  </main>
-
-  <script>
-    const BUCKET = SUPABASE_BUCKET;
-    const $ = (id) => document.getElementById(id);
-
-    function setStatus(message, error = false) {
-      $('uploadStatus').textContent = message;
-      $('uploadStatus').style.background =
-        error ? '#ffe5e0' : '#f5eee9';
-    }
-
-    async function refreshUploads() {
-      const { data, error } = await supabaseClient
-        .from('site_photos')
-        .select('id,title,category,storage_path,public_url,created_at')
-        .order('created_at', { ascending: false })
-        .limit(20);
-
-      if (error) {
-        setStatus(error.message, true);
-        return;
-      }
-
-      $('preview').innerHTML = (data || []).map(p => `
-        <div>
-          <img src="${p.public_url}" alt="${p.title || p.category}">
-          <div class="small">${p.category} · ${p.title || ''}</div>
-          <button
-            class="light deleteBtn"
-            data-id="${p.id}"
-            data-path="${p.storage_path || ''}"
-            style="margin-top:5px">
-            Delete
-          </button>
-        </div>
-      `).join('');
-
-      setStatus(`${(data || []).length} recent uploads loaded.`);
-    }
-
-    async function uploadFiles(inputId, category) {
-      const files = Array.from($(inputId).files || []);
-
-      if (!files.length) {
-        setStatus('Please choose a photo first.', true);
-        return;
-      }
-
-      setStatus(`Uploading ${files.length} photo(s)...`);
-
-      for (const file of files) {
-
-        if (!file.type.startsWith('image/')) continue;
-
-        if (file.size > 50 * 1024 * 1024) {
-          setStatus(
-            `${file.name} is larger than 50 MB. Please use a smaller image.`,
-            true
-          );
-          continue;
-        }
-
-        const safeName = file.name
-          .toLowerCase()
-          .replace(/[^a-z0-9.\-_]/g, '-');
-
-        const path =
-          `${category}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
-
-        const { error: uploadError } =
-          await supabaseClient.storage
-            .from(BUCKET)
-            .upload(path, file, {
-              cacheControl: '3600',
-              upsert: false,
-              contentType: file.type
-            });
-
-        if (uploadError) {
-          setStatus(
-            `Upload failed for ${file.name}: ${uploadError.message}`,
-            true
-          );
-          continue;
-        }
-
-        const { data: urlData } =
-          supabaseClient.storage
-            .from(BUCKET)
-            .getPublicUrl(path);
-
-        const { error: dbError } =
-          await supabaseClient
-            .from('site_photos')
-            .insert({
-              title: file.name.replace(/\.[^/.]+$/, ''),
-              category,
-              storage_path: path,
-              public_url: urlData.publicUrl
-            });
-
-        if (dbError) {
-          setStatus(
-            `Photo uploaded but database record failed: ${dbError.message}`,
-            true
-          );
-          continue;
-        }
-      }
-
-      setStatus(
-        'Upload complete. The website will use the new photo automatically.'
-      );
-
-      $(inputId).value = '';
-      await refreshUploads();
-    }
-
-    async function login() {
-      const email = $('email').value.trim();
-      const password = $('password').value;
-
-      $('loginStatus').textContent = 'Signing in...';
-
-      const { error } =
-        await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
-
-      $('loginStatus').textContent =
-        error ? error.message : 'Logged in.';
-
-      if (!error) {
-        await updateUI();
-      }
-    }
-
-    async function logout() {
-      await supabaseClient.auth.signOut();
-      await updateUI();
-    }
-
-    async function updateUI() {
-      const {
-        data: { session }
-      } = await supabaseClient.auth.getSession();
-
-      const loggedIn = !!session;
-
-      $('loginCard').classList.toggle('hidden', loggedIn);
-      $('adminPanel').classList.toggle('hidden', !loggedIn);
-      $('logoutBtn').classList.toggle('hidden', !loggedIn);
-
-      if (loggedIn) {
-        refreshUploads();
-      }
-    }
-
-    $('loginBtn').onclick = login;
-    $('logoutBtn').onclick = logout;
-
-    $('uploadMenuBtn').onclick =
-      () => uploadFiles('menuFiles', 'menu');
-
-    $('uploadLangarBtn').onclick =
-      () => uploadFiles('langarFiles', 'langar');
-
-    $('uploadGalleryBtn').onclick =
-      () => uploadFiles('galleryFiles', 'gallery');
-
-    $('preview').addEventListener('click', async (e) => {
-      const btn = e.target.closest('.deleteBtn');
-
-      if (!btn) return;
-
-      if (!confirm('Delete this photo from the website?')) return;
-
-      const id = Number(btn.dataset.id);
-      const path = btn.dataset.path;
-
-      const { error: dbError } =
-        await supabaseClient
-          .from('site_photos')
-          .delete()
-          .eq('id', id);
-
-      if (dbError) {
-        setStatus(dbError.message, true);
-        return;
-      }
-
-      if (path) {
-        await supabaseClient
-          .storage
-          .from(BUCKET)
-          .remove([path]);
-      }
-
-      refreshUploads();
-    });
-
-    supabaseClient.auth.onAuthStateChange(() => updateUI());
-
-    updateUI();
-  </script>
+$('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
+$('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
+$('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+supabaseClient.auth.onAuthStateChange(()=>updateUI());
+updateUI();
+</script>
 </body>
 </html>
