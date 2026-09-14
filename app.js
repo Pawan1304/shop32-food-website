@@ -91,7 +91,7 @@ renderMediaCollection("aboutTrack", "aboutDots", SHOP_CONFIG.aboutImages || []);
 renderMediaCollection("galleryTrack", "galleryDots", SHOP_CONFIG.galleryImages || []);
 
 /* Langar gallery */
-renderMediaCollection("langarTrack", "langarDots", SHOP_CONFIG.langarImages || []);
+/* renderMediaCollection("langarTrack", "langarDots", SHOP_CONFIG.langarImages || []); */
 
 /* =====================================================
    MENU WITH MULTI-PHOTO SWIPE CARDS
