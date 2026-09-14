@@ -59,7 +59,6 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
         </select>
       </div>
       <div><label>Photo title</label><input id="title" placeholder="e.g. Dal Makhani — 14 Sep 2026"></div>
-      <div><label>Display date</label><input id="displayDate" type="date"></div>
       <div id="mediaTypeWrap" class="hidden">
         <label>Langar upload type</label>
         <select id="mediaType">
@@ -113,7 +112,6 @@ function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=
 function todayISO(){
   const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
 }
-$('displayDate').value=todayISO();
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
@@ -188,7 +186,6 @@ async function uploadFiles(){
   const category=$('category').value;
   const mediaType=category==='langar' ? $('mediaType').value : 'photo';
   const title=$('title').value.trim();
-  const date=$('displayDate').value||todayISO();
 
   if(category==='menu' && files.length>1){msg('uploadStatus','For Menu, select only one photo.',true);return}
   if(category==='langar' && mediaType==='youtube'){
@@ -228,7 +225,6 @@ async function uploadFiles(){
         category,
         storage_path:path,
         public_url:urlData.publicUrl,
-       /* display_date:date, */
         is_today:category==='menu' && makeToday,
         media_type:mediaType,
         youtube_url:mediaType==='youtube' ? normalizeYouTubeUrl($('youtubeUrl').value) : null
@@ -252,7 +248,7 @@ function renderPhotos(){
   const cat=$('filterCategory').value, q=$('searchTitle').value.trim().toLowerCase();
   const rows=allPhotos.filter(p=>(cat==='all'||p.category===cat)&&(!q||(p.title||'').toLowerCase().includes(q)));
   $('photos').innerHTML=rows.map(p=>{
-    /* const date=p.display_date||p.created_at?.slice(0,10)||''; */
+    const date=p.display_date||p.created_at?.slice(0,10)||'';
     const today=p.category==='menu'&&p.is_today;
     return `<article class="photo-card">
       <img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">
