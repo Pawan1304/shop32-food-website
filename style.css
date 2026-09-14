@@ -4456,3 +4456,68 @@
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
     }
+
+
+/* =====================================================
+   SUPABASE LIVE DAILY MENU PHOTO
+   ===================================================== */
+
+.daily-menu-photo-box {
+  width: 100%;
+  margin: 20px 0 28px;
+}
+
+.daily-menu-photo-card {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  overflow: hidden;
+}
+
+.daily-menu-photo-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+.daily-menu-photo-heading small {
+  font-weight: 600;
+  opacity: .65;
+}
+
+.daily-menu-photo-card img {
+  display: block;
+  width: 100%;
+  max-height: 650px;
+  object-fit: contain;
+  border-radius: 15px;
+  background: #f7f3ef;
+}
+
+@media (max-width: 600px) {
+
+  .daily-menu-photo-card {
+    padding: 9px;
+    border-radius: 16px;
+  }
+
+  .daily-menu-photo-heading {
+    font-size: 14px;
+  }
+
+  .daily-menu-photo-heading small {
+    font-size: 11px;
+  }
+
+  .daily-menu-photo-card img {
+    max-height: 520px;
+    border-radius: 11px;
+  }
+}
