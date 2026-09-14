@@ -258,3 +258,205 @@ if (menuSection && "IntersectionObserver" in window) {
 
 renderMenu();
 updateCart();
+
+
+/* =====================================================
+   PAGE HEADER / MOBILE NAV / SCROLL UX
+   Moved out of index.html so HTML stays clean.
+   ===================================================== */
+
+/* =====================================================
+       MODERN HEADER BEHAVIOUR
+       ===================================================== */
+
+    (function () {
+      const header = document.getElementById("siteHeader");
+      const navLinks = document.querySelectorAll("[data-nav-link]");
+      const mobileButton = document.getElementById("mobileMenuButton");
+      const mobileDropdown = document.getElementById("mobileDropdown");
+
+      function updateHeader() {
+        header.classList.toggle("scrolled", window.scrollY > 30);
+      }
+
+      window.addEventListener("scroll", updateHeader, { passive: true });
+      updateHeader();
+
+      const sections = [...document.querySelectorAll("main section[id]")];
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach((link) => {
+            link.classList.toggle(
+              "active",
+              link.getAttribute("href") === "#" + entry.target.id
+            );
+          });
+        });
+      }, {
+        rootMargin: "-35% 0px -55% 0px",
+        threshold: 0
+      });
+
+      sections.forEach((section) => observer.observe(section));
+
+      if (mobileButton && mobileDropdown) {
+        mobileButton.addEventListener("click", () => {
+          const open = mobileDropdown.classList.toggle("open");
+          mobileButton.setAttribute("aria-expanded", String(open));
+        });
+
+        mobileDropdown.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", () => {
+            mobileDropdown.classList.remove("open");
+            mobileButton.setAttribute("aria-expanded", "false");
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!mobileDropdown.contains(event.target) &&
+              !mobileButton.contains(event.target)) {
+            mobileDropdown.classList.remove("open");
+            mobileButton.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+    })();
+
+    /* =====================================================
+       PHOTO GESTURE UX
+       Keep images swipeable without trapping vertical scrolling.
+       IMPORTANT: no preventDefault() is used here, so normal page
+       scrolling always remains available when the finger starts on a photo.
+       ===================================================== */
+    (function () {
+      document.querySelectorAll('.swipe-track img').forEach(img => {
+        img.addEventListener('dragstart', event => event.preventDefault());
+      });
+    })();
+
+    /* =====================================================
+       MOBILE HERO SCROLL PROMPT
+       Visible on the first screen, hidden after scrolling.
+       ===================================================== */
+    (function () {
+      const scrollPrompt = document.querySelector('.scroll-down');
+      if (!scrollPrompt) return;
+
+      function updateScrollPrompt() {
+        scrollPrompt.classList.toggle('scroll-hidden', window.scrollY > 90);
+      }
+
+      window.addEventListener('scroll', updateScrollPrompt, { passive: true });
+      updateScrollPrompt();
+    })();
+
+
+/* =====================================================
+   SUPABASE LIVE PHOTO SYSTEM
+   Safe to keep here: if Supabase is not configured, it exits.
+   ===================================================== */
+
+/* =========================================================
+   SUDH VAISHNO TANDOOR - LIVE PHOTO SYSTEM
+
+   Public website side:
+   - Daily Menu: latest "menu" photo
+   - Langar: latest 6 "langar" photos
+   - Gallery: latest 12 "gallery" photos
+
+   Daily uploads are handled from admin.html.
+   ========================================================= */
+
+(function () {
+  if (!window.supabase || typeof supabaseClient === "undefined") return;
+
+  const esc = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  async function getPhotos(category, limit) {
+    const { data, error } = await supabaseClient
+      .from("site_photos")
+      .select("id,title,category,public_url,created_at")
+      .eq("category", category)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.warn("Photo system:", error.message);
+      return [];
+    }
+
+    return data || [];
+  }
+
+  function renderDailyMenu(photo) {
+    const box = document.getElementById("dailyMenuPhotoBox");
+    if (!box || !photo) return;
+
+    box.innerHTML = `
+      <div class="daily-menu-photo-card">
+        <div class="daily-menu-photo-heading">
+          <span>🍽️ TODAY'S MENU</span>
+          <small>Freshly updated</small>
+        </div>
+        <img src="${esc(photo.public_url)}" alt="${esc(photo.title || "Today's menu")}" loading="lazy">
+      </div>
+    `;
+  }
+
+  function renderLangar(photos) {
+    const main = document.getElementById("langarMainPhoto");
+    const grid = document.getElementById("langarPhotoGrid");
+    if (!main || !grid || !photos.length) return;
+
+    main.src = photos[0].public_url;
+    main.alt = photos[0].title || "Langar Seva photo";
+
+    grid.innerHTML = photos.slice(0, 6).map((photo, index) => `
+      <button class="langar-thumb ${index === 0 ? "active" : ""}" type="button" data-langar-url="${esc(photo.public_url)}" data-langar-title="${esc(photo.title || "Langar Seva photo")}">
+        <img src="${esc(photo.public_url)}" alt="${esc(photo.title || "Langar Seva photo")}" loading="lazy">
+      </button>
+    `).join("");
+
+    grid.querySelectorAll(".langar-thumb").forEach(btn => {
+      btn.addEventListener("click", () => {
+        main.src = btn.dataset.langarUrl;
+        main.alt = btn.dataset.langarTitle;
+        grid.querySelectorAll(".langar-thumb").forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+  }
+
+  function renderGallery(photos) {
+    const grid = document.getElementById("livePhotoGrid");
+    if (!grid || !photos.length) return;
+
+    grid.innerHTML = photos.map(photo => `
+      <figure class="live-photo-card">
+        <img src="${esc(photo.public_url)}" alt="${esc(photo.title || "Sudh Vaishno Tandoor photo")}" loading="lazy">
+        <figcaption>${esc(photo.title || "Sudh Vaishno Tandoor")}</figcaption>
+      </figure>
+    `).join("");
+  }
+
+  async function loadLivePhotos() {
+    const [menu, langar, gallery] = await Promise.all([
+      getPhotos("menu", 1),
+      getPhotos("langar", 6),
+      getPhotos("gallery", 12)
+    ]);
+
+    renderDailyMenu(menu[0]);
+    renderLangar(langar);
+    renderGallery(gallery);
+  }
+
+  document.addEventListener("DOMContentLoaded", loadLivePhotos);
+})();
