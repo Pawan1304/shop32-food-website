@@ -500,7 +500,17 @@ updateCart();
 
   async function loadDailyMenu() {
 
-    const photos = await getPhotos("menu", 1);
+  const { data: photos, error } = await supabaseClient
+    .from("site_photos")
+    .select("id,title,category,public_url,created_at")
+    .eq("category", "menu")
+    .eq("is_today", true)
+    .limit(1);
+
+  if (error) {
+    console.warn("Today's Menu error:", error.message);
+    return;
+  }
 
     const box =
       document.getElementById("dailyMenuPhotoBox");
