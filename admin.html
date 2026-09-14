@@ -6,6 +6,7 @@
 <title>Sudh Vaishno Tandoor — Admin</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="config.js"></script>
 <style>
 *{box-sizing:border-box} body{margin:0;background:#fff8f1;color:#241914;font-family:Arial,sans-serif}
 .wrap{max-width:1100px;margin:auto;padding:24px 16px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}
@@ -155,7 +156,7 @@ $('category').addEventListener('change',()=>{
   $('mediaTypeWrap').classList.toggle('hidden',!(isMenuItem||isLangar));
   $('mediaType').querySelector('option[value="video"]').hidden=isLangar;
   $('mediaType').querySelector('option[value="youtube"]').hidden=isMenuItem;
-  if((isLangar && type==='video') || (isMenuItem && type==='youtube')) $('mediaType').value='photo';
+  if((isLangar && $('mediaType').value==='video') || (isMenuItem && $('mediaType').value==='youtube')) $('mediaType').value='photo';
   $('youtubeUrlWrap').classList.add('hidden');
   $('youtubeUrl').value='';
   $('mediaType').value=isLangar?'photo':'photo';
