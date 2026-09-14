@@ -99,10 +99,14 @@ renderMediaCollection("galleryTrack", "galleryDots", SHOP_CONFIG.galleryImages |
    overrides the local config images when available.
    ===================================================== */
 let liveMenuMediaByName = {};
-const categories = ["All", ...new Set(SHOP_CONFIG.menu.map(x => x.category))];
 const tabs = document.getElementById("categoryTabs");
+function rebuildMenuCategories(){
+  if(!tabs) return;
+  const categories = ["All", ...new Set(SHOP_CONFIG.menu.map(x => x.category))];
+  tabs.innerHTML = categories.map(c => `<button class="${c === activeCategory ? "active" : (c === "All" && activeCategory === "All" ? "active" : "")}" data-category="${c}">${c}</button>`).join("");
+}
 if (tabs) {
-  tabs.innerHTML = categories.map(c => `<button class="${c === "All" ? "active" : ""}" data-category="${c}">${c}</button>`).join("");
+  rebuildMenuCategories();
   tabs.addEventListener("click", e => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -193,6 +197,44 @@ async function loadLiveMenuItemMedia(){
   }catch(error){
     console.warn('Live menu item media:', error);
   }
+}
+
+async function loadLiveMenuItems(){
+  if(!window.supabase || typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try{
+    const {data,error}=await supabaseClient
+      .from('menu_items')
+      .select('id,name,category,description,price,image,sort_order,is_active')
+      .eq('is_active',true)
+      .order('sort_order',{ascending:true})
+      .order('id',{ascending:true});
+    if(error){ console.warn('Live menu items:', error.message); return; }
+    if(!data?.length) return;
+
+    const localByName=new Map((SHOP_CONFIG.menu||[]).map(x=>[String(x.name).trim().toLowerCase(),x]));
+    const dbItems=data.map(row=>{
+      const local=localByName.get(String(row.name).trim().toLowerCase());
+      return {
+        ...(local||{}),
+        id:Number(row.id),
+        name:row.name,
+        category:row.category,
+        description:row.description||local?.description||'Freshly prepared and served hot.',
+        price:Number(row.price)||0,
+        image:row.image||local?.image||'assets/photos/thali.png',
+        images:local?.images||[]
+      };
+    });
+
+    // Keep the original config items that have not yet been migrated to Supabase,
+    // then add all new database-created items.
+    const dbNames=new Set(dbItems.map(x=>String(x.name).trim().toLowerCase()));
+    const localOnly=(SHOP_CONFIG.menu||[]).filter(x=>!dbNames.has(String(x.name).trim().toLowerCase()));
+    SHOP_CONFIG.menu=[...localOnly,...dbItems];
+    rebuildMenuCategories();
+    renderMenu();
+    updateCart();
+  }catch(error){ console.warn('Live menu items:', error); }
 }
 
 /* =====================================================
@@ -291,6 +333,7 @@ if (menuSection && "IntersectionObserver" in window) {
 renderMenu();
 updateCart();
 loadLiveMenuItemMedia();
+loadLiveMenuItems();
 
 
 /* =====================================================
