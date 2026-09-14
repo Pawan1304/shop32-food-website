@@ -95,7 +95,10 @@ renderMediaCollection("galleryTrack", "galleryDots", SHOP_CONFIG.galleryImages |
 
 /* =====================================================
    MENU WITH MULTI-PHOTO SWIPE CARDS
+   Live menu-item media from Supabase is loaded below and
+   overrides the local config images when available.
    ===================================================== */
+let liveMenuMediaByName = {};
 const categories = ["All", ...new Set(SHOP_CONFIG.menu.map(x => x.category))];
 const tabs = document.getElementById("categoryTabs");
 if (tabs) {
@@ -115,12 +118,17 @@ function renderMenu() {
   if (!grid) return;
 
   grid.innerHTML = items.map(item => {
-    const images = item.images?.length ? item.images : [item.image];
-    const slides = images.map((src, i) => `
-      <div class="swipe-slide">
-        <img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy">
-      </div>
-    `).join("");
+    const images = liveMenuMediaByName[item.name]?.length
+      ? liveMenuMediaByName[item.name]
+      : (item.images?.length ? item.images.map(src => ({type:'image',src})) : [{type:'image',src:item.image}]);
+    const slides = images.map((media, i) => {
+      const type = typeof media === 'string' ? 'image' : (media.type || 'image');
+      const src = typeof media === 'string' ? media : media.src;
+      if(type === 'video') {
+        return `<div class="swipe-slide"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video></div>`;
+      }
+      return `<div class="swipe-slide"><img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy"></div>`;
+    }).join("");
 
     return `
       <article class="menu-card">
@@ -144,7 +152,7 @@ function renderMenu() {
   }).join("");
 
   items.forEach(item => {
-    if ((item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`);
+    if ((liveMenuMediaByName[item.name] || item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`);
   });
 }
 
@@ -161,6 +169,30 @@ if (menuGrid) {
     btn.textContent = "✓ Added";
     setTimeout(() => btn.textContent = "+ Add", 800);
   });
+}
+
+async function loadLiveMenuItemMedia(){
+  if(!window.supabase || typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try{
+    const {data,error}=await supabaseClient
+      .from('site_photos')
+      .select('id,title,short_title,media_type,public_url')
+      .eq('category','menu_item')
+      .order('id',{ascending:true})
+      .limit(200);
+    if(error){ console.warn('Menu item media:', error.message); return; }
+
+    const grouped={};
+    (data||[]).forEach(row=>{
+      const name=(row.short_title||row.title||'').trim();
+      if(!name || !row.public_url) return;
+      (grouped[name] ||= []).push({type:row.media_type==='video'?'video':'image',src:row.public_url});
+    });
+    liveMenuMediaByName=grouped;
+    renderMenu();
+  }catch(error){
+    console.warn('Live menu item media:', error);
+  }
 }
 
 /* =====================================================
@@ -258,6 +290,7 @@ if (menuSection && "IntersectionObserver" in window) {
 
 renderMenu();
 updateCart();
+loadLiveMenuItemMedia();
 
 
 /* =====================================================
