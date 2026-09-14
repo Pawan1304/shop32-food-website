@@ -28,6 +28,8 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 
 .langar-form-note{padding:10px 12px;border-radius:10px;background:#fff7f1;color:#6f5b50;font-size:13px}.youtube-badge{background:#ffe6e2;color:#b42318}.youtube-link{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:12px;font-weight:800;color:#b42318;text-decoration:none}
 @media(max-width:600px){.toolbar{align-items:stretch}.toolbar>div{min-width:100%}.actions button{width:100%}}
+
+.edit-modal{position:fixed;inset:0;background:rgba(20,10,5,.68);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}.edit-box{width:min(560px,100%);background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.edit-preview{display:flex;gap:12px;align-items:center;margin:10px 0 14px;padding:10px;background:#fff8f1;border-radius:12px}.edit-preview img{width:110px;height:85px;object-fit:cover;border-radius:10px}.edit-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
 </style>
 </head>
 <body>
@@ -58,7 +60,7 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
           <option value="gallery">Photos / Gallery</option>
         </select>
       </div>
-      <div><label>Photo title</label><input id="title" placeholder="e.g. Dal Makhani — 14 Sep 2026"></div>
+      <div><label>Photo title</label><input id="title" placeholder="e.g. Langar Seva — 14 Sep 2026"></div>
       <div id="mediaTypeWrap" class="hidden">
         <label>Langar upload type</label>
         <select id="mediaType">
@@ -108,10 +110,6 @@ const $ = id => document.getElementById(id);
 let allPhotos = [];
 
 function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=error?'#ffe5e0':'#f5eee9';}
-
-function todayISO(){
-  const d=new Date(); const off=d.getTimezoneOffset(); return new Date(d.getTime()-off*60000).toISOString().slice(0,10);
-}
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
@@ -257,7 +255,9 @@ function renderPhotos(){
         ${p.media_type==='youtube'&&p.youtube_url?`<a class="youtube-link" href="${esc(p.youtube_url)}" target="_blank" rel="noopener noreferrer">▶ Watch video on YouTube ↗</a>`:''}
         <div class="actions">
           ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
-          <button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button>
+          <button class="dark" data-action="edit" data-id="${p.id}">Edit</button>
+           ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
+           <button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button>
         </div>
       </div>
     </article>`;
@@ -267,14 +267,58 @@ function renderPhotos(){
 
 async function loadPhotos(){
   msg('listStatus','Loading photos...');
-  const {data,error}=await supabaseClient.from('site_photos').select('id,title,short_title,category,media_type,youtube_url,storage_path,public_url,is_today,created_at').order('created_at',{ascending:false}).limit(200);
+  const {data,error}=await supabaseClient.from('site_photos').select('id,title,short_title,category,media_type,youtube_url,storage_path,public_url,is_today').order('id',{ascending:false}).limit(200);
   if(error){msg('listStatus',error.message,true);return}
   allPhotos=data||[];renderPhotos();
+}
+
+let editingPhoto = null;
+function openEdit(id){
+  editingPhoto = allPhotos.find(p => Number(p.id) === Number(id));
+  if(!editingPhoto) return;
+  $('editTitle').value = editingPhoto.title || '';
+  $('editFile').value = '';
+  $('editYoutubeUrl').value = editingPhoto.youtube_url || '';
+  $('editYoutubeWrap').classList.toggle('hidden', editingPhoto.media_type !== 'youtube');
+  $('editPreview').innerHTML = `<img src="${esc(editingPhoto.public_url)}" alt=""><div><strong>${esc(editingPhoto.title || 'Untitled')}</strong><div class="hint">${esc(editingPhoto.category)}${editingPhoto.media_type==='youtube'?' · YouTube':''}</div></div>`;
+  msg('editStatus','Edit the title, replace the image, or both.');
+  $('editModal').classList.remove('hidden');
+}
+function closeEdit(){ editingPhoto=null; $('editModal').classList.add('hidden'); $('editFile').value=''; }
+async function saveEdit(){
+  if(!editingPhoto) return;
+  const title=$('editTitle').value.trim();
+  if(!title){msg('editStatus','Please enter a title.',true);return;}
+  let youtubeUrl=editingPhoto.youtube_url||null;
+  if(editingPhoto.media_type==='youtube'){
+    youtubeUrl=normalizeYouTubeUrl($('editYoutubeUrl').value);
+    if(!youtubeUrl){msg('editStatus','Please enter a valid YouTube link.',true);return;}
+  }
+  const newFile=$('editFile').files[0];
+  $('editSave').disabled=true;msg('editStatus',newFile?'Replacing image and saving changes...':'Saving changes...');
+  try{
+    if(newFile){
+      if(!newFile.type.startsWith('image/')) throw new Error('Please select an image file.');
+      const safe=newFile.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-');
+      const newPath=`${editingPhoto.category}/${Date.now()}-${crypto.randomUUID()}-${safe}`;
+      const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(newPath,newFile,{cacheControl:'3600',upsert:false,contentType:newFile.type});
+      if(ue) throw ue;
+      const publicUrl=supabaseClient.storage.from(BUCKET).getPublicUrl(newPath).data.publicUrl;
+      const {error:de}=await supabaseClient.from('site_photos').update({title,short_title:title,public_url:publicUrl,storage_path:newPath,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      if(de){await supabaseClient.storage.from(BUCKET).remove([newPath]);throw de;}
+      if(editingPhoto.storage_path) await supabaseClient.storage.from(BUCKET).remove([editingPhoto.storage_path]);
+    }else{
+      const {error}=await supabaseClient.from('site_photos').update({title,short_title:title,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      if(error) throw error;
+    }
+    closeEdit(); await loadPhotos();
+  }catch(e){msg('editStatus',e.message||String(e),true)}finally{$('editSave').disabled=false}
 }
 
 $('photos').addEventListener('click',async e=>{
   const b=e.target.closest('button[data-action]');if(!b)return;
   const id=Number(b.dataset.id);
+  if(b.dataset.action==='edit'){openEdit(id);return;}
   if(b.dataset.action==='today'){
     if(!confirm("Set this photo as Today's Menu?"))return;
     const {error:e1}=await supabaseClient.from('site_photos').update({is_today:false}).eq('category','menu');
@@ -292,6 +336,7 @@ $('photos').addEventListener('click',async e=>{
   }
 });
 
+$('editCancel').onclick=closeEdit; $('editSave').onclick=saveEdit; $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
@@ -299,5 +344,7 @@ supabaseClient.auth.onAuthStateChange(()=>updateUI());
 updateLangarUploadMode();
 updateUI();
 </script>
+
+<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title</label><input id="editTitle" placeholder="Enter the title"><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div></div>
 </body>
 </html>
