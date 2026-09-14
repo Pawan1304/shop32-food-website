@@ -248,13 +248,12 @@ function renderPhotos(){
   const cat=$('filterCategory').value, q=$('searchTitle').value.trim().toLowerCase();
   const rows=allPhotos.filter(p=>(cat==='all'||p.category===cat)&&(!q||(p.title||'').toLowerCase().includes(q)));
   $('photos').innerHTML=rows.map(p=>{
-    const date=p.display_date||p.created_at?.slice(0,10)||'';
     const today=p.category==='menu'&&p.is_today;
     return `<article class="photo-card">
       <img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">
       <div class="photo-body">
         <div class="photo-title">${esc(p.title||'Untitled')}</div>
-        <div class="meta">${esc(p.category)} · ${esc(date)} ${p.media_type==='youtube'?' · <span class="badge youtube-badge">YOUTUBE</span>':''} ${today?' · ':''}${today?'<span class="badge">TODAY</span>':''}</div>
+        <div class="meta">${esc(p.category)} ${p.media_type==='youtube'?' · <span class="badge youtube-badge">YOUTUBE</span>':''} ${today?' · ':''}${today?'<span class="badge">TODAY</span>':''}</div>
         ${p.media_type==='youtube'&&p.youtube_url?`<a class="youtube-link" href="${esc(p.youtube_url)}" target="_blank" rel="noopener noreferrer">▶ Watch video on YouTube ↗</a>`:''}
         <div class="actions">
           ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
