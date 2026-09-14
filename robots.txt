@@ -1,1 +1,4 @@
+User-agent: *
+Allow: /
 
+Sitemap: https://sudhirtandoor32.vercel.app/sitemap.xml
