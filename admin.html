@@ -101,12 +101,20 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
     <p class="muted">Add a new food item once. It will appear automatically on the public Menu and in the photo-upload dropdown.</p>
     <div class="form-grid">
       <div><label>Food item name</label><input id="newMenuName" placeholder="e.g. Rajma Chawal"></div>
-      <div><label>Category</label><select id="newMenuCategory"><option>Thali & Combos</option><option>Rice</option><option>Roti & Paratha</option><option>Extras</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div>
+      <div><label>Category</label><select id="newMenuCategory"><option>Thali & Combos</option><option>Rice</option><option>Roti & Paratha</option><option>Extras</option><option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Other</option></select></div>
       <div><label>Price (₹)</label><input id="newMenuPrice" type="number" min="0" step="1" placeholder="60"></div>
       <div><label>Description</label><input id="newMenuDescription" placeholder="Freshly prepared..."></div>
     </div>
     <br><button id="addMenuItemBtn" class="green" type="button">➕ Add New Food Item</button>
     <div id="menuItemStatus" class="status">Add a new food item here when it is not already listed.</div>
+
+    <div style="margin-top:18px;padding-top:18px;border-top:1px solid #eaded5">
+      <h3 style="margin:0 0 6px">↕️ Arrange Menu Order</h3>
+      <div class="hint" style="margin-bottom:10px">Set 1 for the first item, 2 for the second, 3 for the third, and so on. Then click Save Menu Order.</div>
+      <div id="menuOrderList"></div>
+      <button id="saveMenuOrderBtn" class="dark" type="button" style="margin-top:12px">💾 Save Menu Order</button>
+      <div id="menuOrderStatus" class="status">Loading menu order...</div>
+    </div>
   </div>
 
   <div class="card">
@@ -140,21 +148,84 @@ function msg(id,text,error=false){$(id).textContent=text;$(id).style.background=
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 
-async function populateMenuItems(){
-  const select=$('menuItem');
-  if(!select) return;
-  const localItems=SHOP_CONFIG.menu||[];
+async function getMergedMenuItems(){
+  const localItems=(SHOP_CONFIG.menu||[]).map((x,i)=>({...x,__localOrder:(i+1)*10}));
   let dbItems=[];
   try{
-    const {data,error}=await supabaseClient.from('menu_items').select('id,name,category,description,price,sort_order,is_active').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true});
+    const {data,error}=await supabaseClient.from('menu_items').select('id,name,category,description,price,image,sort_order,is_active').eq('is_active',true).order('sort_order',{ascending:true}).order('id',{ascending:true});
     if(!error && data) dbItems=data;
   }catch(e){}
   dbMenuItems=dbItems;
   const merged=[...localItems];
-  dbItems.forEach(item=>{ if(!merged.some(x=>String(x.name).trim().toLowerCase()===String(item.name).trim().toLowerCase())) merged.push({...item,image:'',images:[]}); });
+  dbItems.forEach(item=>{
+    const existing=merged.find(x=>String(x.name).trim().toLowerCase()===String(item.name).trim().toLowerCase());
+    if(existing){ existing.__dbId=item.id; existing.sort_order=Number(item.sort_order)||existing.__localOrder; existing.category=item.category||existing.category; existing.description=item.description||existing.description; existing.price=Number(item.price)||existing.price; existing.image=item.image||existing.image; }
+    else merged.push({...item,__dbId:item.id,sort_order:Number(item.sort_order)||999});
+  });
+  merged.forEach((x,i)=>{ if(!Number.isFinite(Number(x.sort_order))) x.sort_order=x.__localOrder||(i+1)*10; });
+  merged.sort((a,b)=>(Number(a.sort_order)-Number(b.sort_order)) || String(a.name).localeCompare(String(b.name)));
+  return merged;
+}
+
+async function populateMenuItems(){
+  const select=$('menuItem');
+  if(!select) return;
+  const merged=await getMergedMenuItems();
   select.innerHTML=merged.map(item=>`<option value="${esc(String(item.id))}">${esc(item.name)} — ₹${esc(item.price)}</option>`).join('')+`<option value="__new__">➕ Other / New item</option>`;
   if(merged.length) select.value=String(merged[0].id);
   $('newMenuItemWrap').classList.add('hidden');
+  renderMenuOrder(merged);
+}
+
+function renderMenuOrder(items){
+  const wrap=$('menuOrderList');
+  if(!wrap) return;
+  wrap.innerHTML=items.map((item,index)=>`
+    <div class="menu-order-row" style="display:grid;grid-template-columns:42px 1fr 90px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #eee5df">
+      <strong style="color:#c9471c">${index+1}</strong>
+      <div><strong>${esc(item.name)}</strong><div class="hint">${esc(item.category)} · ₹${esc(item.price)}</div></div>
+      <input class="menu-order-input" data-menu-name="${esc(item.name)}" data-menu-id="${esc(item.__dbId||'')}" type="number" min="1" step="1" value="${index+1}" aria-label="Order for ${esc(item.name)}">
+    </div>`).join('');
+}
+
+async function saveMenuOrder(){
+  const items=await getMergedMenuItems();
+  const inputs=[...document.querySelectorAll('.menu-order-input')];
+  const requested=inputs.map((input,index)=>({name:input.dataset.menuName, order:Number(input.value), index}));
+  if(requested.some(x=>!Number.isInteger(x.order)||x.order<1)){msg('menuOrderStatus','Every order must be a whole number starting from 1.',true);return;}
+  const seen=new Set();
+  for(const x of requested){ if(seen.has(x.order)){msg('menuOrderStatus','Each menu item must have a unique order number.',true);return;} seen.add(x.order); }
+  requested.sort((a,b)=>a.order-b.order);
+  $('saveMenuOrderBtn').disabled=true; msg('menuOrderStatus','Saving menu order...');
+  try{
+    // First create database rows for any old config items that do not exist yet.
+    for(const x of requested){
+      const item=items.find(i=>String(i.name)===String(x.name));
+      if(!item) continue;
+      if(!item.__dbId){
+        const {data,error}=await supabaseClient.from('menu_items').insert({
+          name:item.name, category:item.category||'Other', price:Number(item.price)||0,
+          description:item.description||'Freshly prepared and served hot.', image:item.image||null,
+          sort_order:x.order, is_active:true
+        }).select().single();
+        if(error) throw error;
+        item.__dbId=data.id;
+      }
+    }
+    // Two-pass update avoids temporary duplicate sort-order values.
+    for(const x of requested){
+      const item=items.find(i=>String(i.name)===String(x.name));
+      await supabaseClient.from('menu_items').update({sort_order:10000+x.order}).eq('id',item.__dbId);
+    }
+    for(const x of requested){
+      const item=items.find(i=>String(i.name)===String(x.name));
+      const {error}=await supabaseClient.from('menu_items').update({sort_order:x.order}).eq('id',item.__dbId);
+      if(error) throw error;
+    }
+    await populateMenuItems();
+    msg('menuOrderStatus','✅ Menu order saved. The public website will use this order.');
+  }catch(e){msg('menuOrderStatus',e.message||String(e),true)}
+  finally{$('saveMenuOrderBtn').disabled=false}
 }
 
 
@@ -287,7 +358,9 @@ async function addMenuItem(){
   if(exists){msg('menuItemStatus','This food item already exists.',true);return}
   $('addMenuItemBtn').disabled=true; msg('menuItemStatus','Adding new food item...');
   try{
-    const {data,error}=await supabaseClient.from('menu_items').insert({name,category,price,description,sort_order:999,is_active:true}).select().single();
+    const existingItems=await getMergedMenuItems();
+    const nextOrder=existingItems.length ? Math.max(...existingItems.map(x=>Number(x.sort_order)||0))+1 : 1;
+    const {data,error}=await supabaseClient.from('menu_items').insert({name,category,price,description,sort_order:nextOrder,is_active:true}).select().single();
     if(error) throw error;
     dbMenuItems.push(data);
     await populateMenuItems();
@@ -479,7 +552,7 @@ if($('editCancel') && $('editSave') && $('editModal')){
   $('editSave').onclick=saveEdit;
   $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
 }
-$('addMenuItemBtn').onclick=addMenuItem;
+$('addMenuItemBtn').onclick=addMenuItem;$('saveMenuOrderBtn').onclick=saveMenuOrder;
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
