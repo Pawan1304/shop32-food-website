@@ -432,12 +432,57 @@ updateCart();
     `;
   }
 
+  function ensureLangarCaptionStyles() {
+    if (document.getElementById("supabaseLangarCaptionStyles")) return;
+
+    const style = document.createElement("style");
+    style.id = "supabaseLangarCaptionStyles";
+    style.textContent = `
+      .langar-media-slide { position: relative; }
+      .langar-photo-card, .langar-youtube-card {
+        position: relative; width: 100%; height: 100%; display: block;
+        overflow: hidden; border-radius: 21px;
+      }
+      .langar-photo-card img, .langar-youtube-card img {
+        display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 21px;
+      }
+      .langar-photo-caption, .langar-youtube-info {
+        position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
+        padding: 12px 16px 14px;
+        background: rgba(0, 0, 0, 0.58);
+        color: #fff;
+        backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+      }
+      .langar-photo-caption strong, .langar-youtube-info strong {
+        display: block; color: #fff; font-size: 16px; line-height: 1.35;
+        font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.55);
+      }
+      .langar-youtube-info em {
+        display: block; margin-top: 4px; color: rgba(255,255,255,.9);
+        font-size: 12px; font-style: normal;
+      }
+      .langar-youtube-play {
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+        z-index: 4; width: 58px; height: 58px; display: grid; place-items: center;
+        border-radius: 50%; background: #ef3333; color: #fff; font-size: 25px;
+        padding-left: 4px; box-shadow: 0 6px 18px rgba(0,0,0,.3);
+      }
+      @media (max-width: 600px) {
+        .langar-photo-caption, .langar-youtube-info { padding: 9px 12px 11px; }
+        .langar-photo-caption strong, .langar-youtube-info strong { font-size: 14px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
   function renderLangar(items) {
     const track = document.getElementById("langarTrack");
     const dots = document.getElementById("langarDots");
     const root = document.getElementById("langarCarousel");
 
     if (!track || !root) return;
+
+    ensureLangarCaptionStyles();
 
     // IMPORTANT: clear the old static/config Langar images first.
     track.innerHTML = "";
