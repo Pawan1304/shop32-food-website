@@ -1,1 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudh Vaishno Tandoor — Admin</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff8f1;
+      color: #241914;
+    }
+
+    .wrap {
+      max-width: 1050px;
+      margin: auto;
+      padding: 28px 18px 60px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 24px;
+    }
+
+    h1 { margin: 0; font-size: 28px; }
+    .muted { color: #756960; }
+
+    .card {
+      background: #fff;
+      border: 1px solid #eaded5;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 35px rgba(50,25,10,.08);
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media(max-width:800px) {
+      .grid { grid-template-columns: 1fr; }
+      .top { align-items: flex-start; flex-direction: column; }
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    input[type=email],
+    input[type=password],
+    input[type=file] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d9c9be;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      background: #ef5b2a;
+      color: white;
+    }
+
+    button.secondary { background: #241914; }
+    button.light { background: #f0e7e0; color: #241914; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    .status {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border-radius: 10px;
+      background: #f5eee9;
+    }
+
+    .hidden { display: none !important; }
+
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    @media(max-width:600px) {
+      .preview { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .preview img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    .small {
+      font-size: 12px;
+      color: #756960;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+
+    <div class="top">
+      <div>
+        <h1>📸 Sudh Vaishno Tandoor</h1>
+        <div class="muted">Photo Admin — upload without touching website code</div>
+      </div>
+      <button id="logoutBtn" class="secondary hidden">Logout</button>
+    </div>
+
+    <!-- LOGIN -->
+    <section id="loginCard" class="card">
+      <h2>Admin Login</h2>
+      <p class="muted">Only your admin account can upload or delete photos.</p>
+
+      <label>Email</label>
+      <input id="email" type="email" autocomplete="username">
+
+      <br><br>
+
+      <label>Password</label>
+      <input id="password" type="password" autocomplete="current-password">
+
+      <br><br>
+
+      <button id="loginBtn">Login</button>
+      <div id="loginStatus" class="status"></div>
+    </section>
+
+    <!-- ADMIN PANEL -->
+    <section id="adminPanel" class="hidden">
+
+      <div class="card">
+        <h2>🍽️ Today's Menu</h2>
+        <p class="muted">
+          Upload one new menu photo. The newest one automatically appears
+          in the website's Menu section.
+        </p>
+
+        <input id="menuFiles" type="file" accept="image/*">
+        <br><br>
+
+        <button id="uploadMenuBtn">Upload Menu Photo</button>
+      </div>
+
+      <div class="grid">
+
+        <div class="card">
+          <h2>🙏 Langar Seva</h2>
+          <p class="muted">
+            Select several photos at once. The newest 6 appear in the Langar section.
+          </p>
+
+          <input id="langarFiles" type="file" accept="image/*" multiple>
+          <br><br>
+
+          <button id="uploadLangarBtn">Upload Langar Photos</button>
+        </div>
+
+        <div class="card">
+          <h2>🖼️ Gallery</h2>
+          <p class="muted">
+            Upload daily food, customer, shop or event photos.
+          </p>
+
+          <input id="galleryFiles" type="file" accept="image/*" multiple>
+          <br><br>
+
+          <button id="uploadGalleryBtn">Upload Gallery Photos</button>
+        </div>
+
+        <div class="card">
+          <h2>🌐 Website</h2>
+          <p class="muted">
+            After upload, the public website can read photos directly from Supabase.
+          </p>
+
+          <a href="index.html" target="_blank">
+            <button class="light" type="button">Open Website</button>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="card">
+        <h2>Latest Uploads</h2>
+        <div id="uploadStatus" class="status">Loading...</div>
+        <div id="preview" class="preview"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    const BUCKET = SUPABASE_BUCKET;
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(message, error = false) {
+      $('uploadStatus').textContent = message;
+      $('uploadStatus').style.background =
+        error ? '#ffe5e0' : '#f5eee9';
+    }
+
+    async function refreshUploads() {
+      const { data, error } = await supabaseClient
+        .from('site_photos')
+        .select('id,title,category,storage_path,public_url,created_at')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) {
+        setStatus(error.message, true);
+        return;
+      }
+
+      $('preview').innerHTML = (data || []).map(p => `
+        <div>
+          <img src="${p.public_url}" alt="${p.title || p.category}">
+          <div class="small">${p.category} · ${p.title || ''}</div>
+          <button
+            class="light deleteBtn"
+            data-id="${p.id}"
+            data-path="${p.storage_path || ''}"
+            style="margin-top:5px">
+            Delete
+          </button>
+        </div>
+      `).join('');
+
+      setStatus(`${(data || []).length} recent uploads loaded.`);
+    }
+
+    async function uploadFiles(inputId, category) {
+      const files = Array.from($(inputId).files || []);
+
+      if (!files.length) {
+        setStatus('Please choose a photo first.', true);
+        return;
+      }
+
+      setStatus(`Uploading ${files.length} photo(s)...`);
+
+      for (const file of files) {
+
+        if (!file.type.startsWith('image/')) continue;
+
+        if (file.size > 50 * 1024 * 1024) {
+          setStatus(
+            `${file.name} is larger than 50 MB. Please use a smaller image.`,
+            true
+          );
+          continue;
+        }
+
+        const safeName = file.name
+          .toLowerCase()
+          .replace(/[^a-z0-9.\-_]/g, '-');
+
+        const path =
+          `${category}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+
+        const { error: uploadError } =
+          await supabaseClient.storage
+            .from(BUCKET)
+            .upload(path, file, {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: file.type
+            });
+
+        if (uploadError) {
+          setStatus(
+            `Upload failed for ${file.name}: ${uploadError.message}`,
+            true
+          );
+          continue;
+        }
+
+        const { data: urlData } =
+          supabaseClient.storage
+            .from(BUCKET)
+            .getPublicUrl(path);
+
+        const { error: dbError } =
+          await supabaseClient
+            .from('site_photos')
+            .insert({
+              title: file.name.replace(/\.[^/.]+$/, ''),
+              category,
+              storage_path: path,
+              public_url: urlData.publicUrl
+            });
+
+        if (dbError) {
+          setStatus(
+            `Photo uploaded but database record failed: ${dbError.message}`,
+            true
+          );
+          continue;
+        }
+      }
+
+      setStatus(
+        'Upload complete. The website will use the new photo automatically.'
+      );
+
+      $(inputId).value = '';
+      await refreshUploads();
+    }
+
+    async function login() {
+      const email = $('email').value.trim();
+      const password = $('password').value;
+
+      $('loginStatus').textContent = 'Signing in...';
+
+      const { error } =
+        await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+      $('loginStatus').textContent =
+        error ? error.message : 'Logged in.';
+
+      if (!error) {
+        await updateUI();
+      }
+    }
+
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      await updateUI();
+    }
+
+    async function updateUI() {
+      const {
+        data: { session }
+      } = await supabaseClient.auth.getSession();
+
+      const loggedIn = !!session;
+
+      $('loginCard').classList.toggle('hidden', loggedIn);
+      $('adminPanel').classList.toggle('hidden', !loggedIn);
+      $('logoutBtn').classList.toggle('hidden', !loggedIn);
+
+      if (loggedIn) {
+        refreshUploads();
+      }
+    }
+
+    $('loginBtn').onclick = login;
+    $('logoutBtn').onclick = logout;
+
+    $('uploadMenuBtn').onclick =
+      () => uploadFiles('menuFiles', 'menu');
+
+    $('uploadLangarBtn').onclick =
+      () => uploadFiles('langarFiles', 'langar');
+
+    $('uploadGalleryBtn').onclick =
+      () => uploadFiles('galleryFiles', 'gallery');
+
+    $('preview').addEventListener('click', async (e) => {
+      const btn = e.target.closest('.deleteBtn');
+
+      if (!btn) return;
+
+      if (!confirm('Delete this photo from the website?')) return;
+
+      const id = Number(btn.dataset.id);
+      const path = btn.dataset.path;
+
+      const { error: dbError } =
+        await supabaseClient
+          .from('site_photos')
+          .delete()
+          .eq('id', id);
+
+      if (dbError) {
+        setStatus(dbError.message, true);
+        return;
+      }
+
+      if (path) {
+        await supabaseClient
+          .storage
+          .from(BUCKET)
+          .remove([path]);
+      }
+
+      refreshUploads();
+    });
+
+    supabaseClient.auth.onAuthStateChange(() => updateUI());
+
+    updateUI();
+  </script>
+</body>
+</html>
