@@ -460,3 +460,156 @@ updateCart();
 
   document.addEventListener("DOMContentLoaded", loadLivePhotos);
 })();
+
+
+/* =====================================================
+   SUPABASE LIVE PHOTO SYSTEM
+   ===================================================== */
+
+(function () {
+
+  if (
+    typeof supabaseClient === "undefined" ||
+    !supabaseClient
+  ) {
+    console.log("Supabase photo system not connected.");
+    return;
+  }
+
+  async function getPhotos(category, limit) {
+
+    const { data, error } = await supabaseClient
+      .from("site_photos")
+      .select("id,title,category,public_url,created_at")
+      .eq("category", category)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.warn("Supabase photo error:", error.message);
+      return [];
+    }
+
+    return data || [];
+  }
+
+
+  /* =====================================================
+     TODAY'S MENU
+     ===================================================== */
+
+  async function loadDailyMenu() {
+
+    const photos = await getPhotos("menu", 1);
+
+    const box =
+      document.getElementById("dailyMenuPhotoBox");
+
+    if (!box || !photos.length) return;
+
+    const photo = photos[0];
+
+    box.innerHTML = `
+      <div class="daily-menu-photo-card">
+
+        <div class="daily-menu-photo-heading">
+          <span>🍽️ TODAY'S MENU</span>
+          <small>Freshly updated</small>
+        </div>
+
+        <img
+          src="${photo.public_url}"
+          alt="${photo.title || "Today's Menu"}"
+          loading="lazy"
+        >
+
+      </div>
+    `;
+  }
+
+
+  /* =====================================================
+     LANGAR SEVA
+     ===================================================== */
+
+  async function loadLangarPhotos() {
+
+    const photos =
+      await getPhotos("langar", 6);
+
+    const track =
+      document.getElementById("langarTrack");
+
+    if (!track || !photos.length) return;
+
+    track.innerHTML = photos.map(photo => `
+      <div class="swipe-slide">
+
+        <img
+          src="${photo.public_url}"
+          alt="${photo.title || "Langar Seva"}"
+          loading="lazy"
+        >
+
+      </div>
+    `).join("");
+
+    const root =
+      track.closest(".swipe-carousel");
+
+    if (root && typeof setupSwipeCarousel === "function") {
+      setupSwipeCarousel(root.id);
+    }
+  }
+
+
+  /* =====================================================
+     GALLERY
+     ===================================================== */
+
+  async function loadGalleryPhotos() {
+
+    const photos =
+      await getPhotos("gallery", 12);
+
+    const track =
+      document.getElementById("galleryTrack");
+
+    if (!track || !photos.length) return;
+
+    track.innerHTML = photos.map(photo => `
+      <div class="swipe-slide">
+
+        <img
+          src="${photo.public_url}"
+          alt="${photo.title || "Sudh Vaishno Tandoor"}"
+          loading="lazy"
+        >
+
+      </div>
+    `).join("");
+
+    const root =
+      track.closest(".swipe-carousel");
+
+    if (root && typeof setupSwipeCarousel === "function") {
+      setupSwipeCarousel(root.id);
+    }
+  }
+
+
+  /* =====================================================
+     LOAD EVERYTHING
+     ===================================================== */
+
+  async function loadSupabasePhotos() {
+
+    await loadDailyMenu();
+    await loadLangarPhotos();
+    await loadGalleryPhotos();
+
+  }
+
+  loadSupabasePhotos();
+
+})();
