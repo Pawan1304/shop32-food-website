@@ -4415,6 +4415,87 @@
       html { scroll-behavior: auto; }
     }
 
+
+    /* =====================================================
+       HERO SCROLL INDICATOR — FINAL MOBILE FIX
+       Keeps the scroll prompt clearly visible above the
+       fixed bottom navigation on the first screen.
+       ===================================================== */
+
+    @media (max-width: 600px) {
+      .hero-video {
+        /* Keep the hero as one complete first-screen experience. */
+        min-height: 100svh;
+        height: 100svh;
+        padding-bottom: 82px;
+      }
+
+      .hero-video-content {
+        /* Slightly compress the hero content so it does not push
+           the scroll prompt underneath the bottom navigation. */
+        transform: translateY(-18px);
+      }
+
+      .hero-location {
+        margin-top: 8px;
+      }
+
+      .scroll-down {
+        position: fixed;
+        z-index: 999;
+        left: auto;
+        right: 14px;
+        bottom: calc(116px + env(safe-area-inset-bottom));
+        transform: none;
+
+        flex-direction: row;
+        gap: 7px;
+
+        padding: 8px 11px 8px 13px;
+        border-radius: 999px;
+
+        background: rgba(32, 27, 23, .90);
+        border: 1px solid rgba(255,255,255,.28);
+        box-shadow: 0 10px 28px rgba(0,0,0,.28);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .3px;
+
+        opacity: 1;
+        visibility: visible;
+        transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+        animation: scrollFloatMobile 1.8s ease-in-out infinite;
+      }
+
+      .scroll-down .scroll-arrow {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: #f04b23;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      /* After the visitor starts scrolling, get it out of the way. */
+      .scroll-down.scroll-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(12px);
+      }
+    }
+
+    @keyframes scrollFloatMobile {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
   </style>
 
 </head>
@@ -6014,6 +6095,23 @@
         });
       }
     })();
+
+    /* =====================================================
+       MOBILE HERO SCROLL PROMPT
+       Visible on the first screen, hidden after scrolling.
+       ===================================================== */
+    (function () {
+      const scrollPrompt = document.querySelector('.scroll-down');
+      if (!scrollPrompt) return;
+
+      function updateScrollPrompt() {
+        scrollPrompt.classList.toggle('scroll-hidden', window.scrollY > 90);
+      }
+
+      window.addEventListener('scroll', updateScrollPrompt, { passive: true });
+      updateScrollPrompt();
+    })();
+
   </script>
 
   <script src="config.js"></script>
