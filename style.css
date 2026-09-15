@@ -4525,240 +4525,35 @@
 
 
 
-
 /* =====================================================
-   MENU + CART UX UPGRADE — 2026
+   PWA INSTALL BUTTON
    ===================================================== */
-
-.menu-price-wrap {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.menu-price-wrap .price {
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: -.2px;
-}
-
-.menu-price-wrap small {
-  color: #9a8d82;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.menu-cart-control {
-  min-width: 104px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.add-btn {
-  min-width: 104px;
-  min-height: 42px;
-  padding: 9px 15px;
-  border: 1px solid rgba(240,75,35,.14);
-  cursor: pointer;
-  transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
-}
-
-.add-btn:hover {
-  background: #ffe7dc;
-  box-shadow: 0 6px 15px rgba(240,75,35,.12);
-}
-
-.add-btn:active,
-.qty-btn:active,
-.cart-button:active {
-  transform: scale(.96);
-}
-
-.menu-qty {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 4px;
-  gap: 5px;
-  background: #fff0e7;
-  border: 1px solid rgba(240,75,35,.16);
-  border-radius: 12px;
-}
-
-.menu-qty-count {
-  min-width: 28px;
-  text-align: center;
-  color: #201b17;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.qty-btn {
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 9px;
-  color: #201b17;
+.install-app-button,
+.mobile-install-app {
+  border: 1px solid rgba(48, 38, 30, .12);
   background: #fff;
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1;
+  color: #30261e;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 7px rgba(32,27,23,.07);
 }
 
-.qty-btn:hover {
-  background: #fffaf7;
-}
-
-.cart-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.install-app-button {
+  margin-left: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
   white-space: nowrap;
 }
 
-.cart-button-total {
-  padding-left: 7px;
-  border-left: 1px solid rgba(255,255,255,.22);
-  font-size: 11px;
-  font-weight: 900;
-  opacity: .92;
+.install-app-button:hover,
+.mobile-install-app:hover {
+  transform: translateY(-1px);
 }
 
-.cart-row {
-  grid-template-columns: minmax(0,1fr) auto auto;
-}
-
-.cart-item-info {
-  min-width: 0;
-}
-
-.cart-item-info strong {
-  display: block;
-  line-height: 1.35;
-}
-
-.cart-line-total {
-  min-width: 56px;
-  text-align: right;
-}
-
-.qty button {
-  width: 34px;
-  height: 34px;
-  font-size: 17px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.qty strong {
-  min-width: 22px;
-  text-align: center;
-}
-
-.cart-footer .btn:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-  filter: grayscale(.15);
-}
-
-.cart-toast {
-  position: fixed;
-  left: 50%;
-  bottom: 104px;
-  z-index: 1000;
-  max-width: min(90vw, 360px);
-  padding: 11px 16px;
-  border: 1px solid rgba(255,255,255,.16);
-  border-radius: 999px;
-  color: #fff;
-  background: rgba(32,27,23,.94);
-  box-shadow: 0 14px 35px rgba(0,0,0,.22);
-  font-size: 12px;
-  font-weight: 800;
-  text-align: center;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 12px);
-  transition: opacity .2s ease, transform .2s ease;
-}
-
-.cart-toast.show {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-@media (max-width: 600px) {
-  .menu-cart-control {
-    min-width: 98px;
-  }
-
-  .menu-price-wrap .price {
-    font-size: 19px;
-  }
-
-  .add-btn {
-    min-width: 98px;
-    min-height: 44px;
-    font-size: 13px;
-  }
-
-  .menu-qty {
-    min-height: 44px;
-  }
-
-  .menu-qty .qty-btn {
-    width: 34px;
-    height: 34px;
-  }
-
-  .cart-row {
-    grid-template-columns: minmax(0,1fr) auto;
-    gap: 8px;
-    padding: 15px 0;
-  }
-
-  .cart-line-total {
-    grid-column: 1 / -1;
-    text-align: left;
-    padding-left: 2px;
-    color: #e84922;
-    font-size: 14px !important;
-  }
-
-  .cart-row .qty {
-    justify-self: end;
-  }
-
-  .cart-row .qty button {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-  }
-
-  .cart-row .qty strong {
-    min-width: 26px;
-    font-size: 15px;
-  }
-
-  .cart-button-total {
-    display: none;
-  }
-
-  .cart-toast {
-    bottom: 88px;
-    font-size: 11px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .add-btn,
-  .qty-btn,
-  .cart-button,
-  .cart-toast {
-    transition: none;
-  }
+.mobile-install-app {
+  width: 100%;
+  text-align: left;
+  padding: 13px 16px;
+  border-radius: 12px;
+  margin-top: 6px;
 }
