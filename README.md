@@ -35,3 +35,14 @@ This master includes:
 Run `supabase-website-content-migration.sql` once in the Supabase SQL Editor before using the new About / Story and Review management features. It adds the required media fields/categories and creates `site_reviews` and `site_settings`.
 
 The review manager edits the reviews shown on this website. It does not edit Google Maps reviews.
+
+
+## vNext fixes
+- Today's Menu supports multiple current photos; run `supabase-website-content-migration.sql` once to remove the old one-photo unique constraint.
+- About / Story supports multiple persistent story cards.
+- Food & Moments homepage shows up to five items and links to `gallery.html` for the full gallery.
+- Menu item captions are stored and displayed over media.
+- Review editing supports name, rating, reviewer count, display order and full review text.
+- Google website rating/count updates the existing settings row without inserting a null `setting_key`.
+- Supabase menu `sort_order` now controls public menu order.
+- Phone Showcase Logo can be uploaded from Admin; the newest upload is used in the phone preview.
