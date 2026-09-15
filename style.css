@@ -4672,13 +4672,43 @@
 .reviews-marquee.reviews-touch-carousel { overflow-x:auto; overflow-y:hidden; padding:8px 6vw 22px; margin-left:0; width:100%; mask-image:none; -webkit-mask-image:none; scrollbar-width:none; cursor:grab; }
 .reviews-touch-carousel::-webkit-scrollbar { display:none; }
 .reviews-touch-carousel:active { cursor:grabbing; }
-.reviews-touch-carousel .reviews-track { width:max-content; animation:none; gap:16px; }
+.reviews-touch-carousel .reviews-track { width:max-content; animation:none !important; gap:16px; }
 .reviews-touch-carousel .review { flex:0 0 min(350px,82vw); width:min(350px,82vw); min-height:235px; }
 @media(max-width:600px){
-  .reviews-marquee.reviews-touch-carousel { padding:6px 14px 18px; scroll-snap-type:x proximity; }
-  .reviews-touch-carousel .reviews-track .review { flex-basis:82vw; width:82vw; min-height:205px; padding:18px; scroll-snap-align:center; }
+  .reviews-marquee.reviews-touch-carousel { padding:6px 14px 18px; scroll-snap-type:none; }
+  .reviews-touch-carousel .reviews-track .review { flex-basis:82vw; width:82vw; min-height:205px; padding:18px; scroll-snap-align:none; }
 }
 
 /* PWA / header responsiveness */
 @media(max-width:1100px){ .desktop-nav a { padding:0 9px; } .nav-install { padding:0 11px; } }
 @media(max-width:900px){ .nav-install { display:none; } }
+
+
+/* FINAL: continuous Google reviews marquee controlled by JS. */
+.reviews-touch-carousel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: auto;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+}
+.reviews-touch-carousel .reviews-track {
+  width: max-content;
+  display: flex;
+  gap: 16px;
+  animation: none !important;
+  will-change: auto;
+}
+.reviews-touch-carousel .review {
+  flex: 0 0 min(350px, 82vw);
+  width: min(350px, 82vw);
+}
+@media (max-width: 600px) {
+  .reviews-touch-carousel {
+    padding: 6px 14px 18px;
+    scroll-snap-type: none;
+  }
+  .reviews-touch-carousel .reviews-track .review {
+    scroll-snap-align: none;
+  }
+}
