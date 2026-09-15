@@ -128,10 +128,11 @@ function renderMenu() {
     const slides = images.map((media, i) => {
       const type = typeof media === 'string' ? 'image' : (media.type || 'image');
       const src = typeof media === 'string' ? media : media.src;
+      const caption = typeof media === 'string' ? '' : (media.caption || '');
       if(type === 'video') {
-        return `<div class="swipe-slide"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video></div>`;
+        return `<div class="swipe-slide"><div class="menu-media-wrap"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video>${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
       }
-      return `<div class="swipe-slide"><img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy"></div>`;
+      return `<div class="swipe-slide"><div class="menu-media-wrap"><img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy">${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
     }).join("");
 
     return `
@@ -180,7 +181,7 @@ async function loadLiveMenuItemMedia(){
   try{
     const {data,error}=await supabaseClient
       .from('site_photos')
-      .select('id,title,short_title,media_type,public_url')
+      .select('id,title,short_title,caption,media_type,public_url')
       .eq('category','menu_item')
       .order('id',{ascending:true})
       .limit(200);
@@ -190,7 +191,7 @@ async function loadLiveMenuItemMedia(){
     (data||[]).forEach(row=>{
       const name=(row.short_title||row.title||'').trim();
       if(!name || !row.public_url) return;
-      (grouped[name] ||= []).push({type:row.media_type==='video'?'video':'image',src:row.public_url});
+      (grouped[name] ||= []).push({type:row.media_type==='video'?'video':'image',src:row.public_url,caption:row.caption||row.title||''});
     });
     liveMenuMediaByName=grouped;
     renderMenu();
@@ -222,7 +223,8 @@ async function loadLiveMenuItems(){
         description:row.description||local?.description||'Freshly prepared and served hot.',
         price:Number(row.price)||0,
         image:row.image||local?.image||'assets/photos/thali.png',
-        images:local?.images||[]
+        images:local?.images||[],
+        sort_order:Number(row.sort_order)||local?.sort_order||999999
       };
     });
 
@@ -638,7 +640,7 @@ loadLiveMenuItems();
 
       renderDailyMenu(menu);
       renderLangar(langar);
-      renderGallery(gallery);
+      renderGallery(gallery.slice(0,5));
     } catch (error) {
       console.warn("Live media system:", error);
     }
@@ -792,7 +794,10 @@ loadLiveMenuItems();
     if (!box) return;
     const rows = items.length ? items : [];
     if (!rows.length) { box.innerHTML=''; return; }
-    const slides = rows.map((p,i)=>`<div class="swipe-slide"><img src="${esc(p.public_url)}" alt="${esc(p.short_title||p.title||`Today's menu ${i+1}`)}" loading="${i===0?'eager':'lazy'}"></div>`).join('');
+    const slides = rows.map((p,i)=>{
+      const caption = p.caption || p.title || '';
+      return `<div class="swipe-slide"><div class="today-media-wrap"><img src="${esc(p.public_url)}" alt="${esc(p.short_title||p.title||`Today's menu ${i+1}`)}" loading="${i===0?'eager':'lazy'}">${caption ? `<div class="today-media-caption">${esc(caption)}</div>` : ''}</div></div>`;
+    }).join('');
     box.innerHTML = `<div class="daily-menu-photo-card"><div class="daily-menu-photo-heading"><span>🍽️ TODAY'S MENU</span><small>${rows.length} ${rows.length===1?'photo':'photos'} · swipe</small></div><div class="daily-menu-carousel swipe-carousel" id="dailyMenuCarousel"><div class="swipe-track">${slides}</div>${rows.length>1?'<button class="swipe-arrow prev" type="button" data-carousel-prev="dailyMenuCarousel" aria-label="Previous menu photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="dailyMenuCarousel" aria-label="Next menu photo">›</button><div class="swipe-dots"></div>':''}</div></div>`;
     if (rows.length>1) setupSwipeCarousel('dailyMenuCarousel');
   }
@@ -819,6 +824,19 @@ loadLiveMenuItems();
     if (items.length>1) setupSwipeCarousel('galleryCarousel');
   }
 
+  async function loadPhoneShowcaseLogo() {
+    const img = document.getElementById('phoneShowcaseLogo');
+    if (!img || !supabaseClient) return;
+    try {
+      const {data,error} = await supabaseClient.from('site_photos')
+        .select('id,public_url,created_at')
+        .eq('category','experience')
+        .order('id',{ascending:false})
+        .limit(1);
+      if (!error && data?.[0]?.public_url) img.src = data[0].public_url;
+    } catch (e) { console.warn('Phone showcase logo:', e.message || e); }
+  }
+
   async function loadAdvancedContent() {
     renderReviews(fallbackReviews);
     try {
@@ -829,7 +847,7 @@ loadLiveMenuItems();
       ]);
       renderToday(today);
       renderAbout(about);
-      renderGallery(gallery);
+      renderGallery(gallery.slice(0,5));
     } catch(e) {
       console.warn('Advanced content migration not installed yet; using built-in website content.', e.message || e);
       renderAbout([]);
@@ -837,6 +855,7 @@ loadLiveMenuItems();
       // Existing legacy Today's Menu loader will still populate the single-photo version if available.
     }
     loadReviews();
+    loadPhoneShowcaseLogo();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAdvancedContent);
