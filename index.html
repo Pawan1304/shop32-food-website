@@ -24,13 +24,12 @@
   </title>
   <link rel="icon" href="/favicon.png?v=3" type="image/png">
   <link rel="shortcut icon" href="/favicon.png?v=3" type="image/png">
-  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f6efe7">
+  <meta name="theme-color" content="#ef4b23">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Sudh Vaishno Tandoor">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 
 
@@ -95,8 +94,7 @@
       <a href="#contact" data-nav-link>Contact</a>
     </nav>
 
-    <a class="btn btn-primary nav-order" href="#menu">Order Food</a>
-    <button class="install-app-button" id="installAppButtonDesktop" type="button" hidden>📲 Install App</button>
+    <div class="desktop-header-actions"><button class="btn btn-install" id="installAppBtn" type="button" hidden>📲 Install App</button><a class="btn btn-primary nav-order" href="#menu">Order Food</a></div>
 
     <div class="mobile-header-actions">
       <a class="mobile-call" href="tel:+919779159680" aria-label="Call Sudh Vaishno Tandoor">☎</a>
@@ -116,7 +114,7 @@
     <a href="#reviews">Reviews</a>
     <a href="#contact">Contact</a>
     <a class="mobile-dropdown-order" href="#menu">🍽️ Order Food</a>
-    <button class="mobile-install-app" id="installAppButton" type="button" hidden>📲 Install App</button>
+    <button class="mobile-dropdown-install" id="mobileInstallAppBtn" type="button">📲 Install App</button>
   </div>
 
 
@@ -203,6 +201,11 @@
 
         <div class="hero-order-buttons">
 
+          <a class="hero-order-btn menu-btn" href="#menu">
+            <span class="order-icon">🍽️</span>
+            <span><small>SEE MENU</small>ORDER FOOD</span>
+          </a>
+
           <a
             class="hero-order-btn call-btn"
             href="tel:+919779159680"
@@ -252,9 +255,7 @@
 
 
         <div class="hero-location">
-
-          📍 Gate No. 2, GMCH, Chandigarh
-
+          <a href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">📍 Gate No. 2, GMCH, Chandigarh · Open Maps</a>
         </div>
 
       </div>
@@ -1341,7 +1342,17 @@
 
     </section>
 
-  </main>
+  <div class="install-help" id="installHelp" hidden>
+  <div class="install-help-box">
+    <button type="button" class="install-help-close" id="installHelpClose" aria-label="Close">×</button>
+    <div class="install-help-icon">📲</div>
+    <h3>Install Sudh Vaishno Tandoor</h3>
+    <p id="installHelpText">Install this website like an app for quicker access.</p>
+    <button class="btn btn-primary" id="installNowBtn" type="button">Install App</button>
+  </div>
+</div>
+
+</main>
 
 
 
@@ -1608,11 +1619,11 @@
   <script src="app.js"></script>
 
 <script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Service worker:", err));
-    });
+(function(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker:', err)));
   }
+})();
 </script>
 </body>
 </html>
