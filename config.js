@@ -23,7 +23,6 @@ const SHOP_CONFIG = {
     { type: "image", src: "assets/photos/rajma-rice.png", alt: "Rajma rice" },
     { type: "image", src: "assets/photos/dal.png", alt: "Dal" },
     { type: "image", src: "assets/photos/roti.png", alt: "Fresh roti" },
-    { type: "video", src: "assets/videos/food-video.mp4", alt: "Food preparation video" }
   ],
 
   aboutImages: [
