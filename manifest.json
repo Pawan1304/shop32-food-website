@@ -1,15 +1,14 @@
 {
   "name": "Sudh Vaishno Tandoor",
   "short_name": "Sudh Tandoor",
-  "description": "Pure vegetarian food in Chandigarh. Order food by WhatsApp or phone.",
-  "start_url": "./",
+  "description": "Pure vegetarian food in Chandigarh since 1996.",
+  "start_url": "./index.html#home",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#ef4b23",
-  "orientation": "portrait-primary",
+  "background_color": "#fffaf4",
+  "theme_color": "#201b17",
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {"src":"assets/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"assets/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
   ]
 }
