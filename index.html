@@ -24,12 +24,9 @@
   </title>
   <link rel="icon" href="/favicon.png?v=3" type="image/png">
   <link rel="shortcut icon" href="/favicon.png?v=3" type="image/png">
-  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/favicon.png?v=3">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ef4b23">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#201b17">
 
 
 
@@ -94,7 +91,9 @@
       <a href="#contact" data-nav-link>Contact</a>
     </nav>
 
-    <div class="desktop-header-actions"><button class="btn btn-install" id="installAppBtn" type="button" hidden>📲 Install App</button><a class="btn btn-primary nav-order" href="#menu">Order Food</a></div>
+    <button class="nav-install" id="installAppButton" type="button">📲 Install App</button>
+
+    <a class="btn btn-primary nav-order" href="#menu">Order Food</a>
 
     <div class="mobile-header-actions">
       <a class="mobile-call" href="tel:+919779159680" aria-label="Call Sudh Vaishno Tandoor">☎</a>
@@ -113,8 +112,8 @@
     <a href="#about">About</a>
     <a href="#reviews">Reviews</a>
     <a href="#contact">Contact</a>
+    <button class="mobile-install" id="mobileInstallAppButton" type="button">📲 Install App</button>
     <a class="mobile-dropdown-order" href="#menu">🍽️ Order Food</a>
-    <button class="mobile-dropdown-install" id="mobileInstallAppBtn" type="button">📲 Install App</button>
   </div>
 
 
@@ -201,9 +200,15 @@
 
         <div class="hero-order-buttons">
 
-          <a class="hero-order-btn menu-btn" href="#menu">
+          <a
+            class="hero-order-btn menu-btn"
+            href="#menu"
+          >
             <span class="order-icon">🍽️</span>
-            <span><small>SEE MENU</small>ORDER FOOD</span>
+            <span>
+              <small>SEE MENU</small>
+              ORDER FOOD
+            </span>
           </a>
 
           <a
@@ -254,9 +259,9 @@
         </div>
 
 
-        <div class="hero-location">
-          <a href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">📍 Gate No. 2, GMCH, Chandigarh · Open Maps</a>
-        </div>
+        <a class="hero-location" href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">
+          📍 Gate No. 2, GMCH, Chandigarh · Open Maps ↗
+        </a>
 
       </div>
 
@@ -926,123 +931,12 @@
       id="about"
       class="section about-section"
     >
-
-
-      <!-- YOUR THALI IMAGE -->
-
-      <div class="about-image">
-        <div class="swipe-carousel" id="aboutCarousel">
-          <div class="swipe-track" id="aboutTrack"></div>
-          <button class="swipe-arrow prev" type="button" data-carousel-prev="aboutCarousel" aria-label="Previous About photo">‹</button>
-          <button class="swipe-arrow next" type="button" data-carousel-next="aboutCarousel" aria-label="Next About photo">›</button>
-          <div class="swipe-dots" id="aboutDots"></div>
-        </div>
+      <div class="about-story-carousel swipe-carousel" id="aboutStoryCarousel">
+        <div class="swipe-track" id="aboutStoryTrack"></div>
+        <button class="swipe-arrow prev" type="button" data-carousel-prev="aboutStoryCarousel" aria-label="Previous story">‹</button>
+        <button class="swipe-arrow next" type="button" data-carousel-next="aboutStoryCarousel" aria-label="Next story">›</button>
+        <div class="swipe-dots" id="aboutStoryDots"></div>
       </div>
-
-
-      <div class="about-copy">
-
-        <span class="eyebrow">
-          ABOUT US
-        </span>
-
-
-        <h2>
-          Pure vegetarian food since 1996.
-        </h2>
-
-
-        <p>
-
-          <strong>
-            Sudh Vaishno Tandoor
-          </strong>
-
-          is a pure vegetarian food shop at Gate
-          No. 2, GMCH, Chandigarh, serving simple,
-          satisfying and homely meals.
-
-          Owned by
-
-          <strong data-owner>
-            Sudhir Mandal
-          </strong>
-
-          and serving customers since 1996.
-
-        </p>
-
-
-        <div class="about-points">
-
-
-          <div>
-
-            <span>
-              ✓
-            </span>
-
-            <p>
-
-              <strong>
-                Fresh ingredients
-              </strong>
-
-              <small>
-                Prepared with care every day.
-              </small>
-
-            </p>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              ✓
-            </span>
-
-            <p>
-
-              <strong>
-                Great value
-              </strong>
-
-              <small>
-                Good portions at honest prices.
-              </small>
-
-            </p>
-
-          </div>
-
-
-          <div>
-
-            <span>
-              ✓
-            </span>
-
-            <p>
-
-              <strong>
-                Made for you
-              </strong>
-
-              <small>
-                Easy ordering through WhatsApp.
-              </small>
-
-            </p>
-
-          </div>
-
-
-        </div>
-
-      </div>
-
     </section>
 
 
@@ -1088,201 +982,26 @@
       id="reviews"
       class="section reviews-section"
     >
-
       <div class="section-heading centered">
-
-        <span class="eyebrow">
-          GOOGLE REVIEWS
-        </span>
-
-        <h2>
-          Loved by our customers ❤️
-        </h2>
-
-        <p>
-          Real feedback from people who have visited Sudh Vaishno Tandoor.
-        </p>
-
+        <span class="eyebrow">GOOGLE REVIEWS</span>
+        <h2>Loved by our customers ❤️</h2>
+        <p>Real feedback from people who have visited Sudh Vaishno Tandoor.</p>
       </div>
 
-      <div class="google-rating-card">
+      <div class="google-rating-card" id="googleRatingCard">
         <div class="google-rating-score">
-          <strong>4.9</strong>
+          <strong id="googleRatingScore">4.9</strong>
           <span>★★★★★</span>
         </div>
         <div class="google-rating-copy">
           <strong>Google rating</strong>
-          <span>Based on 17 reviews</span>
+          <span>Based on <b id="googleReviewCount">17</b> reviews</span>
         </div>
-        <a
-          class="google-review-button"
-          href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-          target="_blank"
-          rel="noopener"
-        >
-          ⭐ Read all Google Reviews →
-        </a>
+        <a class="google-review-button" href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">⭐ Read all Google Reviews →</a>
       </div>
 
-      <div class="reviews-marquee" aria-label="Customer reviews scrolling from right to left">
-        <div class="reviews-track">
-          <article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Nice experience with family, tasty and healthy food available here at very minimum price of 60 rupees only. Loving the food and serving staff.”
-          </p>
-          <div class="reviewer">
-            <span>A</span>
-            <div>
-              <strong>Ashok Kumar</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Amazing taste, feels like homemade food. Food is prepared in a hygienic measures. Worth every rupees.”
-          </p>
-          <div class="reviewer">
-            <span>C</span>
-            <div>
-              <strong>Chaman Baghel</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Highly recommend for family. Home made taste food.”
-          </p>
-          <div class="reviewer">
-            <span>L</span>
-            <div>
-              <strong>Ladsahab Alam</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Tasty food, home made.”
-          </p>
-          <div class="reviewer">
-            <span>R</span>
-            <div>
-              <strong>RITIK Kumar</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Valuable for money. Tasty kadhi chawal and rajma chawal. Breakfast Lunch Dinner available.”
-          </p>
-          <div class="reviewer">
-            <span>M</span>
-            <div>
-              <strong>Murle Murle</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Tasty food.”
-          </p>
-          <div class="reviewer">
-            <span>T</span>
-            <div>
-              <strong>Tarkesh 99</strong>
-              <small>Google reviewer · 4 reviews</small>
-            </div>
-          </div>
-        </article>
-          <article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Nice experience with family, tasty and healthy food available here at very minimum price of 60 rupees only. Loving the food and serving staff.”
-          </p>
-          <div class="reviewer">
-            <span>A</span>
-            <div>
-              <strong>Ashok Kumar</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Amazing taste, feels like homemade food. Food is prepared in a hygienic measures. Worth every rupees.”
-          </p>
-          <div class="reviewer">
-            <span>C</span>
-            <div>
-              <strong>Chaman Baghel</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Highly recommend for family. Home made taste food.”
-          </p>
-          <div class="reviewer">
-            <span>L</span>
-            <div>
-              <strong>Ladsahab Alam</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Tasty food, home made.”
-          </p>
-          <div class="reviewer">
-            <span>R</span>
-            <div>
-              <strong>RITIK Kumar</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Valuable for money. Tasty kadhi chawal and rajma chawal. Breakfast Lunch Dinner available.”
-          </p>
-          <div class="reviewer">
-            <span>M</span>
-            <div>
-              <strong>Murle Murle</strong>
-              <small>Google reviewer · 1 review</small>
-            </div>
-          </div>
-        </article>
-<article class="review">
-          <div class="stars">★★★★★</div>
-          <p>
-            “Tasty food.”
-          </p>
-          <div class="reviewer">
-            <span>T</span>
-            <div>
-              <strong>Tarkesh 99</strong>
-              <small>Google reviewer · 4 reviews</small>
-            </div>
-          </div>
-        </article>
-        </div>
+      <div class="reviews-marquee reviews-touch-carousel" id="reviewsCarousel" aria-label="Customer reviews. Swipe left or right to read.">
+        <div class="reviews-track" id="reviewsTrack"></div>
       </div>
 
       <div class="reviews-cta">
@@ -1291,25 +1010,10 @@
           <span>Read the latest reviews, photos and business information.</span>
         </div>
         <div class="reviews-cta-actions">
-          <a
-            class="btn btn-light review-map-btn"
-            href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-            target="_blank"
-            rel="noopener"
-          >
-            📍 Open Google Maps
-          </a>
-          <a
-            class="btn btn-primary"
-            href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6"
-            target="_blank"
-            rel="noopener"
-          >
-            ⭐ Read / Write a Review
-          </a>
+          <a class="btn btn-light review-map-btn" href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">📍 Open Google Maps</a>
+          <a class="btn btn-primary" href="https://maps.app.goo.gl/wNxAkM2geS4CqVgk6" target="_blank" rel="noopener">⭐ Read / Write a Review</a>
         </div>
       </div>
-
     </section>
 
 
@@ -1342,17 +1046,7 @@
 
     </section>
 
-  <div class="install-help" id="installHelp" hidden>
-  <div class="install-help-box">
-    <button type="button" class="install-help-close" id="installHelpClose" aria-label="Close">×</button>
-    <div class="install-help-icon">📲</div>
-    <h3>Install Sudh Vaishno Tandoor</h3>
-    <p id="installHelpText">Install this website like an app for quicker access.</p>
-    <button class="btn btn-primary" id="installNowBtn" type="button">Install App</button>
-  </div>
-</div>
-
-</main>
+  </main>
 
 
 
@@ -1618,12 +1312,5 @@
 
   <script src="app.js"></script>
 
-<script>
-(function(){
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker:', err)));
-  }
-})();
-</script>
 </body>
 </html>
