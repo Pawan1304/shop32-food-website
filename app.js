@@ -653,37 +653,70 @@ loadLiveMenuItems();
 })();
 
 /* =====================================================
-   PWA INSTALL EXPERIENCE
+   PWA INSTALL
+   Shows the native install prompt when the browser allows it.
+   On browsers that do not expose a prompt, the button opens
+   simple install instructions instead.
    ===================================================== */
 let deferredInstallPrompt = null;
-const installButtons = [
-  document.getElementById("installAppButton"),
-  document.getElementById("installAppButtonDesktop")
-].filter(Boolean);
+const installAppBtn = document.getElementById('installAppBtn');
+const mobileInstallAppBtn = document.getElementById('mobileInstallAppBtn');
+const installHelp = document.getElementById('installHelp');
+const installHelpText = document.getElementById('installHelpText');
+const installNowBtn = document.getElementById('installNowBtn');
+const installHelpClose = document.getElementById('installHelpClose');
 
-function showInstallButtons(show) {
-  installButtons.forEach(btn => {
-    btn.hidden = !show;
-  });
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  showInstallButtons(true);
-});
+function showInstallHelp() {
+  if (!installHelp) return;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  if (installHelpText) {
+    installHelpText.textContent = isIOS
+      ? 'On iPhone/iPad: tap Share in Safari, then choose “Add to Home Screen”.'
+      : isAndroid
+        ? 'If no install popup appears, open Chrome menu ⋮ and choose “Add to Home screen” or “Install app”.'
+        : 'Use your browser menu and choose “Install app” or “Add to Home screen”.';
+  }
+  installHelp.hidden = false;
+}
 
-installButtons.forEach(btn => {
-  btn.addEventListener("click", async () => {
-    if (!deferredInstallPrompt) return;
+async function installWebsite() {
+  if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
     const result = await deferredInstallPrompt.userChoice;
-    if (result.outcome === "accepted") showInstallButtons(false);
     deferredInstallPrompt = null;
-  });
+    if (installAppBtn) installAppBtn.hidden = true;
+    if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '📲 App Installed';
+    return result;
+  }
+  showInstallHelp();
+}
+
+installAppBtn?.addEventListener('click', installWebsite);
+mobileInstallAppBtn?.addEventListener('click', installWebsite);
+installNowBtn?.addEventListener('click', installWebsite);
+installHelpClose?.addEventListener('click', () => { if (installHelp) installHelp.hidden = true; });
+installHelp?.addEventListener('click', e => { if (e.target === installHelp) installHelp.hidden = true; });
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  if (installAppBtn) installAppBtn.hidden = false;
+  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '📲 Install App';
 });
 
-window.addEventListener("appinstalled", () => {
+window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
-  showInstallButtons(false);
+  if (installAppBtn) installAppBtn.hidden = true;
+  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '✓ App Installed';
+  if (installHelp) installHelp.hidden = true;
 });
+
+if (isStandalone()) {
+  if (installAppBtn) installAppBtn.hidden = true;
+  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '✓ App Installed';
+}
