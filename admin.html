@@ -33,6 +33,12 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 .edit-modal{position:fixed;inset:0;background:rgba(20,10,5,.68);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}.edit-box{width:min(560px,100%);background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.edit-preview{display:flex;gap:12px;align-items:center;margin:10px 0 14px;padding:10px;background:#fff8f1;border-radius:12px}.edit-preview img,.edit-preview video{width:110px;height:85px;object-fit:cover;border-radius:10px}.edit-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
 
 .dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.dash-stat{padding:15px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}.dash-stat .num{font-size:28px;font-weight:900;line-height:1.1}.dash-stat .label{font-size:12px;color:#756960;margin-top:5px;font-weight:700}.dash-status{display:flex;align-items:center;gap:8px;font-weight:800}.dash-dot{width:10px;height:10px;border-radius:50%;background:#999;display:inline-block}.dash-dot.ok{background:#1f9d55}.dash-dot.bad{background:#d64545}.dash-latest{margin-top:14px;padding:12px 14px;border-radius:12px;background:#fff7f1}.quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.quick-actions a{display:inline-flex;text-decoration:none}.quick-actions button{margin:0}@media(max-width:700px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:450px){.dashboard-grid{grid-template-columns:1fr 1fr}.dash-stat .num{font-size:24px}}
+
+textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;background:#fff;font:inherit;resize:vertical}
+.admin-review-list{display:grid;gap:10px;margin-top:14px}
+.admin-review-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}
+.admin-review-row p{margin:7px 0 0;color:#5f544d;line-height:1.5;font-size:13px}
+@media(max-width:650px){.admin-review-row{grid-template-columns:1fr}.admin-review-row .actions button{width:auto}}
 </style>
 </head>
 <body>
@@ -81,7 +87,8 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
           <option value="menu">Today's Menu</option>
           <option value="menu_item">🍽️ Menu Item Photos / Videos</option>
           <option value="langar">🙏 Langar Seva</option>
-          <option value="gallery">📸 Photos / Gallery</option>
+          <option value="gallery">📸 Food & Moments Gallery</option>
+          <option value="about">📖 About / Story</option>
         </select>
       </div>
       <div id="menuItemWrap" class="hidden">
@@ -92,7 +99,8 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
         <label>New / other food item name</label>
         <input id="newMenuItemName" placeholder="e.g. Rajma Chawal">
       </div>
-      <div><label>Photo title</label><input id="title" placeholder="e.g. Langar Seva — 14 Sep 2026"></div>
+      <div><label id="titleLabel">Photo title / caption</label><input id="title" placeholder="e.g. Fresh tandoori roti"></div>
+      <div id="storyTextWrap" class="hidden" style="grid-column:1 / -1"><label>Story text</label><textarea id="storyText" rows="5" placeholder="Write the story or message customers should read with this image..."></textarea></div>
       <div id="mediaTypeWrap" class="hidden">
         <label id="mediaTypeLabel">Upload type</label>
         <select id="mediaType">
@@ -139,10 +147,29 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
     </div>
   </div>
 
+  <div id="reviewsManagementCard" class="card">
+    <h2>⭐ Manage Website Google Reviews</h2>
+    <p class="muted">Add, edit, hide or delete the customer reviews shown on your website. This does <strong>not</strong> edit Google Maps itself.</p>
+    <div class="form-grid">
+      <div><label>Reviewer name</label><input id="reviewerName" placeholder="e.g. Ashok Kumar"></div>
+      <div><label>Rating</label><select id="reviewRating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></div>
+      <div><label>Reviewer review count</label><input id="reviewerCount" type="number" min="1" value="1"></div>
+      <div><label>Display order</label><input id="reviewSort" type="number" min="1" value="10"></div>
+      <div style="grid-column:1 / -1"><label>Review text</label><textarea id="reviewText" rows="4" placeholder="Paste the genuine customer review text here..."></textarea></div>
+    </div>
+    <div class="quick-actions"><button id="addReviewBtn" class="green" type="button">➕ Add Review</button><button id="saveGoogleStatsBtn" class="dark" type="button">💾 Save Google Rating / Count</button></div>
+    <div class="form-grid" style="margin-top:12px">
+      <div><label>Google rating shown on website</label><input id="googleRatingInput" type="number" min="0" max="5" step="0.1" value="4.9"></div>
+      <div><label>Google review count shown on website</label><input id="googleCountInput" type="number" min="0" step="1" value="17"></div>
+    </div>
+    <div id="reviewsAdminStatus" class="status">Loading website reviews...</div>
+    <div id="adminReviewsList" class="admin-review-list"></div>
+  </div>
+
   <div id="photoManagementCard" class="card">
     <h2>🗂️ Photo Management</h2>
     <div class="toolbar">
-      <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option></select></div>
+      <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option><option value="about">About / Story</option></select></div>
       <div><label>Search title</label><input id="searchTitle" placeholder="Search photos..."></div>
       <div><button id="refreshBtn" class="light">Refresh</button></div>
     </div>
@@ -158,7 +185,7 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 </section>
 </main>
 
-<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title</label><input id="editTitle" placeholder="Enter the title"><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
+<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title / Caption</label><input id="editTitle" placeholder="Enter the title or caption"><div id="editStoryWrap" class="hidden" style="margin-top:12px"><label>Story text</label><textarea id="editStoryText" rows="6" placeholder="Story text..."></textarea></div><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*,video/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
 
 <script>
 const BUCKET = SUPABASE_BUCKET;
@@ -269,6 +296,8 @@ $('category').addEventListener('change',()=>{
   const isMenu=cat==='menu';
   const isMenuItem=cat==='menu_item';
   const isLangar=cat==='langar';
+  const isGallery=cat==='gallery';
+  const isAbout=cat==='about';
 
   $('menuItemWrap').classList.toggle('hidden',!isMenuItem);
   $('newMenuItemWrap').classList.add('hidden');
@@ -276,14 +305,17 @@ $('category').addEventListener('change',()=>{
   $('makeToday').disabled=!isMenu;
   $('makeToday').checked=isMenu;
   $('makeTodayRow').style.opacity=isMenu?'1':'.7';
+  $('storyTextWrap').classList.toggle('hidden',!isAbout);
+  $('titleLabel').textContent=isAbout?'Story heading':(isGallery?'Caption / title':'Photo title / caption');
 
-  $('mediaTypeWrap').classList.toggle('hidden',!(isMenuItem||isLangar));
-  $('mediaType').querySelector('option[value="video"]').hidden=isLangar;
-  $('mediaType').querySelector('option[value="youtube"]').hidden=isMenuItem;
-  if((isLangar && $('mediaType').value==='video') || (isMenuItem && $('mediaType').value==='youtube')) $('mediaType').value='photo';
-  $('youtubeUrlWrap').classList.add('hidden');
+  $('mediaTypeWrap').classList.toggle('hidden',!(isMenuItem||isLangar||isGallery));
+  $('mediaType').querySelector('option[value="video"]').hidden=!(isMenuItem||isGallery);
+  $('mediaType').querySelector('option[value="youtube"]').hidden=!isLangar;
+  if(isGallery && $('mediaType').value==='youtube') $('mediaType').value='photo';
+  if(isMenuItem && $('mediaType').value==='youtube') $('mediaType').value='photo';
+  if(isAbout) $('mediaType').value='photo';
+  $('youtubeUrlWrap').classList.toggle('hidden',!(isLangar && $('mediaType').value==='youtube'));
   $('youtubeUrl').value='';
-  $('mediaType').value=isLangar?'photo':'photo';
   updateUploadMode();
 });
 $('menuItem').addEventListener('change',()=>{
@@ -291,12 +323,9 @@ $('menuItem').addEventListener('change',()=>{
   const isNew=$('menuItem').value==='__new__';
   $('newMenuItemWrap').classList.toggle('hidden',!isNew);
   if(isNew){
-    $('title').value='';
-    $('title').placeholder='e.g. Rajma Chawal';
-    $('newMenuItemName').focus();
+    $('title').value=''; $('title').placeholder='e.g. Rajma Chawal'; $('newMenuItemName').focus();
   }else{
-    $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
-    $('title').placeholder='Photo title';
+    $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||''; $('title').placeholder='Photo title';
   }
   updateUploadMode();
 });
@@ -310,6 +339,8 @@ function updateUploadMode(){
   const type=$('mediaType').value;
   const isMenuItem=cat==='menu_item';
   const isLangar=cat==='langar';
+  const isGallery=cat==='gallery';
+  const isAbout=cat==='about';
 
   if(isMenuItem){
     const isNew=$('menuItem').value==='__new__';
@@ -317,26 +348,37 @@ function updateUploadMode(){
     if(!isNew && !$('title').value.trim()) $('title').value=$('menuItem').selectedOptions[0]?.textContent.split(' — ₹')[0]||'';
   }
 
+  $('storyTextWrap').classList.toggle('hidden',!isAbout);
   $('youtubeUrlWrap').classList.toggle('hidden',!(isLangar && type==='youtube'));
+
   if(isMenuItem){
     $('mediaTypeLabel').textContent='Menu item media type';
     $('fileLabel').textContent=type==='video'?'Select ONE food video':'Select food photo(s)';
     $('files').multiple=type!=='video';
     $('files').accept=type==='video'?'video/*':'image/*';
-    $('uploadHint').textContent=type==='video'
-      ? 'Upload one short food video for this menu item. Customers can play it from the food card carousel.'
-      : 'Upload multiple photos of the same food item. Customers will be able to swipe left/right through them.';
+    $('uploadHint').textContent=type==='video'?'Upload one short food video for this menu item. Customers can play it from the food card carousel.':'Upload multiple photos of the same food item. Customers can swipe through them.';
   } else if(isLangar){
     $('mediaTypeLabel').textContent='Langar upload type';
     $('fileLabel').textContent=type==='youtube'?'Select YouTube thumbnail (1 image)':'Select food/distribution photo(s)';
     $('files').multiple=type!=='youtube';
     $('files').accept='image/*';
     $('uploadHint').textContent='For Langar Seva, choose normal distribution photos or a YouTube thumbnail.';
-  } else {
-    $('fileLabel').textContent='Select photo';
+  } else if(isGallery){
+    $('mediaTypeLabel').textContent='Gallery media type';
+    $('fileLabel').textContent=type==='video'?'Select food preparation video':'Select food photo(s)';
+    $('files').multiple=type!=='video';
+    $('files').accept=type==='video'?'video/*':'image/*';
+    $('uploadHint').textContent=type==='video'?'Upload one food preparation / kitchen video. It will appear in Food & Moments.':'Upload one or more food photos. Add a caption above if desired.';
+  } else if(isAbout){
+    $('fileLabel').textContent='Select ONE story image';
     $('files').multiple=false;
     $('files').accept='image/*';
-    $('uploadHint').textContent='Upload a single photo for the selected category.';
+    $('uploadHint').textContent='Upload one image with a heading and story text. Customers can swipe between your story cards.';
+  } else {
+    $('fileLabel').textContent='Select Today\'s Menu photo(s)';
+    $('files').multiple=true;
+    $('files').accept='image/*';
+    $('uploadHint').textContent='Select one or more menu photos. If “Today’s Menu” is checked, all selected photos will appear in the swipe gallery.';
   }
   if(type==='youtube' && $('files').files.length>1){ $('files').value=''; $('preview').innerHTML=''; }
 }
@@ -394,7 +436,7 @@ async function updateUI(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   const ok=!!session;
   $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
-  if(ok){ loadPhotos(); populateMenuItems(); loadDashboard(); }
+  if(ok){ loadPhotos(); populateMenuItems(); loadDashboard(); loadAdminReviews(); }
 }
 
 async function addMenuItem(){
@@ -443,7 +485,9 @@ async function uploadFiles(){
     if(type==='photo' && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','Menu photo mode accepts image files only.',true);return}
     if(type==='video' && !files[0].type.startsWith('video/')){msg('uploadStatus','Please select a video file.',true);return}
   }
-  if(category==='menu' && files.length>1){msg('uploadStatus','For Today\'s Menu, select only one photo.',true);return}
+  if(category==='about' && files.length!==1){msg('uploadStatus','For About / Story, select exactly one image.',true);return}
+  if(category==='gallery' && type==='video' && files.length!==1){msg('uploadStatus','For a gallery video, select exactly one video.',true);return}
+  if(category==='gallery' && type==='photo' && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','Gallery photo mode accepts image files only.',true);return}
   if(category==='langar' && type==='youtube'){
     if(files.length!==1){msg('uploadStatus','For a YouTube item, select exactly one thumbnail image.',true);return}
     if(!normalizeYouTubeUrl($('youtubeUrl').value)){msg('uploadStatus','Please enter a valid YouTube link.',true);return}
@@ -468,7 +512,7 @@ async function uploadFiles(){
     for(const file of files){
       const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-');
       const path=`${category}/${Date.now()}-${crypto.randomUUID()}-${safe}`;
-      const mediaType=category==='langar' ? type : category==='menu_item' ? type : 'photo';
+      const mediaType=(category==='langar'||category==='menu_item'||category==='gallery') ? type : 'photo';
       const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
       if(ue) throw ue;
 
@@ -476,6 +520,8 @@ async function uploadFiles(){
       const row={
         title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
         short_title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        caption:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        story_text:category==='about' ? $('storyText').value.trim() : null,
         category,
         storage_path:path,
         public_url:urlData.publicUrl,
@@ -491,6 +537,7 @@ async function uploadFiles(){
     $('files').value='';$('preview').innerHTML='';
     if(category!=='menu_item') $('title').value='';
     $('newMenuItemName').value='';
+    $('storyText').value='';
     $('youtubeUrl').value='';
     msg('uploadStatus',category==='menu_item'
       ? `${files.length} media item(s) uploaded for ${menuItem ? menuItem.name : customMenuItemName}. They are now available in your media library.`
@@ -528,7 +575,7 @@ function renderPhotos(){
 
 async function loadPhotos(){
   msg('listStatus','Loading photos...');
-  const {data,error}=await supabaseClient.from('site_photos').select('id,title,short_title,category,media_type,youtube_url,storage_path,public_url,is_today').order('id',{ascending:false}).limit(200);
+  const {data,error}=await supabaseClient.from('site_photos').select('id,title,short_title,caption,story_text,category,media_type,youtube_url,storage_path,public_url,is_today').order('id',{ascending:false}).limit(200);
   if(error){msg('listStatus',error.message,true);return}
   allPhotos=data||[];renderPhotos();
 }
@@ -538,6 +585,8 @@ function openEdit(id){
   editingPhoto = allPhotos.find(p => Number(p.id) === Number(id));
   if(!editingPhoto) return;
   $('editTitle').value = editingPhoto.title || '';
+  $('editStoryText').value = editingPhoto.story_text || '';
+  $('editStoryWrap').classList.toggle('hidden', editingPhoto.category !== 'about');
   $('editFile').value = '';
   $('editYoutubeUrl').value = editingPhoto.youtube_url || '';
   $('editYoutubeWrap').classList.toggle('hidden', editingPhoto.media_type !== 'youtube');
@@ -565,11 +614,11 @@ async function saveEdit(){
       const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(newPath,newFile,{cacheControl:'3600',upsert:false,contentType:newFile.type});
       if(ue) throw ue;
       const publicUrl=supabaseClient.storage.from(BUCKET).getPublicUrl(newPath).data.publicUrl;
-      const {error:de}=await supabaseClient.from('site_photos').update({title,short_title:title,public_url:publicUrl,storage_path:newPath,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      const {error:de}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,public_url:publicUrl,storage_path:newPath,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
       if(de){await supabaseClient.storage.from(BUCKET).remove([newPath]);throw de;}
       if(editingPhoto.storage_path) await supabaseClient.storage.from(BUCKET).remove([editingPhoto.storage_path]);
     }else{
-      const {error}=await supabaseClient.from('site_photos').update({title,short_title:title,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      const {error}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
       if(error) throw error;
     }
     closeEdit(); await loadPhotos();
@@ -602,6 +651,45 @@ if($('editCancel') && $('editSave') && $('editModal')){
   $('editSave').onclick=saveEdit;
   $('editModal').addEventListener('click',e=>{if(e.target.id==='editModal')closeEdit()});
 }
+
+/* =====================================================
+   WEBSITE REVIEW MANAGER
+   ===================================================== */
+let adminReviews=[];
+async function loadAdminReviews(){
+  if(!$('adminReviewsList')) return;
+  $('reviewsAdminStatus').textContent='Loading website reviews...';
+  try{
+    const {data,error}=await supabaseClient.from('site_reviews').select('id,reviewer_name,review_text,rating,review_count,is_active,sort_order').order('sort_order',{ascending:true}).order('id',{ascending:true});
+    if(error) throw error;
+    adminReviews=data||[];
+    renderAdminReviews();
+    const {data:settings}=await supabaseClient.from('site_settings').select('google_rating,google_review_count').eq('id',1).maybeSingle();
+    if(settings){$('googleRatingInput').value=settings.google_rating ?? 4.9;$('googleCountInput').value=settings.google_review_count ?? 17;}
+    $('reviewsAdminStatus').textContent=`${adminReviews.length} website review(s) loaded.`;
+  }catch(e){$('reviewsAdminStatus').textContent='Reviews table is not ready yet. Run supabase-website-content-migration.sql once in Supabase SQL Editor.';}
+}
+function renderAdminReviews(){
+  $('adminReviewsList').innerHTML=adminReviews.map(r=>`<div class="admin-review-row"><div><strong>${esc(r.reviewer_name)}</strong><div class="hint">${'★'.repeat(Number(r.rating)||5)} · ${Number(r.review_count)||1} review(s) · order ${Number(r.sort_order)||0}</div><p>${esc(r.review_text)}</p></div><div class="actions"><button class="light" data-review-edit="${r.id}">Edit</button><button class="${r.is_active?'dark':'green'}" data-review-toggle="${r.id}">${r.is_active?'Hide':'Show'}</button><button class="danger" data-review-delete="${r.id}">Delete</button></div></div>`).join('');
+}
+$('addReviewBtn')?.addEventListener('click',async()=>{
+  const name=$('reviewerName').value.trim(), text=$('reviewText').value.trim();
+  if(!name||!text){$('reviewsAdminStatus').textContent='Enter reviewer name and review text.';return;}
+  const {error}=await supabaseClient.from('site_reviews').insert({reviewer_name:name,review_text:text,rating:Number($('reviewRating').value)||5,review_count:Number($('reviewerCount').value)||1,sort_order:Number($('reviewSort').value)||10,is_active:true});
+  if(error){$('reviewsAdminStatus').textContent=error.message;return;}
+  $('reviewerName').value='';$('reviewText').value='';await loadAdminReviews();
+});
+$('saveGoogleStatsBtn')?.addEventListener('click',async()=>{
+  const {error}=await supabaseClient.from('site_settings').upsert({id:1,google_rating:Number($('googleRatingInput').value)||4.9,google_review_count:Number($('googleCountInput').value)||0});
+  $('reviewsAdminStatus').textContent=error?error.message:'✅ Google rating/count display saved.';
+});
+$('adminReviewsList')?.addEventListener('click',async e=>{
+  const edit=e.target.closest('[data-review-edit]'), toggle=e.target.closest('[data-review-toggle]'), del=e.target.closest('[data-review-delete]');
+  if(edit){const r=adminReviews.find(x=>Number(x.id)===Number(edit.dataset.reviewEdit));if(!r)return;const name=prompt('Reviewer name:',r.reviewer_name);if(name===null)return;const text=prompt('Review text:',r.review_text);if(text===null)return;const {error}=await supabaseClient.from('site_reviews').update({reviewer_name:name.trim(),review_text:text.trim()}).eq('id',r.id);if(error)alert(error.message);else loadAdminReviews();}
+  if(toggle){const r=adminReviews.find(x=>Number(x.id)===Number(toggle.dataset.reviewToggle));if(!r)return;const {error}=await supabaseClient.from('site_reviews').update({is_active:!r.is_active}).eq('id',r.id);if(error)alert(error.message);else loadAdminReviews();}
+  if(del){if(!confirm('Delete this website review?'))return;const {error}=await supabaseClient.from('site_reviews').delete().eq('id',Number(del.dataset.reviewDelete));if(error)alert(error.message);else loadAdminReviews();}
+});
+
 $('addMenuItemBtn').onclick=addMenuItem;$('saveMenuOrderBtn').onclick=saveMenuOrder;
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
 $('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
@@ -610,6 +698,7 @@ supabaseClient.auth.onAuthStateChange(()=>updateUI());
 populateMenuItems();
 updateUploadMode();
 updateUI();
+loadAdminReviews();
 </script>
 
 </div>
