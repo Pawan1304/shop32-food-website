@@ -148,22 +148,8 @@ function renderMenu() {
           <h3>${item.name}</h3>
           <p>${item.description}</p>
           <div class="menu-bottom">
-            <div class="menu-price-wrap">
-              <span class="price">${money(item.price)}</span>
-              <small>per item</small>
-            </div>
-            <div class="menu-cart-control" data-menu-control="${item.id}">
-              ${(() => {
-                const row = cart.find(x => x.id === item.id);
-                return row
-                  ? `<div class="menu-qty" role="group" aria-label="Quantity for ${item.name}">
-                       <button type="button" class="qty-btn menu-qty-minus" data-menu-minus="${item.id}" aria-label="Remove one ${item.name}">−</button>
-                       <span class="menu-qty-count" aria-live="polite">${row.qty}</span>
-                       <button type="button" class="qty-btn menu-qty-plus" data-menu-plus="${item.id}" aria-label="Add one more ${item.name}">+</button>
-                     </div>`
-                  : `<button class="add-btn" data-add="${item.id}" type="button">+ Add</button>`;
-              })()}
-            </div>
+            <span class="price">${money(item.price)}</span>
+            <button class="add-btn" data-add="${item.id}">+ Add</button>
           </div>
         </div>
       </article>`;
@@ -174,66 +160,18 @@ function renderMenu() {
   });
 }
 
-function showCartToast(message = "Added to your cart ✓") {
-  let toast = document.getElementById("cartToast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "cartToast";
-    toast.className = "cart-toast";
-    toast.setAttribute("role", "status");
-    toast.setAttribute("aria-live", "polite");
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(window.__cartToastTimer);
-  window.__cartToastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
-}
-
-function syncMenuCartControls() {
-  document.querySelectorAll("[data-menu-control]").forEach(control => {
-    const id = Number(control.dataset.menuControl);
-    const row = cart.find(x => x.id === id);
-    const item = SHOP_CONFIG.menu.find(x => x.id === id);
-    if (!item) return;
-
-    if (row) {
-      control.innerHTML = `
-        <div class="menu-qty" role="group" aria-label="Quantity for ${item.name}">
-          <button type="button" class="qty-btn menu-qty-minus" data-menu-minus="${id}" aria-label="Remove one ${item.name}">−</button>
-          <span class="menu-qty-count" aria-live="polite">${row.qty}</span>
-          <button type="button" class="qty-btn menu-qty-plus" data-menu-plus="${id}" aria-label="Add one more ${item.name}">+</button>
-        </div>`;
-    } else {
-      control.innerHTML = `<button class="add-btn" data-add="${id}" type="button">+ Add</button>`;
-    }
-  });
-}
-
 const menuGrid = document.getElementById("menuGrid");
 if (menuGrid) {
   menuGrid.addEventListener("click", e => {
-    const addBtn = e.target.closest("[data-add]");
-    const plusBtn = e.target.closest("[data-menu-plus]");
-    const minusBtn = e.target.closest("[data-menu-minus]");
-    const btn = addBtn || plusBtn || minusBtn;
+    const btn = e.target.closest("[data-add]");
     if (!btn) return;
-
-    const id = Number(btn.dataset.add || btn.dataset.menuPlus || btn.dataset.menuMinus);
-    const row = cart.find(x => x.id === id);
-
-    if (minusBtn) {
-      if (!row) return;
-      row.qty--;
-      cart = cart.filter(x => x.qty > 0);
-    } else {
-      if (row) row.qty++;
-      else cart.push({ id, qty: 1 });
-      if (addBtn) showCartToast();
-    }
-
+    const id = Number(btn.dataset.add);
+    const existing = cart.find(x => x.id === id);
+    if (existing) existing.qty++; else cart.push({ id, qty: 1 });
     save();
     updateCart();
+    btn.textContent = "✓ Added";
+    setTimeout(() => btn.textContent = "+ Add", 800);
   });
 }
 
@@ -319,70 +257,36 @@ document.getElementById("closeCart")?.addEventListener("click", closeCart);
 overlay?.addEventListener("click", e => { if (e.target === overlay) closeCart(); });
 document.getElementById("browseMenu")?.addEventListener("click", closeCart);
 
-function getCartSummary() {
-  let count = 0;
-  let total = 0;
-
-  cart.forEach(row => {
-    const item = SHOP_CONFIG.menu.find(x => x.id === row.id);
-    if (!item) return;
-    count += Number(row.qty) || 0;
-    total += item.price * (Number(row.qty) || 0);
-  });
-
-  return { count, total };
-}
-
 function updateCart() {
-  const { count, total } = getCartSummary();
-  const cartCount = document.getElementById("cartCount");
-  const mobileCartCount = document.getElementById("mobileCartCount");
-  const cartButtonTotal = document.getElementById("cartButtonTotal");
-
-  if (cartCount) cartCount.textContent = count;
-  if (mobileCartCount) mobileCartCount.textContent = count;
-  if (cartButtonTotal) cartButtonTotal.textContent = money(total);
-
-  syncMenuCartControls();
+  const count = cart.reduce((s, x) => s + x.qty, 0);
+  document.getElementById("cartCount").textContent = count;
+  document.getElementById("mobileCartCount").textContent = count;
   renderCart();
 }
 
 function renderCart() {
   const wrap = document.getElementById("cartItems");
   const panel = document.querySelector(".cart-panel");
-  const checkoutBtn = document.getElementById("checkoutBtn");
   if (!wrap || !panel) return;
-
-  const { count, total } = getCartSummary();
-  const hasItems = count > 0;
-
-  panel.classList.toggle("no-items", !hasItems);
-  wrap.innerHTML = hasItems ? cart.map(row => {
+  if (!cart.length) {
+    panel.classList.add("no-items");
+    wrap.innerHTML = "";
+    document.getElementById("cartTotal").textContent = "0";
+    return;
+  }
+  panel.classList.remove("no-items");
+  let total = 0;
+  wrap.innerHTML = cart.map(row => {
     const item = SHOP_CONFIG.menu.find(x => x.id === row.id);
     if (!item) return "";
+    total += item.price * row.qty;
     return `<div class="cart-row">
-      <div class="cart-item-info">
-        <strong>${item.name}</strong>
-        <small>${money(item.price)} each</small>
-      </div>
-      <div class="qty" role="group" aria-label="Quantity for ${item.name}">
-        <button type="button" data-minus="${item.id}" aria-label="Remove one ${item.name}">−</button>
-        <strong aria-live="polite">${row.qty}</strong>
-        <button type="button" data-plus="${item.id}" aria-label="Add one ${item.name}">+</button>
-      </div>
-      <strong class="cart-line-total">${money(item.price * row.qty)}</strong>
+      <div><strong>${item.name}</strong><small>${money(item.price)} each</small></div>
+      <div class="qty"><button data-minus="${item.id}">−</button><strong>${row.qty}</strong><button data-plus="${item.id}">+</button></div>
+      <strong>${money(item.price * row.qty)}</strong>
     </div>`;
-  }).filter(Boolean).join("") : "";
-
-  const cartTotal = document.getElementById("cartTotal");
-  if (cartTotal) cartTotal.textContent = total;
-
-  if (checkoutBtn) {
-    checkoutBtn.disabled = !hasItems;
-    checkoutBtn.textContent = hasItems
-      ? "💬 Send Order on WhatsApp"
-      : "Add items to order";
-  }
+  }).join("");
+  document.getElementById("cartTotal").textContent = total;
 }
 
 document.getElementById("cartItems")?.addEventListener("click", e => {
@@ -747,3 +651,39 @@ loadLiveMenuItems();
     loadLivePhotos();
   }
 })();
+
+/* =====================================================
+   PWA INSTALL EXPERIENCE
+   ===================================================== */
+let deferredInstallPrompt = null;
+const installButtons = [
+  document.getElementById("installAppButton"),
+  document.getElementById("installAppButtonDesktop")
+].filter(Boolean);
+
+function showInstallButtons(show) {
+  installButtons.forEach(btn => {
+    btn.hidden = !show;
+  });
+}
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  showInstallButtons(true);
+});
+
+installButtons.forEach(btn => {
+  btn.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const result = await deferredInstallPrompt.userChoice;
+    if (result.outcome === "accepted") showInstallButtons(false);
+    deferredInstallPrompt = null;
+  });
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  showInstallButtons(false);
+});
