@@ -4526,34 +4526,32 @@
 
 
 /* =====================================================
-   PWA INSTALL BUTTON
+   PWA INSTALL + MOBILE HERO ACTIONS
    ===================================================== */
-.install-app-button,
-.mobile-install-app {
-  border: 1px solid rgba(48, 38, 30, .12);
-  background: #fff;
-  color: #30261e;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+.desktop-header-actions{display:flex;align-items:center;gap:10px}
+.btn-install{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);color:#fff;cursor:pointer}
+.mobile-dropdown-install{display:block;width:100%;border:0;background:#fff3ed;color:#e84b20;font:inherit;font-weight:800;padding:13px 15px;border-radius:12px;text-align:left;cursor:pointer;margin-top:6px}
+.hero-order-btn.menu-btn{background:#f59e0b}
+.hero-location a{color:inherit;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.45);padding-bottom:2px}
+.hero-location a:hover{color:#fff}
+.install-help{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.62);display:grid;place-items:center;padding:20px}
+.install-help[hidden]{display:none}
+.install-help-box{position:relative;width:min(390px,100%);background:#fff;border-radius:22px;padding:30px 24px 24px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.35)}
+.install-help-icon{font-size:42px;margin-bottom:6px}
+.install-help-box h3{margin:0 0 8px;font-size:23px;color:#1b1715}
+.install-help-box p{margin:0 auto 20px;color:#655c57;line-height:1.55;font-size:14px}
+.install-help-box .btn{border:0;cursor:pointer}
+.install-help-close{position:absolute;right:12px;top:10px;border:0;background:transparent;font-size:30px;line-height:1;cursor:pointer;color:#777}
+@media(max-width:700px){
+  .desktop-header-actions{display:none}
+  .hero-order-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(360px,94%);margin-left:auto;margin-right:auto}
+  .hero-order-btn{min-width:0;width:100%;padding:11px 9px;min-height:58px;border-radius:13px;gap:7px}
+  .hero-order-btn span:last-child{font-size:12px}
+  .hero-order-btn small{font-size:7px}
+  .order-icon{font-size:19px}
+  .hero-order-btn.menu-btn{grid-column:1 / -1;min-height:52px}
+  .hero-location{font-size:10px;margin-top:9px}
 }
-
-.install-app-button {
-  margin-left: 8px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  white-space: nowrap;
-}
-
-.install-app-button:hover,
-.mobile-install-app:hover {
-  transform: translateY(-1px);
-}
-
-.mobile-install-app {
-  width: 100%;
-  text-align: left;
-  padding: 13px 16px;
-  border-radius: 12px;
-  margin-top: 6px;
+@media(min-width:701px){
+  .mobile-dropdown-install{display:none}
 }
