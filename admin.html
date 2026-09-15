@@ -89,6 +89,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
           <option value="langar">🙏 Langar Seva</option>
           <option value="gallery">📸 Food & Moments Gallery</option>
           <option value="about">📖 About / Story</option>
+          <option value="experience">📱 Phone Showcase Logo</option>
         </select>
       </div>
       <div id="menuItemWrap" class="hidden">
@@ -169,7 +170,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
   <div id="photoManagementCard" class="card">
     <h2>🗂️ Photo Management</h2>
     <div class="toolbar">
-      <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option><option value="about">About / Story</option></select></div>
+      <div><label>Category</label><select id="filterCategory"><option value="all">All</option><option value="menu">Today's Menu</option><option value="menu_item">Menu Item Photos</option><option value="langar">Langar Seva</option><option value="gallery">Gallery</option><option value="about">About / Story</option><option value="experience">Phone Showcase</option></select></div>
       <div><label>Search title</label><input id="searchTitle" placeholder="Search photos..."></div>
       <div><button id="refreshBtn" class="light">Refresh</button></div>
     </div>
@@ -185,6 +186,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
 </section>
 </main>
 
+<div id="reviewEditModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Website Review</h2><div class="form-grid"><div><label>Reviewer name</label><input id="editReviewName"></div><div><label>Rating</label><select id="editReviewRating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></div><div><label>Reviewer review count</label><input id="editReviewCount" type="number" min="1"></div><div><label>Display order</label><input id="editReviewSort" type="number" min="1"></div><div style="grid-column:1 / -1"><label>Review text</label><textarea id="editReviewText" rows="6"></textarea></div></div><div id="editReviewStatus" class="status"></div><div class="edit-actions"><button id="editReviewCancel" class="light" type="button">Cancel</button><button id="editReviewSave" type="button">Save Review</button></div></div></div>
 <div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title / Caption</label><input id="editTitle" placeholder="Enter the title or caption"><div id="editStoryWrap" class="hidden" style="margin-top:12px"><label>Story text</label><textarea id="editStoryText" rows="6" placeholder="Story text..."></textarea></div><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*,video/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
 
 <script>
@@ -264,7 +266,8 @@ async function saveMenuOrder(){
     // Two-pass update avoids temporary duplicate sort-order values.
     for(const x of requested){
       const item=items.find(i=>String(i.name)===String(x.name));
-      await supabaseClient.from('menu_items').update({sort_order:10000+x.order}).eq('id',item.__dbId);
+      const {error}=await supabaseClient.from('menu_items').update({sort_order:10000+x.order}).eq('id',item.__dbId);
+      if(error) throw error;
     }
     for(const x of requested){
       const item=items.find(i=>String(i.name)===String(x.name));
@@ -298,6 +301,7 @@ $('category').addEventListener('change',()=>{
   const isLangar=cat==='langar';
   const isGallery=cat==='gallery';
   const isAbout=cat==='about';
+  const isExperience=cat==='experience';
 
   $('menuItemWrap').classList.toggle('hidden',!isMenuItem);
   $('newMenuItemWrap').classList.add('hidden');
@@ -306,14 +310,14 @@ $('category').addEventListener('change',()=>{
   $('makeToday').checked=isMenu;
   $('makeTodayRow').style.opacity=isMenu?'1':'.7';
   $('storyTextWrap').classList.toggle('hidden',!isAbout);
-  $('titleLabel').textContent=isAbout?'Story heading':(isGallery?'Caption / title':'Photo title / caption');
+  $('titleLabel').textContent=isAbout?'Story heading':(isGallery?'Caption / title':(isExperience?'Phone showcase title':'Photo title / caption'));
 
   $('mediaTypeWrap').classList.toggle('hidden',!(isMenuItem||isLangar||isGallery));
   $('mediaType').querySelector('option[value="video"]').hidden=!(isMenuItem||isGallery);
   $('mediaType').querySelector('option[value="youtube"]').hidden=!isLangar;
   if(isGallery && $('mediaType').value==='youtube') $('mediaType').value='photo';
   if(isMenuItem && $('mediaType').value==='youtube') $('mediaType').value='photo';
-  if(isAbout) $('mediaType').value='photo';
+  if(isAbout || isExperience) $('mediaType').value='photo';
   $('youtubeUrlWrap').classList.toggle('hidden',!(isLangar && $('mediaType').value==='youtube'));
   $('youtubeUrl').value='';
   updateUploadMode();
@@ -341,6 +345,7 @@ function updateUploadMode(){
   const isLangar=cat==='langar';
   const isGallery=cat==='gallery';
   const isAbout=cat==='about';
+  const isExperience=cat==='experience';
 
   if(isMenuItem){
     const isNew=$('menuItem').value==='__new__';
@@ -370,10 +375,15 @@ function updateUploadMode(){
     $('files').accept=type==='video'?'video/*':'image/*';
     $('uploadHint').textContent=type==='video'?'Upload one food preparation / kitchen video. It will appear in Food & Moments.':'Upload one or more food photos. Add a caption above if desired.';
   } else if(isAbout){
-    $('fileLabel').textContent='Select ONE story image';
-    $('files').multiple=false;
+    $('fileLabel').textContent='Select story image(s)';
+    $('files').multiple=true;
     $('files').accept='image/*';
-    $('uploadHint').textContent='Upload one image with a heading and story text. Customers can swipe between your story cards.';
+    $('uploadHint').textContent='Upload one or more story images. Each upload becomes a separate story card and stays saved until you delete it.';
+  } else if(isExperience){
+    $('fileLabel').textContent='Select phone showcase image(s)';
+    $('files').multiple=true;
+    $('files').accept='image/*';
+    $('uploadHint').textContent='Upload a logo / small showcase image for the “See it. Crave it.” phone preview. The newest upload is shown.';
   } else {
     $('fileLabel').textContent='Select Today\'s Menu photo(s)';
     $('files').multiple=true;
@@ -485,7 +495,7 @@ async function uploadFiles(){
     if(type==='photo' && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','Menu photo mode accepts image files only.',true);return}
     if(type==='video' && !files[0].type.startsWith('video/')){msg('uploadStatus','Please select a video file.',true);return}
   }
-  if(category==='about' && files.length!==1){msg('uploadStatus','For About / Story, select exactly one image.',true);return}
+  if((category==='about' || category==='experience') && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','This category accepts image files only.',true);return}
   if(category==='gallery' && type==='video' && files.length!==1){msg('uploadStatus','For a gallery video, select exactly one video.',true);return}
   if(category==='gallery' && type==='photo' && files.some(f=>!f.type.startsWith('image/'))){msg('uploadStatus','Gallery photo mode accepts image files only.',true);return}
   if(category==='langar' && type==='youtube'){
@@ -518,9 +528,9 @@ async function uploadFiles(){
 
       const {data:urlData}=supabaseClient.storage.from(BUCKET).getPublicUrl(path);
       const row={
-        title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        title:category==='menu_item' ? (title || (menuItem ? menuItem.name : customMenuItemName)) : (title || file.name.replace(/\.[^/.]+$/,'')),
         short_title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
-        caption:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        caption:category==='menu_item' ? (title || (menuItem ? menuItem.name : customMenuItemName)) : (title || file.name.replace(/\.[^/.]+$/,'')),
         story_text:category==='about' ? $('storyText').value.trim() : null,
         category,
         storage_path:path,
@@ -680,12 +690,36 @@ $('addReviewBtn')?.addEventListener('click',async()=>{
   $('reviewerName').value='';$('reviewText').value='';await loadAdminReviews();
 });
 $('saveGoogleStatsBtn')?.addEventListener('click',async()=>{
-  const {error}=await supabaseClient.from('site_settings').upsert({id:1,google_rating:Number($('googleRatingInput').value)||4.9,google_review_count:Number($('googleCountInput').value)||0});
+  const {error}=await supabaseClient.from('site_settings').update({google_rating:Number($('googleRatingInput').value)||4.9,google_review_count:Number($('googleCountInput').value)||0,updated_at:new Date().toISOString()}).eq('id',1);
   $('reviewsAdminStatus').textContent=error?error.message:'✅ Google rating/count display saved.';
+});
+let editingReviewId=null;
+function openReviewEditor(r){
+  editingReviewId=r.id;
+  $('editReviewName').value=r.reviewer_name||'';
+  $('editReviewRating').value=String(r.rating||5);
+  $('editReviewCount').value=Number(r.review_count)||1;
+  $('editReviewSort').value=Number(r.sort_order)||1;
+  $('editReviewText').value=r.review_text||'';
+  $('editReviewStatus').textContent='';
+  $('reviewEditModal').classList.remove('hidden');
+}
+function closeReviewEditor(){editingReviewId=null;$('reviewEditModal').classList.add('hidden');}
+$('editReviewCancel')?.addEventListener('click',closeReviewEditor);
+$('reviewEditModal')?.addEventListener('click',e=>{if(e.target.id==='reviewEditModal')closeReviewEditor()});
+$('editReviewSave')?.addEventListener('click',async()=>{
+  if(!editingReviewId)return;
+  const payload={reviewer_name:$('editReviewName').value.trim(),rating:Number($('editReviewRating').value)||5,review_count:Number($('editReviewCount').value)||1,sort_order:Number($('editReviewSort').value)||1,review_text:$('editReviewText').value.trim()};
+  if(!payload.reviewer_name||!payload.review_text){$('editReviewStatus').textContent='Reviewer name and review text are required.';return;}
+  $('editReviewSave').disabled=true;
+  const {error}=await supabaseClient.from('site_reviews').update(payload).eq('id',editingReviewId);
+  $('editReviewSave').disabled=false;
+  if(error){$('editReviewStatus').textContent=error.message;return;}
+  closeReviewEditor();await loadAdminReviews();
 });
 $('adminReviewsList')?.addEventListener('click',async e=>{
   const edit=e.target.closest('[data-review-edit]'), toggle=e.target.closest('[data-review-toggle]'), del=e.target.closest('[data-review-delete]');
-  if(edit){const r=adminReviews.find(x=>Number(x.id)===Number(edit.dataset.reviewEdit));if(!r)return;const name=prompt('Reviewer name:',r.reviewer_name);if(name===null)return;const text=prompt('Review text:',r.review_text);if(text===null)return;const {error}=await supabaseClient.from('site_reviews').update({reviewer_name:name.trim(),review_text:text.trim()}).eq('id',r.id);if(error)alert(error.message);else loadAdminReviews();}
+  if(edit){const r=adminReviews.find(x=>Number(x.id)===Number(edit.dataset.reviewEdit));if(r)openReviewEditor(r);return;}
   if(toggle){const r=adminReviews.find(x=>Number(x.id)===Number(toggle.dataset.reviewToggle));if(!r)return;const {error}=await supabaseClient.from('site_reviews').update({is_active:!r.is_active}).eq('id',r.id);if(error)alert(error.message);else loadAdminReviews();}
   if(del){if(!confirm('Delete this website review?'))return;const {error}=await supabaseClient.from('site_reviews').delete().eq('id',Number(del.dataset.reviewDelete));if(error)alert(error.message);else loadAdminReviews();}
 });
