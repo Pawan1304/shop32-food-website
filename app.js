@@ -653,70 +653,201 @@ loadLiveMenuItems();
 })();
 
 /* =====================================================
-   PWA INSTALL
-   Shows the native install prompt when the browser allows it.
-   On browsers that do not expose a prompt, the button opens
-   simple install instructions instead.
+   ADVANCED LIVE CONTENT + PWA UX
+   - Today's Menu multi-photo carousel
+   - Editable About stories
+   - Editable Food & Moments photo/video gallery
+   - Editable website review carousel
+   - Installable PWA controls
    ===================================================== */
-let deferredInstallPrompt = null;
-const installAppBtn = document.getElementById('installAppBtn');
-const mobileInstallAppBtn = document.getElementById('mobileInstallAppBtn');
-const installHelp = document.getElementById('installHelp');
-const installHelpText = document.getElementById('installHelpText');
-const installNowBtn = document.getElementById('installNowBtn');
-const installHelpClose = document.getElementById('installHelpClose');
+(function () {
+  const esc = (value) => String(value ?? '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 
-function isStandalone() {
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-}
+  const fallbackReviews = [
+    { reviewer_name:'Ashok Kumar', review_text:'Nice experience with family, tasty and healthy food available here at very minimum price of 60 rupees only. Loving the food and serving staff.', rating:5, review_count:1 },
+    { reviewer_name:'Chaman Baghel', review_text:'Amazing taste, feels like homemade food. Food is prepared in a hygienic measures. Worth every rupees.', rating:5, review_count:1 },
+    { reviewer_name:'Ladsahab Alam', review_text:'Highly recommend for family. Home made taste food.', rating:5, review_count:1 },
+    { reviewer_name:'RITIK Kumar', review_text:'Tasty food, home made.', rating:5, review_count:1 },
+    { reviewer_name:'Murle Murle', review_text:'Valuable for money. Tasty kadhi chawal and rajma chawal. Breakfast Lunch Dinner available.', rating:5, review_count:1 },
+    { reviewer_name:'Tarkesh 99', review_text:'Tasty food.', rating:5, review_count:4 }
+  ];
 
-function showInstallHelp() {
-  if (!installHelp) return;
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isAndroid = /android/i.test(navigator.userAgent);
-  if (installHelpText) {
-    installHelpText.textContent = isIOS
-      ? 'On iPhone/iPad: tap Share in Safari, then choose “Add to Home Screen”.'
+  function setupAutoReviewCarousel() {
+    const root = document.getElementById('reviewsCarousel');
+    const track = document.getElementById('reviewsTrack');
+    if (!root || !track || root.dataset.ready === '1') return;
+    root.dataset.ready = '1';
+    let resumeTimer = null;
+    let autoTimer = null;
+    let interacting = false;
+
+    const pauseThenResume = () => {
+      interacting = true;
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { interacting = false; }, 1000);
+    };
+
+    ['pointerdown','touchstart','wheel','mouseenter'].forEach(evt => root.addEventListener(evt, pauseThenResume, {passive:true}));
+    ['pointerup','touchend','mouseleave'].forEach(evt => root.addEventListener(evt, () => {
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { interacting = false; }, 1000);
+    }, {passive:true}));
+    root.addEventListener('scroll', pauseThenResume, {passive:true});
+
+    autoTimer = setInterval(() => {
+      if (interacting || document.hidden) return;
+      const max = root.scrollWidth - root.clientWidth;
+      if (max <= 4) return;
+      const first = track.querySelector('.review');
+      const step = first ? first.getBoundingClientRect().width + 16 : root.clientWidth * .8;
+      if (root.scrollLeft + root.clientWidth >= root.scrollWidth - 8) {
+        root.scrollTo({left:0, behavior:'smooth'});
+      } else {
+        root.scrollBy({left:step, behavior:'smooth'});
+      }
+    }, 3600);
+
+    window.addEventListener('beforeunload', () => clearInterval(autoTimer));
+  }
+
+  function renderReviews(rows) {
+    const track = document.getElementById('reviewsTrack');
+    if (!track) return;
+    const items = (rows && rows.length ? rows : fallbackReviews);
+    const cards = items.map(row => {
+      const name = row.reviewer_name || row.name || 'Google reviewer';
+      const initial = name.trim().charAt(0).toUpperCase() || 'G';
+      const stars = '★'.repeat(Math.max(1, Math.min(5, Number(row.rating) || 5)));
+      return `<article class="review"><div class="stars">${stars}</div><p>“${esc(row.review_text || row.text || '')}”</p><div class="reviewer"><span>${esc(initial)}</span><div><strong>${esc(name)}</strong><small>Google reviewer · ${Number(row.review_count)||1} ${Number(row.review_count)===1?'review':'reviews'}</small></div></div></article>`;
+    }).join('');
+    // Duplicate the set once so the horizontal area always feels continuous on desktop.
+    track.innerHTML = cards + cards;
+    setupAutoReviewCarousel();
+  }
+
+  async function loadReviews() {
+    if (!window.supabase || typeof supabaseClient === 'undefined' || !supabaseClient) {
+      renderReviews(fallbackReviews); return;
+    }
+    try {
+      const {data, error} = await supabaseClient.from('site_reviews')
+        .select('id,reviewer_name,review_text,rating,review_count,is_active,sort_order')
+        .eq('is_active', true).order('sort_order',{ascending:true}).order('id',{ascending:true});
+      if (error) throw error;
+      renderReviews(data || fallbackReviews);
+
+      const settings = await supabaseClient.from('site_settings').select('google_rating,google_review_count').eq('id',1).maybeSingle();
+      if (!settings.error && settings.data) {
+        const rating = document.getElementById('googleRatingScore');
+        const count = document.getElementById('googleReviewCount');
+        if (rating) rating.textContent = Number(settings.data.google_rating || 4.9).toFixed(1).replace('.0','');
+        if (count) count.textContent = Number(settings.data.google_review_count || 17);
+      }
+    } catch (e) {
+      console.warn('Live reviews unavailable; using website fallback reviews.', e.message || e);
+      renderReviews(fallbackReviews);
+    }
+  }
+
+  async function getContent(category, limit=30) {
+    if (!window.supabase || typeof supabaseClient === 'undefined' || !supabaseClient) return [];
+    const {data,error} = await supabaseClient.from('site_photos')
+      .select('id,title,short_title,caption,story_text,category,media_type,youtube_url,public_url,is_today')
+      .eq('category', category).order('id',{ascending:true}).limit(limit);
+    if (error) throw error;
+    return data || [];
+  }
+
+  function renderToday(items) {
+    const box = document.getElementById('dailyMenuPhotoBox');
+    if (!box) return;
+    const rows = items.length ? items : [];
+    if (!rows.length) { box.innerHTML=''; return; }
+    const slides = rows.map((p,i)=>`<div class="swipe-slide"><img src="${esc(p.public_url)}" alt="${esc(p.short_title||p.title||`Today's menu ${i+1}`)}" loading="${i===0?'eager':'lazy'}"></div>`).join('');
+    box.innerHTML = `<div class="daily-menu-photo-card"><div class="daily-menu-photo-heading"><span>🍽️ TODAY'S MENU</span><small>${rows.length} ${rows.length===1?'photo':'photos'} · swipe</small></div><div class="daily-menu-carousel swipe-carousel" id="dailyMenuCarousel"><div class="swipe-track">${slides}</div>${rows.length>1?'<button class="swipe-arrow prev" type="button" data-carousel-prev="dailyMenuCarousel" aria-label="Previous menu photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="dailyMenuCarousel" aria-label="Next menu photo">›</button><div class="swipe-dots"></div>':''}</div></div>`;
+    if (rows.length>1) setupSwipeCarousel('dailyMenuCarousel');
+  }
+
+  function renderAbout(rows) {
+    const track = document.getElementById('aboutStoryTrack');
+    if (!track) return;
+    const fallback = [{title:'Pure vegetarian food since 1996.', story_text:'Sudh Vaishno Tandoor is a pure vegetarian food shop at Gate No. 2, GMCH, Chandigarh, serving simple, satisfying and homely meals.\n\nOwned by Sudhir Mandal and serving customers since 1996.', public_url:'assets/photos/thali.png'}];
+    const items = rows.length ? rows : fallback;
+    track.innerHTML = items.map((p,i)=>`<article class="swipe-slide about-story-slide"><div class="about-story-image"><img src="${esc(p.public_url || 'assets/photos/thali.png')}" alt="${esc(p.title||'Sudh Vaishno Tandoor story')}" loading="${i===0?'eager':'lazy'}"></div><div class="about-story-copy"><span class="eyebrow">ABOUT US</span><h2>${esc(p.title||'Our story')}</h2><p>${esc(p.story_text || p.caption || 'Pure vegetarian food, fresh every day, with a homely taste.')}</p><div class="about-story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div></div></article>`).join('');
+    setupSwipeCarousel('aboutStoryCarousel');
+  }
+
+  function renderGallery(rows) {
+    const track = document.getElementById('galleryTrack');
+    if (!track) return;
+    const fallback = (SHOP_CONFIG.galleryImages||[]).map((src,i)=>({public_url:src,title:'Sudh Vaishno Tandoor'}));
+    const items = rows.length ? rows : fallback;
+    track.innerHTML = items.map((p,i)=>{
+      const title = p.caption || p.title || 'Sudh Vaishno Tandoor';
+      if (p.media_type === 'video') return `<div class="swipe-slide"><div class="gallery-media-card"><video src="${esc(p.public_url)}" controls muted playsinline preload="metadata" aria-label="${esc(title)}"></video><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
+      return `<div class="swipe-slide"><div class="gallery-media-card"><img src="${esc(p.public_url)}" alt="${esc(title)}" loading="${i===0?'eager':'lazy'}"><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
+    }).join('');
+    if (items.length>1) setupSwipeCarousel('galleryCarousel');
+  }
+
+  async function loadAdvancedContent() {
+    renderReviews(fallbackReviews);
+    try {
+      const [today,about,gallery] = await Promise.all([
+        getContent('menu', 20).then(rows => rows.filter(x=>x.is_today)),
+        getContent('about', 20),
+        getContent('gallery', 30)
+      ]);
+      renderToday(today);
+      renderAbout(about);
+      renderGallery(gallery);
+    } catch(e) {
+      console.warn('Advanced content migration not installed yet; using built-in website content.', e.message || e);
+      renderAbout([]);
+      renderGallery([]);
+      // Existing legacy Today's Menu loader will still populate the single-photo version if available.
+    }
+    loadReviews();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAdvancedContent);
+  else loadAdvancedContent();
+
+  /* PWA install UX */
+  let deferredInstallPrompt = null;
+  const installButtons = () => [document.getElementById('installAppButton'), document.getElementById('mobileInstallAppButton')].filter(Boolean);
+  const markInstalled = () => installButtons().forEach(btn => { btn.textContent='✓ App Installed'; btn.classList.add('installed'); });
+  const showInstallHelp = () => {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const message = isIOS
+      ? 'To install: open this website in Safari → Share → Add to Home Screen.'
       : isAndroid
-        ? 'If no install popup appears, open Chrome menu ⋮ and choose “Add to Home screen” or “Install app”.'
-        : 'Use your browser menu and choose “Install app” or “Add to Home screen”.';
+        ? 'If the install popup does not appear: Chrome ⋮ → Install app (or Add to Home screen).'
+        : 'Use Chrome or Edge and choose Install app from the browser address-bar menu.';
+    alert(message);
+  };
+  const handleInstallClick = async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      try { await deferredInstallPrompt.userChoice; } catch(e) {}
+      deferredInstallPrompt = null;
+      return;
+    }
+    if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) { markInstalled(); return; }
+    showInstallHelp();
+  };
+  installButtons().forEach(btn => btn.addEventListener('click', handleInstallClick));
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferredInstallPrompt=e;
+    installButtons().forEach(btn => { btn.textContent='📲 Install App'; btn.classList.remove('installed'); });
+  });
+  window.addEventListener('appinstalled', markInstalled);
+  if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true) markInstalled();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker:', err)));
   }
-  installHelp.hidden = false;
-}
-
-async function installWebsite() {
-  if (deferredInstallPrompt) {
-    deferredInstallPrompt.prompt();
-    const result = await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    if (installAppBtn) installAppBtn.hidden = true;
-    if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '📲 App Installed';
-    return result;
-  }
-  showInstallHelp();
-}
-
-installAppBtn?.addEventListener('click', installWebsite);
-mobileInstallAppBtn?.addEventListener('click', installWebsite);
-installNowBtn?.addEventListener('click', installWebsite);
-installHelpClose?.addEventListener('click', () => { if (installHelp) installHelp.hidden = true; });
-installHelp?.addEventListener('click', e => { if (e.target === installHelp) installHelp.hidden = true; });
-
-window.addEventListener('beforeinstallprompt', event => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-  if (installAppBtn) installAppBtn.hidden = false;
-  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '📲 Install App';
-});
-
-window.addEventListener('appinstalled', () => {
-  deferredInstallPrompt = null;
-  if (installAppBtn) installAppBtn.hidden = true;
-  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '✓ App Installed';
-  if (installHelp) installHelp.hidden = true;
-});
-
-if (isStandalone()) {
-  if (installAppBtn) installAppBtn.hidden = true;
-  if (mobileInstallAppBtn) mobileInstallAppBtn.textContent = '✓ App Installed';
-}
+})();
