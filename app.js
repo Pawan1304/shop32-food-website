@@ -679,37 +679,64 @@ loadLiveMenuItems();
     const track = document.getElementById('reviewsTrack');
     if (!root || !track || root.dataset.ready === '1') return;
     root.dataset.ready = '1';
-    let resumeTimer = null;
-    let autoTimer = null;
-    let interacting = false;
 
-    const pauseThenResume = () => {
-      interacting = true;
+    // True continuous marquee: smooth, constant-speed movement instead of
+    // jumping one card every few seconds. The track contains two identical
+    // sets, so we can loop seamlessly when the first set has passed.
+    let raf = 0;
+    let lastTime = 0;
+    let pausedUntil = 0;
+    let resumeTimer = null;
+    const speed = 34; // pixels/second; lower = slower, higher = faster
+
+    const pauseForInteraction = () => {
+      pausedUntil = performance.now() + 1000;
       clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => { interacting = false; }, 1000);
+      resumeTimer = setTimeout(() => {
+        pausedUntil = performance.now();
+      }, 1050);
     };
 
-    ['pointerdown','touchstart','wheel','mouseenter'].forEach(evt => root.addEventListener(evt, pauseThenResume, {passive:true}));
-    ['pointerup','touchend','mouseleave'].forEach(evt => root.addEventListener(evt, () => {
-      clearTimeout(resumeTimer);
-      resumeTimer = setTimeout(() => { interacting = false; }, 1000);
-    }, {passive:true}));
-    root.addEventListener('scroll', pauseThenResume, {passive:true});
+    ['pointerdown','touchstart','wheel','mouseenter','focusin'].forEach(evt => {
+      root.addEventListener(evt, pauseForInteraction, { passive: true });
+    });
 
-    autoTimer = setInterval(() => {
-      if (interacting || document.hidden) return;
-      const max = root.scrollWidth - root.clientWidth;
-      if (max <= 4) return;
-      const first = track.querySelector('.review');
-      const step = first ? first.getBoundingClientRect().width + 16 : root.clientWidth * .8;
-      if (root.scrollLeft + root.clientWidth >= root.scrollWidth - 8) {
-        root.scrollTo({left:0, behavior:'smooth'});
-      } else {
-        root.scrollBy({left:step, behavior:'smooth'});
+    ['pointerup','touchend','mouseleave','focusout'].forEach(evt => {
+      root.addEventListener(evt, () => {
+        clearTimeout(resumeTimer);
+        pausedUntil = performance.now() + 1000;
+        resumeTimer = setTimeout(() => {
+          pausedUntil = performance.now();
+        }, 1050);
+      }, { passive: true });
+    });
+
+    const animate = (now) => {
+      if (!lastTime) lastTime = now;
+      const dt = Math.min(50, now - lastTime);
+      lastTime = now;
+
+      if (!document.hidden && now >= pausedUntil) {
+        const loopWidth = track.scrollWidth / 2;
+        if (loopWidth > 0) {
+          // Positive scrollLeft makes the content travel right-to-left.
+          root.scrollLeft += (speed * dt) / 1000;
+          if (root.scrollLeft >= loopWidth) {
+            root.scrollLeft -= loopWidth;
+          }
+        }
       }
-    }, 3600);
 
-    window.addEventListener('beforeunload', () => clearInterval(autoTimer));
+      raf = requestAnimationFrame(animate);
+    };
+
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(animate);
+
+    window.addEventListener('beforeunload', () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(resumeTimer);
+    });
   }
 
   function renderReviews(rows) {
