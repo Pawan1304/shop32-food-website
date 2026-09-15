@@ -1,1 +1,25 @@
-
+{
+  "name": "Sudh Vaishno Tandoor",
+  "short_name": "Sudh Tandoor",
+  "description": "Pure vegetarian food at Gate No. 2, GMCH, Chandigarh. Browse the menu and order on WhatsApp.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6efe7",
+  "theme_color": "#f6efe7",
+  "lang": "en-IN",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
