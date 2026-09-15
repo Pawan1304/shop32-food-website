@@ -4526,32 +4526,159 @@
 
 
 /* =====================================================
-   PWA INSTALL + MOBILE HERO ACTIONS
+   2026 UX POLISH — MOBILE + CONTENT CAROUSELS
    ===================================================== */
-.desktop-header-actions{display:flex;align-items:center;gap:10px}
-.btn-install{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);color:#fff;cursor:pointer}
-.mobile-dropdown-install{display:block;width:100%;border:0;background:#fff3ed;color:#e84b20;font:inherit;font-weight:800;padding:13px 15px;border-radius:12px;text-align:left;cursor:pointer;margin-top:6px}
-.hero-order-btn.menu-btn{background:#f59e0b}
-.hero-location a{color:inherit;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.45);padding-bottom:2px}
-.hero-location a:hover{color:#fff}
-.install-help{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.62);display:grid;place-items:center;padding:20px}
-.install-help[hidden]{display:none}
-.install-help-box{position:relative;width:min(390px,100%);background:#fff;border-radius:22px;padding:30px 24px 24px;text-align:center;box-shadow:0 25px 70px rgba(0,0,0,.35)}
-.install-help-icon{font-size:42px;margin-bottom:6px}
-.install-help-box h3{margin:0 0 8px;font-size:23px;color:#1b1715}
-.install-help-box p{margin:0 auto 20px;color:#655c57;line-height:1.55;font-size:14px}
-.install-help-box .btn{border:0;cursor:pointer}
-.install-help-close{position:absolute;right:12px;top:10px;border:0;background:transparent;font-size:30px;line-height:1;cursor:pointer;color:#777}
-@media(max-width:700px){
-  .desktop-header-actions{display:none}
-  .hero-order-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(360px,94%);margin-left:auto;margin-right:auto}
-  .hero-order-btn{min-width:0;width:100%;padding:11px 9px;min-height:58px;border-radius:13px;gap:7px}
-  .hero-order-btn span:last-child{font-size:12px}
-  .hero-order-btn small{font-size:7px}
-  .order-icon{font-size:19px}
-  .hero-order-btn.menu-btn{grid-column:1 / -1;min-height:52px}
-  .hero-location{font-size:10px;margin-top:9px}
+
+/* Desktop install control: always readable on the light header. */
+.nav-install {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #eadfd5;
+  border-radius: 15px;
+  background: #fff;
+  color: #201b17;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 7px 18px rgba(45,29,18,.06);
+  transition: transform .2s ease, background .2s ease, color .2s ease;
 }
-@media(min-width:701px){
-  .mobile-dropdown-install{display:none}
+.nav-install:hover { transform: translateY(-2px); background:#201b17; color:#fff; }
+.nav-install.installed { color:#198754; background:#effaf3; border-color:#bfe5cc; }
+.mobile-install {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: #201b17;
+  color: #fff;
+  font-weight: 800;
+  text-align: left;
 }
+.mobile-install.installed { background:#eaf8ef; color:#168247; }
+
+/* Hero: reduce the visual size of the background image without changing the content. */
+.hero-video-bg {
+  inset: 2.2%;
+  width: 95.6%;
+  height: 95.6%;
+  border-radius: 30px;
+  transform: none;
+}
+.hero-video-overlay {
+  inset: 2.2%;
+  border-radius: 30px;
+  overflow: hidden;
+}
+.hero-order-btn.menu-btn { background:#f5a20a; }
+.hero-location {
+  display: inline-block;
+  text-decoration: none;
+}
+.hero-location:hover { color:#fff; text-decoration: underline; }
+
+/* Experience section — compact, app-like on phones. */
+@media (max-width: 600px) {
+  .experience-section { padding: 42px 12px 38px; }
+  .experience-label { margin-bottom: 7px; font-size: 9px; }
+  .experience-title { font-size: clamp(34px, 9.5vw, 43px); letter-spacing:-1.5px; }
+  .experience-description { margin: 10px auto 22px; font-size: 12px; line-height:1.45; max-width:340px; }
+  .experience-content {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    max-width:390px;
+  }
+  .food-phone { grid-column:1 / -1; order:-1; }
+  .phone-frame { width:190px; height:365px; border-radius:30px; padding:7px; }
+  .phone-speaker { top:11px; width:56px; height:16px; }
+  .phone-screen { border-radius:24px; padding:25px 10px 10px; }
+  .phone-logo { width:34px; height:34px; border-radius:10px; }
+  .phone-small { margin:6px 0; font-size:6px; }
+  .phone-screen h3 { margin:6px 0 8px; font-size:19px; }
+  .phone-media-carousel .swipe-slide { height:150px; border-radius:13px; }
+  .phone-media-carousel img { object-fit:cover; background:#f7efe8; }
+  .phone-media-carousel .swipe-dots { margin-top:5px; }
+  .phone-menu-button { margin-top:8px; padding:8px; border-radius:8px; font-size:9px; }
+  .feature-column { display:contents; }
+  .feature-card {
+    min-height:64px;
+    padding:9px 8px;
+    gap:8px;
+    border-radius:14px;
+    box-shadow:0 7px 17px rgba(45,29,18,.06);
+  }
+  .feature-icon { width:38px; height:38px; border-radius:11px; font-size:18px; }
+  .feature-card strong { font-size:11px; line-height:1.1; }
+  .feature-card small { margin-top:2px; font-size:8px; line-height:1.15; }
+  .experience-bottom { margin-top:17px; gap:7px; font-size:9px; }
+  .hero-video-bg, .hero-video-overlay { inset:2%; width:96%; height:96%; border-radius:20px; }
+  .hero-order-buttons { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; width:min(390px,100%); margin:13px auto 0; }
+  .hero-order-btn { min-width:0; width:100%; min-height:53px; padding:8px 5px; gap:5px; border-radius:12px; flex-direction:column; }
+  .hero-order-btn small { font-size:6px; margin-bottom:1px; letter-spacing:.8px; }
+  .hero-order-btn span:last-child { font-size:10px; letter-spacing:0; }
+  .order-icon { font-size:17px; line-height:1; }
+  .hero-location { margin-top:8px; font-size:8px; }
+}
+
+/* About story: image + editable story text travel together. */
+.about-section { display:block; background:#fff; padding-top:72px; padding-bottom:72px; }
+.about-story-carousel {
+  position:relative;
+  max-width:1180px;
+  margin:0 auto;
+  overflow:hidden;
+  border-radius:30px;
+  background:#fff7f1;
+  box-shadow:0 18px 55px rgba(45,29,18,.08);
+}
+.about-story-carousel .swipe-track { gap:0; }
+.about-story-slide {
+  min-width:100%;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:stretch;
+  background:#fff;
+}
+.about-story-image { min-height:500px; background:#fff7f1; }
+.about-story-image img { width:100%; height:100%; min-height:500px; object-fit:cover; }
+.about-story-copy { padding:54px 58px; display:flex; flex-direction:column; justify-content:center; }
+.about-story-copy .eyebrow { margin-bottom:10px; }
+.about-story-copy h2 { margin:0 0 18px; font-family:"Playfair Display",Georgia,serif; font-size:clamp(34px,4vw,54px); line-height:1.03; }
+.about-story-copy p { margin:0; color:#766c63; line-height:1.75; font-size:15px; white-space:pre-line; }
+.about-story-meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+.about-story-meta span { padding:8px 11px; border-radius:999px; background:#fff2e9; color:#8a5946; font-size:10px; font-weight:800; }
+.about-story-carousel .swipe-arrow { z-index:5; }
+
+/* Today's Menu becomes a real swipe gallery when multiple images are selected in Admin. */
+.daily-menu-photo-card { max-width:900px; }
+.daily-menu-carousel { position:relative; overflow:hidden; border-radius:15px; }
+.daily-menu-carousel .swipe-track { gap:0; }
+.daily-menu-carousel .swipe-slide { min-width:100%; height:430px; display:flex; align-items:center; justify-content:center; background:#f7f3ef; overflow:hidden; }
+.daily-menu-carousel img { width:100%; height:100%; object-fit:contain; background:#f7f3ef; }
+.daily-menu-carousel .swipe-dots { margin-top:8px; }
+@media(max-width:600px){
+  .daily-menu-carousel .swipe-slide { height:300px; }
+  .daily-menu-photo-box { margin:12px 0 20px; }
+}
+
+/* Food & Moments: photo or video with editable caption. */
+.food-moments-carousel .gallery-media-card { position:relative; width:100%; height:100%; overflow:hidden; border-radius:24px; background:#fff; }
+.food-moments-carousel .gallery-media-card img,
+.food-moments-carousel .gallery-media-card video { width:100%; height:100%; object-fit:cover; display:block; background:#f7f3ef; }
+.gallery-media-caption { position:absolute; left:0; right:0; bottom:0; padding:13px 16px; color:#fff; background:linear-gradient(transparent,rgba(0,0,0,.72)); font-size:13px; font-weight:700; }
+.gallery-media-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:56px; height:56px; border-radius:50%; display:grid; place-items:center; background:rgba(240,75,35,.95); color:#fff; font-size:22px; padding-left:3px; }
+
+/* Reviews: swipeable, readable, auto-advance; interaction pauses and resumes after 1 second. */
+.reviews-marquee.reviews-touch-carousel { overflow-x:auto; overflow-y:hidden; padding:8px 6vw 22px; margin-left:0; width:100%; mask-image:none; -webkit-mask-image:none; scrollbar-width:none; cursor:grab; }
+.reviews-touch-carousel::-webkit-scrollbar { display:none; }
+.reviews-touch-carousel:active { cursor:grabbing; }
+.reviews-touch-carousel .reviews-track { width:max-content; animation:none; gap:16px; }
+.reviews-touch-carousel .review { flex:0 0 min(350px,82vw); width:min(350px,82vw); min-height:235px; }
+@media(max-width:600px){
+  .reviews-marquee.reviews-touch-carousel { padding:6px 14px 18px; scroll-snap-type:x proximity; }
+  .reviews-touch-carousel .reviews-track .review { flex-basis:82vw; width:82vw; min-height:205px; padding:18px; scroll-snap-align:center; }
+}
+
+/* PWA / header responsiveness */
+@media(max-width:1100px){ .desktop-nav a { padding:0 9px; } .nav-install { padding:0 11px; } }
+@media(max-width:900px){ .nav-install { display:none; } }
