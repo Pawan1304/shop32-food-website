@@ -34,6 +34,8 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 
 .dashboard-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.dash-stat{padding:15px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}.dash-stat .num{font-size:28px;font-weight:900;line-height:1.1}.dash-stat .label{font-size:12px;color:#756960;margin-top:5px;font-weight:700}.dash-status{display:flex;align-items:center;gap:8px;font-weight:800}.dash-dot{width:10px;height:10px;border-radius:50%;background:#999;display:inline-block}.dash-dot.ok{background:#1f9d55}.dash-dot.bad{background:#d64545}.dash-latest{margin-top:14px;padding:12px 14px;border-radius:12px;background:#fff7f1}.quick-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.quick-actions a{display:inline-flex;text-decoration:none}.quick-actions button{margin:0}@media(max-width:700px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:450px){.dashboard-grid{grid-template-columns:1fr 1fr}.dash-stat .num{font-size:24px}}
 
+
+.branding-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.branding-box{padding:16px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}.branding-preview{width:110px;height:110px;margin:10px 0;border-radius:20px;overflow:hidden;background:#f3ebe4;border:1px solid #eaded5;display:grid;place-items:center}.branding-preview img{width:100%;height:100%;object-fit:cover}.phone-branding-preview{border-radius:24px}.branding-box input[type=file]{margin-bottom:10px}@media(max-width:650px){.branding-grid{grid-template-columns:1fr}}
 textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;background:#fff;font:inherit;resize:vertical}
 .admin-review-list{display:grid;gap:10px;margin-top:14px}
 .admin-review-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}
@@ -89,7 +91,6 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
           <option value="langar">🙏 Langar Seva</option>
           <option value="gallery">📸 Food & Moments Gallery</option>
           <option value="about">📖 About / Story</option>
-          <option value="experience">📱 Phone Showcase Logo</option>
         </select>
       </div>
       <div id="menuItemWrap" class="hidden">
@@ -119,7 +120,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
     <br>
     <label id="makeTodayRow" style="display:flex;gap:8px;align-items:center;font-weight:700">
       <input id="makeToday" type="checkbox" style="width:auto" checked>
-      Set uploaded Menu photo as <strong>Today's Menu</strong> (and replace the previous one)
+      Set uploaded Menu photo(s) as <strong>Today's Menu</strong> (multiple photos supported)
     </label>
     <div id="uploadHint" class="hint">For Menu Item Photos, select a food item and upload multiple photos. Customers will be able to swipe through them on that food card. You can also upload one food video.</div>
     <div id="preview" class="preview"></div>
@@ -165,6 +166,27 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
     </div>
     <div id="reviewsAdminStatus" class="status">Loading website reviews...</div>
     <div id="adminReviewsList" class="admin-review-list"></div>
+  </div>
+
+  <div id="brandingCard" class="card">
+    <h2>🎨 Branding & Showcase Images</h2>
+    <p class="muted">Change the small profile photo in the website header and the logo/image shown inside the “See it. Crave it.” phone preview. Changes are saved immediately after upload.</p>
+    <div class="branding-grid">
+      <div class="branding-box">
+        <label>Header profile photo</label>
+        <div class="branding-preview"><img id="headerBrandingPreview" src="assets/photos/logo.png" alt="Header profile preview"></div>
+        <input id="headerBrandingFile" type="file" accept="image/*">
+        <button id="uploadHeaderBrandingBtn" class="green" type="button">⬆️ Update Header Photo</button>
+        <div id="headerBrandingStatus" class="hint"></div>
+      </div>
+      <div class="branding-box">
+        <label>Phone showcase logo / image</label>
+        <div class="branding-preview phone-branding-preview"><img id="phoneBrandingPreview" src="assets/photos/logo.png" alt="Phone showcase preview"></div>
+        <input id="phoneBrandingFile" type="file" accept="image/*">
+        <button id="uploadPhoneBrandingBtn" class="dark" type="button">⬆️ Update Phone Image</button>
+        <div id="phoneBrandingStatus" class="hint"></div>
+      </div>
+    </div>
   </div>
 
   <div id="photoManagementCard" class="card">
@@ -446,7 +468,7 @@ async function updateUI(){
   const {data:{session}}=await supabaseClient.auth.getSession();
   const ok=!!session;
   $('loginCard').classList.toggle('hidden',ok);$('adminPanel').classList.toggle('hidden',!ok);$('logoutBtn').classList.toggle('hidden',!ok);
-  if(ok){ loadPhotos(); populateMenuItems(); loadDashboard(); loadAdminReviews(); }
+  if(ok){ loadPhotos(); populateMenuItems(); loadDashboard(); loadAdminReviews(); loadBrandingSettings(); }
 }
 
 async function addMenuItem(){
@@ -509,14 +531,10 @@ async function uploadFiles(){
 
   try{
     if(category==='menu' && makeToday){
-      const {data:old,error:e1}=await supabaseClient.from('site_photos').select('id,storage_path').eq('category','menu').eq('is_today',true);
+      // Multiple Today's Menu photos are supported. Clear the old flag only;
+      // keep the old media rows so they remain available in Photo Management.
+      const {error:e1}=await supabaseClient.from('site_photos').update({is_today:false}).eq('category','menu').eq('is_today',true);
       if(e1) throw e1;
-      if(old?.length){
-        const paths=old.map(x=>x.storage_path).filter(Boolean);
-        if(paths.length) await supabaseClient.storage.from(BUCKET).remove(paths);
-        const {error:e2}=await supabaseClient.from('site_photos').delete().eq('category','menu').eq('is_today',true);
-        if(e2) throw e2;
-      }
     }
 
     for(const file of files){
@@ -723,6 +741,42 @@ $('adminReviewsList')?.addEventListener('click',async e=>{
   if(toggle){const r=adminReviews.find(x=>Number(x.id)===Number(toggle.dataset.reviewToggle));if(!r)return;const {error}=await supabaseClient.from('site_reviews').update({is_active:!r.is_active}).eq('id',r.id);if(error)alert(error.message);else loadAdminReviews();}
   if(del){if(!confirm('Delete this website review?'))return;const {error}=await supabaseClient.from('site_reviews').delete().eq('id',Number(del.dataset.reviewDelete));if(error)alert(error.message);else loadAdminReviews();}
 });
+
+/* =====================================================
+   BRANDING / SHOWCASE IMAGE MANAGER
+   ===================================================== */
+const BRANDING_BUCKET = BUCKET;
+async function loadBrandingSettings(){
+  try{
+    const {data,error}=await supabaseClient.from('site_settings').select('setting_key,setting_value').in('setting_key',['header_profile_image_url','phone_showcase_logo_url']);
+    if(error) throw error;
+    const map=Object.fromEntries((data||[]).map(x=>[x.setting_key,x.setting_value]));
+    if(map.header_profile_image_url) $('headerBrandingPreview').src=map.header_profile_image_url;
+    if(map.phone_showcase_logo_url) $('phoneBrandingPreview').src=map.phone_showcase_logo_url;
+  }catch(e){ console.warn('Branding settings:',e.message||e); }
+}
+async function uploadBranding(settingKey,fileInputId,previewId,statusId,label){
+  const file=$(fileInputId).files[0];
+  if(!file){msg(statusId,'Choose an image first.',true);return;}
+  if(!file.type.startsWith('image/')){msg(statusId,'Please choose an image file.',true);return;}
+  const btn=settingKey==='header_profile_image_url' ? $('uploadHeaderBrandingBtn') : $('uploadPhoneBrandingBtn');
+  btn.disabled=true; msg(statusId,'Uploading '+label+'...');
+  try{
+    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]/g,'-');
+    const path=`branding/${settingKey}-${Date.now()}-${crypto.randomUUID()}-${safe}`;
+    const {error:ue}=await supabaseClient.storage.from(BRANDING_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+    if(ue) throw ue;
+    const publicUrl=supabaseClient.storage.from(BRANDING_BUCKET).getPublicUrl(path).data.publicUrl;
+    const {error:se}=await supabaseClient.from('site_settings').update({setting_value:publicUrl,updated_at:new Date().toISOString()}).eq('setting_key',settingKey);
+    if(se){await supabaseClient.storage.from(BRANDING_BUCKET).remove([path]);throw se;}
+    $(previewId).src=publicUrl;
+    $(fileInputId).value='';
+    msg(statusId,'✅ Saved. Refresh the public website to see the new image.');
+  }catch(e){msg(statusId,e.message||String(e),true)}
+  finally{btn.disabled=false}
+}
+$('uploadHeaderBrandingBtn')?.addEventListener('click',()=>uploadBranding('header_profile_image_url','headerBrandingFile','headerBrandingPreview','headerBrandingStatus','header photo'));
+$('uploadPhoneBrandingBtn')?.addEventListener('click',()=>uploadBranding('phone_showcase_logo_url','phoneBrandingFile','phoneBrandingPreview','phoneBrandingStatus','phone showcase image'));
 
 $('addMenuItemBtn').onclick=addMenuItem;$('saveMenuOrderBtn').onclick=saveMenuOrder;
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
