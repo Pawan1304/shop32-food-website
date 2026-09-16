@@ -1,1 +1,62 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#201b17">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="style.css">
+<title>Our Story | Sudh Vaishno Tandoor</title>
+<style>
+body.story-page{background:#fffaf4}
+.story-page-main{min-height:100vh;padding:125px 18px 80px;max-width:1180px;margin:auto}
+.story-page-head{text-align:center;max-width:780px;margin:0 auto 38px}
+.story-page-head h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(38px,6vw,68px);line-height:1;margin:10px 0 14px;color:#201b17}
+.story-page-head p{color:#756960;line-height:1.7;font-size:15px;margin:0}
+.story-back{display:inline-flex;align-items:center;gap:8px;margin-bottom:22px;padding:10px 14px;border-radius:12px;background:#fff;border:1px solid #eaded5;font-weight:800;color:#201b17;text-decoration:none}
+.story-list{display:grid;gap:24px}
+.story-full-card{display:grid;grid-template-columns:minmax(300px,.9fr) 1.1fr;background:#fff;border:1px solid #eaded5;border-radius:28px;overflow:hidden;box-shadow:0 16px 45px rgba(45,29,18,.08)}
+.story-full-image{min-height:460px;background:#fff7f1}
+.story-full-image img{width:100%;height:100%;min-height:460px;display:block;object-fit:cover}
+.story-full-copy{padding:48px 52px;display:flex;flex-direction:column;justify-content:center}
+.story-full-copy .eyebrow{margin-bottom:10px}
+.story-full-copy h2{font-family:"Playfair Display",Georgia,serif;font-size:clamp(32px,4vw,52px);line-height:1.05;margin:0 0 22px;color:#201b17}
+.story-full-copy p{margin:0;color:#6f655d;font-size:16px;line-height:1.9;white-space:pre-line;overflow-wrap:anywhere}
+.story-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}.story-meta span{padding:8px 11px;border-radius:999px;background:#fff2e9;color:#8a5946;font-size:10px;font-weight:800}
+.story-loading,.story-empty{text-align:center;color:#756960;padding:45px}
+@media(max-width:760px){.story-page-main{padding:105px 12px 60px}.story-full-card{grid-template-columns:1fr}.story-full-image,.story-full-image img{min-height:310px;height:310px}.story-full-copy{padding:28px 22px}.story-full-copy h2{font-size:34px}.story-full-copy p{font-size:14px;line-height:1.75}.story-page-head h1{font-size:42px}}
+</style>
+</head>
+<body class="story-page">
+<header class="topbar" style="position:fixed">
+  <a class="brand" href="index.html#home" aria-label="Sudh Vaishno Tandoor home"><span class="brand-mark"><img id="storyHeaderLogo" src="assets/photos/logo.png" onerror="this.onerror=null;this.src='assets/photos/logo.png'" alt="Sudh Vaishno Tandoor"></span><span><strong>Sudh Vaishno Tandoor</strong><small>Pure Vegetarian • Since 1996</small></span></a>
+  <nav class="desktop-nav" aria-label="Main navigation"><a href="index.html#home">Home</a><a href="index.html#menu">Menu</a><a href="index.html#langar">Langar Seva</a><a href="gallery.html">Photos</a><a class="active" href="story.html">About</a><a href="index.html#reviews">Reviews</a><a href="index.html#contact">Contact</a></nav>
+  <a class="btn btn-primary nav-order" href="index.html#menu">Order Food</a>
+</header>
+<main class="story-page-main">
+  <a class="story-back" href="index.html#about">← Back to website</a>
+  <div class="story-page-head"><span class="eyebrow">OUR STORY</span><h1>Better food for everyday life</h1><p>Read the complete stories, descriptions and memories shared from Sudh Vaishno Tandoor.</p></div>
+  <div id="storyStatus" class="story-loading">Loading our story…</div>
+  <div id="storyList" class="story-list"></div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(async()=>{
+ const st=document.getElementById('storyStatus'),list=document.getElementById('storyList');
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+ try{
+  const {data:settings}=await supabaseClient.from('site_settings').select('setting_key,setting_value').eq('setting_key','header_profile_image_url').maybeSingle();
+  if(settings?.setting_value) document.getElementById('storyHeaderLogo').src=settings.setting_value;
+  const {data,error}=await supabaseClient.from('site_photos').select('id,title,story_text,caption,public_url').eq('category','about').order('id',{ascending:true}).limit(100);
+  if(error) throw error;
+  const rows=data||[];
+  if(!rows.length){st.textContent='No story has been added yet.';st.className='story-empty';return;}
+  st.style.display='none';
+  list.innerHTML=rows.map(r=>`<article class="story-full-card"><div class="story-full-image"><img src="${esc(r.public_url||'assets/photos/thali.png')}" alt="${esc(r.title||'Sudh Vaishno Tandoor story')}" loading="lazy"></div><div class="story-full-copy"><span class="eyebrow">ABOUT US</span><h2>${esc(r.title||'Our story')}</h2><p>${esc(r.story_text||r.caption||'Pure vegetarian food, fresh every day, with a homely taste.')}</p><div class="story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div></div></article>`).join('');
+ }catch(e){st.textContent='Our story could not load: '+(e.message||e);st.className='story-empty';}
+})();
+</script>
+</body>
+</html>
