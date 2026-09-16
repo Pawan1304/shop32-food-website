@@ -116,8 +116,15 @@ if (tabs) {
   });
 }
 
+function getMenuQty(id){
+  const row = cart.find(x => Number(x.id) === Number(id));
+  return row ? Number(row.qty) || 0 : 0;
+}
+
 function renderMenu() {
-  const items = activeCategory === "All" ? SHOP_CONFIG.menu : SHOP_CONFIG.menu.filter(x => x.category === activeCategory);
+  const items = activeCategory === "All"
+    ? SHOP_CONFIG.menu
+    : SHOP_CONFIG.menu.filter(x => x.category === activeCategory);
   const grid = document.getElementById("menuGrid");
   if (!grid) return;
 
@@ -129,50 +136,36 @@ function renderMenu() {
       const type = typeof media === 'string' ? 'image' : (media.type || 'image');
       const src = typeof media === 'string' ? media : media.src;
       const caption = typeof media === 'string' ? '' : (media.caption || '');
-      if(type === 'video') {
-        return `<div class="swipe-slide"><div class="menu-media-wrap"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video>${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
-      }
+      if(type === 'video') return `<div class="swipe-slide"><div class="menu-media-wrap"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video>${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
       return `<div class="swipe-slide"><div class="menu-media-wrap"><img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy">${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
     }).join("");
-
-    return `
-      <article class="menu-card">
-        <div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}">
-          <div class="swipe-track">${slides}</div>
-          ${images.length > 1 ? `
-            <button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${item.name} photo">‹</button>
-            <button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${item.name} photo">›</button>
-            <div class="swipe-dots"></div>
-          ` : ""}
-        </div>
-        <div class="menu-body">
-          <h3>${item.name}</h3>
-          <p>${item.description}</p>
-          <div class="menu-bottom">
-            <span class="price">${money(item.price)}</span>
-            <button class="add-btn" data-add="${item.id}">+ Add</button>
-          </div>
-        </div>
-      </article>`;
+    const qty = getMenuQty(item.id);
+    const action = qty > 0
+      ? `<div class="menu-qty" aria-label="Quantity controls for ${item.name}"><button type="button" data-menu-minus="${item.id}" aria-label="Decrease ${item.name} quantity">−</button><strong>${qty}</strong><button type="button" data-menu-plus="${item.id}" aria-label="Increase ${item.name} quantity">+</button></div>`
+      : `<button class="add-btn" data-add="${item.id}">+ Add</button>`;
+    return `<article class="menu-card"><div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}"><div class="swipe-track">${slides}</div>${images.length > 1 ? `<button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${item.name} photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${item.name} photo">›</button><div class="swipe-dots"></div>` : ""}</div><div class="menu-body"><h3>${item.name}</h3><p>${item.description}</p><div class="menu-bottom"><span class="price">${money(item.price)}</span>${action}</div></div></article>`;
   }).join("");
+  items.forEach(item => { if ((liveMenuMediaByName[item.name] || item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`); });
+}
 
-  items.forEach(item => {
-    if ((liveMenuMediaByName[item.name] || item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`);
-  });
+function changeMenuQty(id, delta){
+  const row = cart.find(x => Number(x.id) === Number(id));
+  if (row) { row.qty += delta; if (row.qty <= 0) cart = cart.filter(x => Number(x.id) !== Number(id)); }
+  else if (delta > 0) cart.push({ id:Number(id), qty:1 });
+  save(); updateCart(); renderMenu();
 }
 
 const menuGrid = document.getElementById("menuGrid");
 if (menuGrid) {
   menuGrid.addEventListener("click", e => {
-    const btn = e.target.closest("[data-add]");
-    if (!btn) return;
-    const id = Number(btn.dataset.add);
-    const existing = cart.find(x => x.id === id);
-    if (existing) existing.qty++; else cart.push({ id, qty: 1 });
-    save();
-    updateCart();
-    btn.textContent = "✓ Added";
-    setTimeout(() => btn.textContent = "+ Add", 800);
+    const add = e.target.closest("[data-add]");
+    const plus = e.target.closest("[data-menu-plus]");
+    const minus = e.target.closest("[data-menu-minus]");
+    if (!add && !plus && !minus) return;
+    const raw = add ? add.dataset.add : (plus ? plus.dataset.menuPlus : minus.dataset.menuMinus);
+    const id = Number(raw);
+    if (!Number.isFinite(id)) return;
+    changeMenuQty(id, (add || plus) ? 1 : -1);
   });
 }
 
@@ -805,10 +798,12 @@ loadLiveMenuItems();
   function renderAbout(rows) {
     const track = document.getElementById('aboutStoryTrack');
     if (!track) return;
-    const fallback = [{title:'Pure vegetarian food since 1996.', story_text:'Sudh Vaishno Tandoor is a pure vegetarian food shop at Gate No. 2, GMCH, Chandigarh, serving simple, satisfying and homely meals.\n\nOwned by Sudhir Mandal and serving customers since 1996.', public_url:'assets/photos/thali.png'}];
-    const items = rows.length ? rows : fallback;
-    track.innerHTML = items.map((p,i)=>`<article class="swipe-slide about-story-slide"><div class="about-story-image"><img src="${esc(p.public_url || 'assets/photos/thali.png')}" alt="${esc(p.title||'Sudh Vaishno Tandoor story')}" loading="${i===0?'eager':'lazy'}"></div><div class="about-story-copy"><span class="eyebrow">ABOUT US</span><h2>${esc(p.title||'Our story')}</h2><p>${esc(p.story_text || p.caption || 'Pure vegetarian food, fresh every day, with a homely taste.')}</p><div class="about-story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div></div></article>`).join('');
-    setupSwipeCarousel('aboutStoryCarousel');
+    const fallback = [{title:'Pure vegetarian food since 1996.', story_text:'Sudh Vaishno Tandoor is a pure vegetarian food shop at Gate No. 2, GMCH, Chandigarh, serving simple, satisfying and homely meals. Owned by Sudhir Mandal and serving customers since 1996.', public_url:'assets/photos/thali.png'}];
+    const first = (rows.length ? rows : fallback)[0];
+    const fullText = String(first.story_text || first.caption || 'Pure vegetarian food, fresh every day, with a homely taste.').trim();
+    const preview = fullText.length > 260 ? fullText.slice(0,257).trimEnd() + '…' : fullText;
+    track.innerHTML = `<article class="about-story-slide"><div class="about-story-image"><img src="${esc(first.public_url || 'assets/photos/thali.png')}" alt="${esc(first.title||'Sudh Vaishno Tandoor story')}" loading="eager"></div><div class="about-story-copy"><span class="eyebrow">ABOUT US</span><h2>${esc(first.title||'Our story')}</h2><p class="about-story-preview-text">${esc(preview)}</p><a class="about-read-more" href="story.html">Read full story <span>→</span></a><div class="about-story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div></div></article>`;
+    document.getElementById('aboutStoryCarousel')?.querySelectorAll('.swipe-arrow,.swipe-dots').forEach(el=>el.remove());
   }
 
   function renderGallery(rows) {
@@ -834,8 +829,8 @@ loadLiveMenuItems();
       const map = Object.fromEntries((data || []).map(x => [x.setting_key, x.setting_value]));
       const header = document.getElementById('headerProfileImage');
       const phone = document.getElementById('phoneShowcaseScreenLogo');
-      if (header && map.header_profile_image_url) header.src = map.header_profile_image_url;
-      if (phone && map.phone_showcase_logo_url) phone.src = map.phone_showcase_logo_url;
+      if (header) header.src = map.header_profile_image_url || 'assets/photos/logo.png';
+      if (phone) phone.src = map.phone_showcase_logo_url || 'assets/photos/logo.png';
     } catch (e) {
       console.warn('Branding settings unavailable; using built-in images.', e.message || e);
     }
