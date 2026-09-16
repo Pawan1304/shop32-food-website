@@ -824,17 +824,21 @@ loadLiveMenuItems();
     if (items.length>1) setupSwipeCarousel('galleryCarousel');
   }
 
-  async function loadPhoneShowcaseLogo() {
-    const img = document.getElementById('phoneShowcaseLogo');
-    if (!img || !supabaseClient) return;
+  async function loadBranding() {
+    if (!supabaseClient) return;
     try {
-      const {data,error} = await supabaseClient.from('site_photos')
-        .select('id,public_url,created_at')
-        .eq('category','experience')
-        .order('id',{ascending:false})
-        .limit(1);
-      if (!error && data?.[0]?.public_url) img.src = data[0].public_url;
-    } catch (e) { console.warn('Phone showcase logo:', e.message || e); }
+      const {data,error} = await supabaseClient.from('site_settings')
+        .select('setting_key,setting_value')
+        .in('setting_key',['header_profile_image_url','phone_showcase_logo_url']);
+      if (error) throw error;
+      const map = Object.fromEntries((data || []).map(x => [x.setting_key, x.setting_value]));
+      const header = document.getElementById('headerProfileImage');
+      const phone = document.getElementById('phoneShowcaseScreenLogo');
+      if (header && map.header_profile_image_url) header.src = map.header_profile_image_url;
+      if (phone && map.phone_showcase_logo_url) phone.src = map.phone_showcase_logo_url;
+    } catch (e) {
+      console.warn('Branding settings unavailable; using built-in images.', e.message || e);
+    }
   }
 
   async function loadAdvancedContent() {
@@ -855,7 +859,7 @@ loadLiveMenuItems();
       // Existing legacy Today's Menu loader will still populate the single-photo version if available.
     }
     loadReviews();
-    loadPhoneShowcaseLogo();
+    loadBranding();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadAdvancedContent);
