@@ -4720,3 +4720,107 @@
 .menu-media-wrap .menu-img,.today-media-wrap img{width:100%;height:100%;object-fit:cover;display:block}
 .gallery-more-card{margin:18px auto 0;max-width:760px}.gallery-more-link{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid #eaded5;border-radius:18px;background:#fffaf7;box-shadow:0 10px 25px rgba(45,29,18,.06);color:#201b17;transition:.2s ease}.gallery-more-link:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(45,29,18,.1)}.gallery-more-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:#ffe9df;font-size:22px;flex:none}.gallery-more-link strong{display:block;font-size:15px}.gallery-more-link small{display:block;margin-top:3px;color:#766a61;font-size:12px}.gallery-more-arrow{margin-left:auto;font-size:22px;color:#f04b25}
 #reviewEditModal .edit-box{max-width:680px}@media(max-width:650px){.gallery-more-link{padding:13px 14px}.gallery-more-link strong{font-size:13px}.gallery-more-link small{font-size:11px}.gallery-more-icon{width:40px;height:40px}}
+
+/* =====================================================
+   VNEXT RESPONSIVE POLISH — HERO / STORY / MENU / FOOD
+   ===================================================== */
+
+/* Keep the complete mobile hero above the fixed bottom navigation. */
+@media (max-width: 600px) {
+  .hero-video {
+    min-height: calc(100svh - 92px);
+    height: calc(100svh - 92px);
+    padding: 28px 12px 92px;
+    align-items: center;
+  }
+
+  .hero-video-content {
+    width: min(100%, 390px);
+    transform: translateY(-2px);
+    margin-top: 0;
+  }
+
+  .hero-badge { margin-bottom: 9px; }
+  .hero-video-content h1 { font-size: clamp(43px, 13.8vw, 59px); line-height: .86; }
+  .hero-subtitle { margin: 9px 0 4px; font-size: 16px; }
+  .hero-description { max-width: 310px; font-size: 11px; line-height: 1.35; }
+  .hero-order-buttons { margin-top: 11px; gap: 6px; }
+  .hero-order-btn { min-height: 51px; padding: 7px 4px; }
+  .hero-order-btn span:last-child { font-size: 9px; }
+  .order-icon { font-size: 16px; }
+  .hero-location { margin-top: 7px; font-size: 8px; white-space: nowrap; }
+
+  /* The prompt stays inside the hero and never covers the order/address area. */
+  .scroll-down {
+    position: absolute;
+    right: 12px;
+    left: auto;
+    bottom: 13px;
+    z-index: 8;
+    animation: none;
+  }
+
+  /* Story: reduce the empty vertical space around the heading. */
+  .story-section {
+    min-height: 0;
+    padding: 52px 16px 82px;
+  }
+  .story-content { max-width: 680px; }
+  .story-content .experience-label { margin-bottom: 4px; }
+  .story-content h2 {
+    margin: 0;
+    font-size: clamp(35px, 10.5vw, 48px);
+    line-height: .94;
+  }
+  .story-content > p { margin-top: 16px; font-size: 14px; line-height: 1.55; }
+  .story-location { margin-top: 22px; }
+  .story-stats { margin: 34px auto 24px; }
+
+  /* Show the decorative food on phones, but keep it subtle and out of the text flow. */
+  .story-section .floating-food,
+  .story-section .floating-water,
+  .story-section .butter-tikki {
+    display: block;
+    opacity: .82;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,.10));
+    pointer-events: none;
+    z-index: 1;
+  }
+  .story-section .food-roti { width: 76px; height: 76px; left: -9px; top: 7%; }
+  .story-section .food-dal { width: 70px; height: 70px; right: -8px; top: 3%; }
+  .story-section .food-rajma { width: 88px; height: 88px; right: -14px; top: 46%; }
+  .story-section .food-paratha { width: 92px; height: 92px; left: -15px; bottom: 3%; }
+  .story-section .floating-water { width: 48px; height: 82px; left: 6%; bottom: 5%; }
+  .story-section .butter-tikki { width: 72px; height: 72px; right: 4%; bottom: 3%; }
+
+  /* Compact menu cards: remove artificial vertical whitespace. */
+  .menu-card .menu-img { height: 172px; padding: 6px; }
+  .menu-body { padding: 12px 13px 13px; }
+  .menu-body h3 { margin: 0 0 4px; font-size: 15px; line-height: 1.2; }
+  .menu-body p {
+    min-height: 0;
+    margin: 0 0 9px;
+    font-size: 11px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .price { font-size: 16px; }
+  .add-btn { padding: 7px 11px; font-size: 11px; }
+}
+
+@media (min-width: 601px) {
+  .story-section { padding-top: 82px; padding-bottom: 100px; }
+  .story-content .experience-label { margin-bottom: 6px; }
+  .story-content > p { margin-top: 17px; }
+  .story-stats { margin-top: 38px; margin-bottom: 28px; }
+  .menu-card .menu-img { height: 180px; }
+  .menu-body { padding: 14px 15px 15px; }
+  .menu-body p { min-height: 0; margin-bottom: 11px; }
+}
+
+/* Branding images should remain clean and never be clipped by the logo wrapper. */
+.brand-mark img { object-fit: cover; padding: 0; }
+.phone-logo img { object-fit: contain; }
