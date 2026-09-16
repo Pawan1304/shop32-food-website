@@ -38,6 +38,7 @@ button:disabled{opacity:.5;cursor:not-allowed}.status{margin-top:12px;padding:10
 .branding-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.branding-box{padding:16px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}.branding-preview{width:110px;height:110px;margin:10px 0;border-radius:20px;overflow:hidden;background:#f3ebe4;border:1px solid #eaded5;display:grid;place-items:center}.branding-preview img{width:100%;height:100%;object-fit:cover}.phone-branding-preview{border-radius:24px}.branding-box input[type=file]{margin-bottom:10px}@media(max-width:650px){.branding-grid{grid-template-columns:1fr}}
 textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;background:#fff;font:inherit;resize:vertical}
 .admin-review-list{display:grid;gap:10px;margin-top:14px}
+.admin-list-toggle{display:flex;justify-content:center;margin-top:12px}.admin-list-toggle button{min-width:140px}.admin-review-row.is-collapsed-extra,.photo-card.is-collapsed-extra{display:none}
 .admin-review-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}
 .admin-review-row p{margin:7px 0 0;color:#5f544d;line-height:1.5;font-size:13px}
 @media(max-width:650px){.admin-review-row{grid-template-columns:1fr}.admin-review-row .actions button{width:auto}}
@@ -102,6 +103,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
         <input id="newMenuItemName" placeholder="e.g. Rajma Chawal">
       </div>
       <div><label id="titleLabel">Photo title / caption</label><input id="title" placeholder="e.g. Fresh tandoori roti"></div>
+      <div id="descriptionWrap" style="grid-column:1 / -1"><label>Description</label><textarea id="description" rows="3" placeholder="Short description or caption shown on the website..."></textarea></div>
       <div id="storyTextWrap" class="hidden" style="grid-column:1 / -1"><label>Story text</label><textarea id="storyText" rows="5" placeholder="Write the story or message customers should read with this image..."></textarea></div>
       <div id="mediaTypeWrap" class="hidden">
         <label id="mediaTypeLabel">Upload type</label>
@@ -165,7 +167,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
       <div><label>Google review count shown on website</label><input id="googleCountInput" type="number" min="0" step="1" value="17"></div>
     </div>
     <div id="reviewsAdminStatus" class="status">Loading website reviews...</div>
-    <div id="adminReviewsList" class="admin-review-list"></div>
+    <div id="adminReviewsList" class="admin-review-list"></div><div class="admin-list-toggle"><button id="reviewsToggleBtn" class="light" type="button">See more reviews</button></div>
   </div>
 
   <div id="brandingCard" class="card">
@@ -197,7 +199,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
       <div><button id="refreshBtn" class="light">Refresh</button></div>
     </div>
     <div id="listStatus" class="status">Loading photos...</div>
-    <div id="photos" class="photos"></div>
+    <div id="photos" class="photos"></div><div class="admin-list-toggle"><button id="photosToggleBtn" class="light" type="button">See more photos</button></div>
   </div>
 
   <div class="card">
@@ -209,7 +211,7 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
 </main>
 
 <div id="reviewEditModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Website Review</h2><div class="form-grid"><div><label>Reviewer name</label><input id="editReviewName"></div><div><label>Rating</label><select id="editReviewRating"><option value="5">★★★★★ 5</option><option value="4">★★★★☆ 4</option><option value="3">★★★☆☆ 3</option><option value="2">★★☆☆☆ 2</option><option value="1">★☆☆☆☆ 1</option></select></div><div><label>Reviewer review count</label><input id="editReviewCount" type="number" min="1"></div><div><label>Display order</label><input id="editReviewSort" type="number" min="1"></div><div style="grid-column:1 / -1"><label>Review text</label><textarea id="editReviewText" rows="6"></textarea></div></div><div id="editReviewStatus" class="status"></div><div class="edit-actions"><button id="editReviewCancel" class="light" type="button">Cancel</button><button id="editReviewSave" type="button">Save Review</button></div></div></div>
-<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title / Caption</label><input id="editTitle" placeholder="Enter the title or caption"><div id="editStoryWrap" class="hidden" style="margin-top:12px"><label>Story text</label><textarea id="editStoryText" rows="6" placeholder="Story text..."></textarea></div><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*,video/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
+<div id="editModal" class="edit-modal hidden"><div class="edit-box"><h2>✏️ Edit Photo</h2><div id="editPreview" class="edit-preview"></div><label>Title / Caption</label><input id="editTitle" placeholder="Enter the title or caption"><div style="margin-top:12px"><label>Description</label><textarea id="editDescription" rows="3" placeholder="Short description / caption"></textarea></div><div id="editStoryWrap" class="hidden" style="margin-top:12px"><label>Story text</label><textarea id="editStoryText" rows="6" placeholder="Story text..."></textarea></div><div id="editYoutubeWrap" class="hidden" style="margin-top:12px"><label>YouTube video link</label><input id="editYoutubeUrl" type="url" placeholder="https://www.youtube.com/watch?v=..."></div><div style="margin-top:12px"><label>Replace image <span class="hint">(optional)</span></label><input id="editFile" type="file" accept="image/*,video/*"></div><div class="hint" style="margin-top:8px">Leave the image empty if you only want to change the title.</div><div class="edit-actions"><button id="editCancel" class="light" type="button">Cancel</button><button id="editSave" type="button">Save Changes</button></div><div id="editStatus" class="status"></div></div>
 
 <script>
 const BUCKET = SUPABASE_BUCKET;
@@ -332,7 +334,9 @@ $('category').addEventListener('change',()=>{
   $('makeToday').checked=isMenu;
   $('makeTodayRow').style.opacity=isMenu?'1':'.7';
   $('storyTextWrap').classList.toggle('hidden',!isAbout);
-  $('titleLabel').textContent=isAbout?'Story heading':(isGallery?'Caption / title':(isExperience?'Phone showcase title':'Photo title / caption'));
+  $('titleLabel').textContent=isAbout?'Story heading':(isGallery?'Photo title':(isExperience?'Phone showcase title':'Photo title'));
+  $('descriptionWrap').classList.toggle('hidden', false);
+  $('description').placeholder=isAbout?'Optional short summary (the full story goes below).':'Short description / caption shown with this image...';
 
   $('mediaTypeWrap').classList.toggle('hidden',!(isMenuItem||isLangar||isGallery));
   $('mediaType').querySelector('option[value="video"]').hidden=!(isMenuItem||isGallery);
@@ -506,6 +510,7 @@ async function uploadFiles(){
   const category=$('category').value;
   const type=$('mediaType').value;
   const title=$('title').value.trim();
+  const description=$('description').value.trim();
   const menuItemId=$('menuItem').value==='__new__' ? null : Number($('menuItem').value);
   const menuItem=menuItemId ? ([...(SHOP_CONFIG.menu||[]), ...(dbMenuItems||[])].find(x=>Number(x.id)===menuItemId) || null) : null;
   const customMenuItemName=$('newMenuItemName').value.trim();
@@ -548,7 +553,7 @@ async function uploadFiles(){
       const row={
         title:category==='menu_item' ? (title || (menuItem ? menuItem.name : customMenuItemName)) : (title || file.name.replace(/\.[^/.]+$/,'')),
         short_title:category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : (title || file.name.replace(/\.[^/.]+$/,'')),
-        caption:category==='menu_item' ? (title || (menuItem ? menuItem.name : customMenuItemName)) : (title || file.name.replace(/\.[^/.]+$/,'')),
+        caption:description || title || (category==='menu_item' ? (menuItem ? menuItem.name : customMenuItemName) : file.name.replace(/\.[^/.]+$/,'')),
         story_text:category==='about' ? $('storyText').value.trim() : null,
         category,
         storage_path:path,
@@ -564,6 +569,7 @@ async function uploadFiles(){
 
     $('files').value='';$('preview').innerHTML='';
     if(category!=='menu_item') $('title').value='';
+    $('description').value='';
     $('newMenuItemName').value='';
     $('storyText').value='';
     $('youtubeUrl').value='';
@@ -575,30 +581,20 @@ async function uploadFiles(){
   finally{$('uploadBtn').disabled=false}
 }
 
+let showAllPhotos = false;
 function renderPhotos(){
   const cat=$('filterCategory').value, q=$('searchTitle').value.trim().toLowerCase();
   const rows=allPhotos.filter(p=>(cat==='all'||p.category===cat)&&(!q||(p.title||'').toLowerCase().includes(q)));
-  $('photos').innerHTML=rows.map(p=>{
+  const visible=showAllPhotos ? rows : rows.slice(0,6);
+  $('photos').innerHTML=visible.map((p,index)=>{
     const today=p.category==='menu'&&p.is_today;
-    const media=p.media_type==='video'
-      ? `<video src="${esc(p.public_url)}" controls muted playsinline preload="metadata"></video>`
-      : `<img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">`;
+    const media=p.media_type==='video' ? `<video src="${esc(p.public_url)}" controls muted playsinline preload="metadata"></video>` : `<img src="${esc(p.public_url)}" alt="${esc(p.title||'Photo')}" loading="lazy">`;
     const categoryLabel=p.category==='menu_item'?'Menu Item':p.category;
-    return `<article class="photo-card">
-      ${media}
-      <div class="photo-body">
-        <div class="photo-title">${esc(p.title||'Untitled')}</div>
-        <div class="meta">${esc(categoryLabel)} ${p.media_type==='video'?' · <span class="badge">VIDEO</span>':''} ${p.media_type==='youtube'?' · <span class="badge youtube-badge">YOUTUBE</span>':''} ${today?' · <span class="badge">TODAY</span>':''}</div>
-        ${p.media_type==='youtube'&&p.youtube_url?`<a class="youtube-link" href="${esc(p.youtube_url)}" target="_blank" rel="noopener noreferrer">▶ Watch video on YouTube ↗</a>`:''}
-        <div class="actions">
-          ${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}
-          <button class="dark" data-action="edit" data-id="${p.id}">Edit</button>
-          <button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button>
-        </div>
-      </div>
-    </article>`;
+    return `<article class="photo-card"><div class="photo-media">${media}</div><div class="photo-body"><div class="photo-title">${esc(p.title||'Untitled')}</div><div class="meta">${esc(categoryLabel)} ${p.media_type==='video'?' · <span class="badge">VIDEO</span>':''} ${p.media_type==='youtube'?' · <span class="badge youtube-badge">YOUTUBE</span>':''} ${today?' · <span class="badge">TODAY</span>':''}</div>${p.media_type==='youtube'&&p.youtube_url?`<a class="youtube-link" href="${esc(p.youtube_url)}" target="_blank" rel="noopener noreferrer">▶ Watch video on YouTube ↗</a>`:''}<div class="actions">${p.category==='menu'&&!today?`<button class="green" data-action="today" data-id="${p.id}">Set as Today's Menu</button>`:''}<button class="dark" data-action="edit" data-id="${p.id}">Edit</button><button class="danger" data-action="delete" data-id="${p.id}" data-path="${esc(p.storage_path)}">Delete</button></div></div></article>`;
   }).join('');
-  msg('listStatus',`${rows.length} photo(s) shown.`);
+  const toggle=$('photosToggleBtn');
+  if(toggle){toggle.style.display=rows.length>6?'inline-block':'none';toggle.textContent=showAllPhotos?'See less photos':`See more photos (${rows.length-6})`;}
+  msg('listStatus',`${rows.length} photo(s) found · showing ${visible.length}.`);
 }
 
 async function loadPhotos(){
@@ -614,6 +610,7 @@ function openEdit(id){
   if(!editingPhoto) return;
   $('editTitle').value = editingPhoto.title || '';
   $('editStoryText').value = editingPhoto.story_text || '';
+  $('editDescription').value = editingPhoto.caption || '';
   $('editStoryWrap').classList.toggle('hidden', editingPhoto.category !== 'about');
   $('editFile').value = '';
   $('editYoutubeUrl').value = editingPhoto.youtube_url || '';
@@ -642,11 +639,11 @@ async function saveEdit(){
       const {error:ue}=await supabaseClient.storage.from(BUCKET).upload(newPath,newFile,{cacheControl:'3600',upsert:false,contentType:newFile.type});
       if(ue) throw ue;
       const publicUrl=supabaseClient.storage.from(BUCKET).getPublicUrl(newPath).data.publicUrl;
-      const {error:de}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,public_url:publicUrl,storage_path:newPath,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      const {error:de}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:$('editDescription').value.trim() || title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,public_url:publicUrl,storage_path:newPath,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
       if(de){await supabaseClient.storage.from(BUCKET).remove([newPath]);throw de;}
       if(editingPhoto.storage_path) await supabaseClient.storage.from(BUCKET).remove([editingPhoto.storage_path]);
     }else{
-      const {error}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
+      const {error}=await supabaseClient.from('site_photos').update({title,short_title:title,caption:$('editDescription').value.trim() || title,story_text:editingPhoto.category==='about'?$('editStoryText').value.trim():editingPhoto.story_text||null,youtube_url:youtubeUrl}).eq('id',editingPhoto.id);
       if(error) throw error;
     }
     closeEdit(); await loadPhotos();
@@ -697,8 +694,12 @@ async function loadAdminReviews(){
     $('reviewsAdminStatus').textContent=`${adminReviews.length} website review(s) loaded.`;
   }catch(e){$('reviewsAdminStatus').textContent='Reviews table is not ready yet. Run supabase-website-content-migration.sql once in Supabase SQL Editor.';}
 }
+let showAllReviews = false;
 function renderAdminReviews(){
-  $('adminReviewsList').innerHTML=adminReviews.map(r=>`<div class="admin-review-row"><div><strong>${esc(r.reviewer_name)}</strong><div class="hint">${'★'.repeat(Number(r.rating)||5)} · ${Number(r.review_count)||1} review(s) · order ${Number(r.sort_order)||0}</div><p>${esc(r.review_text)}</p></div><div class="actions"><button class="light" data-review-edit="${r.id}">Edit</button><button class="${r.is_active?'dark':'green'}" data-review-toggle="${r.id}">${r.is_active?'Hide':'Show'}</button><button class="danger" data-review-delete="${r.id}">Delete</button></div></div>`).join('');
+  const visible=showAllReviews ? adminReviews : adminReviews.slice(0,3);
+  $('adminReviewsList').innerHTML=visible.map(r=>`<div class="admin-review-row"><div><strong>${esc(r.reviewer_name)}</strong><div class="hint">${'★'.repeat(Number(r.rating)||5)} · ${Number(r.review_count)||1} review(s) · order ${Number(r.sort_order)||0}</div><p>${esc(r.review_text)}</p></div><div class="actions"><button class="light" data-review-edit="${r.id}">Edit</button><button class="${r.is_active?'dark':'green'}" data-review-toggle="${r.id}">${r.is_active?'Hide':'Show'}</button><button class="danger" data-review-delete="${r.id}">Delete</button></div></div>`).join('');
+  const toggle=$('reviewsToggleBtn');
+  if(toggle){toggle.style.display=adminReviews.length>3?'inline-block':'none';toggle.textContent=showAllReviews?'See less reviews':`See more reviews (${adminReviews.length-3})`;}
 }
 $('addReviewBtn')?.addEventListener('click',async()=>{
   const name=$('reviewerName').value.trim(), text=$('reviewText').value.trim();
@@ -767,7 +768,17 @@ async function uploadBranding(settingKey,fileInputId,previewId,statusId,label){
     const {error:ue}=await supabaseClient.storage.from(BRANDING_BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
     if(ue) throw ue;
     const publicUrl=supabaseClient.storage.from(BRANDING_BUCKET).getPublicUrl(path).data.publicUrl;
-    const {error:se}=await supabaseClient.from('site_settings').update({setting_value:publicUrl,updated_at:new Date().toISOString()}).eq('setting_key',settingKey);
+    const now=new Date().toISOString();
+    const {data:existing,error:fe}=await supabaseClient.from('site_settings').select('id').eq('setting_key',settingKey).maybeSingle();
+    if(fe) throw fe;
+    let se;
+    if(existing?.id){
+      const {error}=await supabaseClient.from('site_settings').update({setting_value:publicUrl,updated_at:now}).eq('id',existing.id);
+      se=error;
+    }else{
+      const {error}=await supabaseClient.from('site_settings').insert({setting_key:settingKey,setting_value:publicUrl,updated_at:now});
+      se=error;
+    }
     if(se){await supabaseClient.storage.from(BRANDING_BUCKET).remove([path]);throw se;}
     $(previewId).src=publicUrl;
     $(fileInputId).value='';
@@ -778,9 +789,11 @@ async function uploadBranding(settingKey,fileInputId,previewId,statusId,label){
 $('uploadHeaderBrandingBtn')?.addEventListener('click',()=>uploadBranding('header_profile_image_url','headerBrandingFile','headerBrandingPreview','headerBrandingStatus','header photo'));
 $('uploadPhoneBrandingBtn')?.addEventListener('click',()=>uploadBranding('phone_showcase_logo_url','phoneBrandingFile','phoneBrandingPreview','phoneBrandingStatus','phone showcase image'));
 
+$('photosToggleBtn')?.addEventListener('click',()=>{showAllPhotos=!showAllPhotos;renderPhotos();});
+$('reviewsToggleBtn')?.addEventListener('click',()=>{showAllReviews=!showAllReviews;renderAdminReviews();});
 $('addMenuItemBtn').onclick=addMenuItem;$('saveMenuOrderBtn').onclick=saveMenuOrder;
 $('loginBtn').onclick=login;$('logoutBtn').onclick=logout;$('uploadBtn').onclick=uploadFiles;$('refreshBtn').onclick=loadPhotos;
-$('filterCategory').onchange=renderPhotos;$('searchTitle').oninput=renderPhotos;
+$('filterCategory').onchange=()=>{showAllPhotos=false;renderPhotos()};$('searchTitle').oninput=()=>{showAllPhotos=false;renderPhotos()};
 $('password').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 supabaseClient.auth.onAuthStateChange(()=>updateUI());
 populateMenuItems();
