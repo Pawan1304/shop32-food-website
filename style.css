@@ -4849,3 +4849,407 @@
 .about-read-more{display:inline-flex;align-items:center;justify-content:space-between;width:fit-content;gap:16px;margin-top:18px;padding:11px 15px;border-radius:12px;background:#201b17;color:#fff;text-decoration:none;font-size:12px;font-weight:800}
 .about-read-more span{color:#ff7043;font-size:18px;line-height:1}
 @media(max-width:600px){.about-section{padding:36px 12px 48px!important}.about-story-carousel{border-radius:22px}.about-story-slide{grid-template-columns:42% 58%!important}.about-story-image,.about-story-image img{min-height:390px!important}.about-story-copy{padding:26px 18px!important;justify-content:flex-start}.about-story-copy h2{font-size:28px!important;line-height:1.05!important}.about-story-copy p.about-story-preview-text{font-size:13px!important;line-height:1.55!important;-webkit-line-clamp:9;max-height:14em}.about-read-more{margin-top:14px;padding:10px 12px;font-size:11px}}
+
+/* =========================================================
+   PREMIUM MOTION LAYER — CSS ONLY
+   Visual enhancement layer; preserves existing layout/content.
+   ========================================================= */
+:root {
+  --motion-ease: cubic-bezier(.22,1,.36,1);
+  --motion-fast: 180ms var(--motion-ease);
+  --motion-med: 420ms var(--motion-ease);
+  --premium-shadow: 0 18px 45px rgba(45,29,18,.12);
+}
+
+/* Global interaction polish */
+button, a, input, select, textarea,
+.menu-card, .feature-card, .review, .story-stat,
+.contact-info-card, .langar-point, .google-rating-card,
+.gallery-more-link, .v2-meta-chip, .photo-grid img,
+.phone-frame, .phone-logo, .swipe-arrow, .swipe-dot {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a {
+  transition:
+    transform var(--motion-fast),
+    box-shadow var(--motion-fast),
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast),
+    opacity var(--motion-fast),
+    filter var(--motion-fast);
+}
+
+button:focus-visible, a:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid rgba(240,75,35,.25);
+  outline-offset: 3px;
+}
+
+/* Header: premium glass movement without changing its dimensions */
+.topbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.42) 48%, transparent 68%);
+  background-size: 220% 100%;
+  opacity: .28;
+  animation: headerSheen 9s ease-in-out infinite;
+}
+
+.brand-mark,
+.mobile-header-actions a,
+.mobile-menu-button {
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), filter var(--motion-fast);
+}
+
+@media (hover:hover) {
+  .brand-mark:hover { transform: translateY(-2px) rotate(-2deg) scale(1.03); box-shadow: 0 12px 25px rgba(32,27,23,.22); }
+  .mobile-header-actions a:hover,
+  .mobile-menu-button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(45,29,18,.13); }
+}
+
+/* Desktop nav: animated active/hover indicator */
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 999px;
+  background: #f04b23;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--motion-fast);
+}
+.desktop-nav a:hover::after,
+.desktop-nav a.active::after { transform: scaleX(1); }
+.desktop-nav a.active::after { background: rgba(255,255,255,.72); }
+
+/* Hero: soft ambient light + richer entrance */
+.hero-video-overlay::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, rgba(255,119,74,.10), transparent 34%);
+  animation: heroAmbient 8s ease-in-out infinite alternate;
+}
+
+.hero-badge { animation: fadeUp 800ms var(--motion-ease) both, badgePulse 4.5s ease-in-out 1.2s infinite; }
+.hero-location a { transition: color var(--motion-fast), text-shadow var(--motion-fast); }
+.hero-location a:hover { text-shadow: 0 0 14px rgba(255,255,255,.5); }
+
+.hero-order-btn,
+.btn,
+.story-button,
+.phone-menu-button,
+.cart-button,
+.google-review-button,
+.add-btn,
+.v2-action {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero-order-btn::before,
+.btn::before,
+.story-button::before,
+.phone-menu-button::before,
+.cart-button::before,
+.google-review-button::before,
+.add-btn::before,
+.v2-action::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.22) 48%, transparent 72%);
+  background-size: 230% 100%;
+  transform: translateX(-75%);
+  transition: transform 700ms var(--motion-ease);
+  z-index: 0;
+}
+
+@media (hover:hover) {
+  .hero-order-btn:hover::before,
+  .btn:hover::before,
+  .story-button:hover::before,
+  .phone-menu-button:hover::before,
+  .cart-button:hover::before,
+  .google-review-button:hover::before,
+  .add-btn:hover::before,
+  .v2-action:hover::before { transform: translateX(75%); }
+
+  .hero-order-btn:hover { transform: translateY(-4px) scale(1.012); }
+}
+
+.hero-order-btn:active,
+.btn:active,
+.story-button:active,
+.phone-menu-button:active,
+.cart-button:active,
+.google-review-button:active,
+.add-btn:active,
+.v2-action:active { transform: translateY(1px) scale(.985); }
+
+/* Section entrances: gentle, not flashy */
+.experience-section,
+.story-section,
+.menu-section,
+.about-section,
+.photos-section,
+.reviews-section,
+.langar-section,
+.contact-section,
+.trust-strip {
+  animation: sectionReveal 700ms var(--motion-ease) both;
+}
+
+/* Feature/card lift */
+.feature-card,
+.menu-card,
+.review,
+.story-stat,
+.contact-info-card,
+.langar-point,
+.google-rating-card,
+.gallery-more-link {
+  transition:
+    transform var(--motion-med),
+    box-shadow var(--motion-med),
+    border-color var(--motion-med),
+    background-color var(--motion-med);
+}
+
+@media (hover:hover) {
+  .menu-card:hover,
+  .review:hover,
+  .story-stat:hover,
+  .google-rating-card:hover,
+  .gallery-more-link:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--premium-shadow);
+    border-color: rgba(240,75,35,.20);
+  }
+
+  .feature-card:hover,
+  .contact-info-card:hover,
+  .langar-point:hover {
+    transform: translateY(-5px) scale(1.008);
+  }
+}
+
+/* Staggered menu/review/feature entrance */
+.menu-grid .menu-card,
+.feature-column .feature-card,
+.reviews-grid .review,
+.reviews-track .review,
+.photo-grid img {
+  animation: cardReveal 650ms var(--motion-ease) both;
+}
+
+.menu-grid .menu-card:nth-child(2), .reviews-track .review:nth-child(2) { animation-delay: 70ms; }
+.menu-grid .menu-card:nth-child(3), .reviews-track .review:nth-child(3) { animation-delay: 140ms; }
+.menu-grid .menu-card:nth-child(4), .reviews-track .review:nth-child(4) { animation-delay: 210ms; }
+.menu-grid .menu-card:nth-child(5), .reviews-track .review:nth-child(5) { animation-delay: 280ms; }
+.menu-grid .menu-card:nth-child(6), .reviews-track .review:nth-child(6) { animation-delay: 350ms; }
+.feature-column .feature-card:nth-child(2) { animation-delay: 100ms; }
+.feature-column .feature-card:nth-child(3) { animation-delay: 200ms; }
+
+/* Menu media: a tiny visual zoom on hover while preserving crop */
+.menu-card .menu-carousel,
+.food-moments-carousel .swipe-slide,
+.about-image .swipe-slide,
+.langar-gallery .swipe-slide,
+.phone-media-carousel .swipe-slide {
+  transition: box-shadow var(--motion-med), transform var(--motion-med);
+}
+
+.menu-card .menu-img,
+.photo-grid img,
+.about-image .swipe-slide img,
+.food-moments-carousel img,
+.langar-gallery img,
+.phone-media-carousel img {
+  transition: transform 700ms var(--motion-ease), filter 500ms ease;
+}
+
+@media (hover:hover) {
+  .menu-card:hover .menu-img,
+  .photo-grid img:hover,
+  .about-image .swipe-slide:hover img,
+  .food-moments-carousel .swipe-slide:hover img,
+  .langar-gallery .swipe-slide:hover img,
+  .phone-media-carousel .swipe-slide:hover img {
+    transform: scale(1.035);
+    filter: saturate(1.04) contrast(1.02);
+  }
+}
+
+/* Carousel controls feel tactile */
+.swipe-arrow {
+  transition: transform var(--motion-fast), box-shadow var(--motion-fast), background-color var(--motion-fast), opacity var(--motion-fast);
+}
+@media (hover:hover) {
+  .swipe-arrow:hover { transform: translateY(-50%) scale(1.08); box-shadow: 0 12px 26px rgba(32,27,23,.20); opacity: 1; }
+}
+.swipe-arrow:active { transform: translateY(-50%) scale(.94); }
+.swipe-dot { transition: width 300ms var(--motion-ease), background-color 300ms ease, transform 300ms var(--motion-ease); }
+.swipe-dot.active { box-shadow: 0 0 0 4px rgba(239,75,35,.10); }
+
+/* Phone showcase: premium floating glass feel */
+.phone-frame {
+  will-change: transform;
+  transition: box-shadow 500ms var(--motion-ease), filter 500ms ease;
+}
+@media (hover:hover) {
+  .phone-frame:hover {
+    animation-play-state: paused;
+    transform: rotate(0deg) translateY(-7px) scale(1.018);
+    box-shadow: 0 38px 85px rgba(30,20,10,.30);
+  }
+}
+.phone-logo {
+  animation: logoBreath 4s ease-in-out infinite;
+  box-shadow: 0 8px 22px rgba(240,75,35,.12);
+}
+
+/* Floating food gets a slower ambient rhythm and stronger depth */
+.floating-food,
+.floating-water,
+.butter-tikki {
+  will-change: transform;
+}
+.butter-tikki { animation: butterFloat 4.8s ease-in-out infinite; }
+.floating-water { animation-duration: 5.5s; }
+
+/* Story stats: number blocks feel responsive */
+.story-stat strong { transition: transform var(--motion-med), letter-spacing var(--motion-med); }
+@media (hover:hover) {
+  .story-stat:hover strong { transform: scale(1.06); letter-spacing: .2px; }
+}
+
+/* Trust strip micro motion */
+.trust-strip div { transition: transform var(--motion-fast), opacity var(--motion-fast); }
+@media (hover:hover) {
+  .trust-strip div:hover { transform: translateY(-2px); }
+}
+
+/* Reviews: subtle shine on active cards without disturbing marquee */
+.review { position: relative; overflow: hidden; }
+.review::after {
+  content: "";
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  right: -70px;
+  top: -70px;
+  border-radius: 50%;
+  background: rgba(240,75,35,.055);
+  pointer-events: none;
+  transition: transform 500ms var(--motion-ease);
+}
+@media (hover:hover) { .review:hover::after { transform: scale(1.25); } }
+
+/* Contact / langar ambient rings */
+.contact-section::before,
+.contact-section::after,
+.langar-section::before {
+  animation: ambientDrift 9s ease-in-out infinite alternate;
+}
+.v2-contact-actions { box-shadow: inset 0 1px 0 rgba(255,255,255,.10); }
+.v2-meta-chip { transition: transform var(--motion-fast), background-color var(--motion-fast), border-color var(--motion-fast); }
+@media (hover:hover) { .v2-meta-chip:hover { transform: translateY(-2px); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.18); } }
+
+/* Bottom cart badge: small state pulse */
+.cart-button span { animation: badgePop 2.8s ease-in-out infinite; }
+#openCart { will-change: transform, opacity; }
+
+/* Form controls / inputs */
+input, select, textarea {
+  transition: border-color var(--motion-fast), box-shadow var(--motion-fast), background-color var(--motion-fast), transform var(--motion-fast);
+}
+input:hover, select:hover, textarea:hover { border-color: #d7bfb0; }
+input:focus, select:focus, textarea:focus {
+  border-color: #f04b23;
+  box-shadow: 0 0 0 4px rgba(240,75,35,.09);
+}
+
+/* Motion-safe image reveal */
+img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--motion-ease); }
+
+/* Keyframes */
+@keyframes headerSheen {
+  0%, 60% { background-position: 170% 0; }
+  100% { background-position: -70% 0; }
+}
+@keyframes heroAmbient {
+  from { transform: scale(1); opacity: .55; }
+  to { transform: scale(1.08); opacity: .95; }
+}
+@keyframes badgePulse {
+  0%, 72%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  80% { box-shadow: 0 0 0 7px rgba(255,255,255,.055); }
+}
+@keyframes sectionReveal {
+  from { opacity: .001; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes cardReveal {
+  from { opacity: .001; transform: translateY(12px) scale(.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes logoBreath {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(1deg); }
+}
+@keyframes ambientDrift {
+  from { transform: translate3d(0,0,0) rotate(0deg); }
+  to { transform: translate3d(8px,-8px,0) rotate(2deg); }
+}
+@keyframes badgePop {
+  0%, 78%, 100% { transform: scale(1); }
+  84% { transform: scale(1.12); }
+  90% { transform: scale(1); }
+}
+
+/* Mobile: reduce hover-like elevation and keep touch interactions calm */
+@media (max-width: 600px) {
+  .menu-card:hover,
+  .review:hover,
+  .story-stat:hover,
+  .google-rating-card:hover,
+  .gallery-more-link:hover,
+  .feature-card:hover,
+  .contact-info-card:hover,
+  .langar-point:hover { transform: none; }
+
+  .menu-grid .menu-card,
+  .reviews-track .review,
+  .feature-column .feature-card { animation-duration: 520ms; }
+
+  .hero-video-overlay::before { opacity: .55; }
+  .topbar::after { animation-duration: 12s; opacity: .18; }
+}
+
+/* Accessibility: respect the operating-system reduced-motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+  .reviews-track { animation: none !important; }
+  .phone-frame,
+  .phone-logo,
+  .floating-food,
+  .floating-water,
+  .butter-tikki { transform: none !important; }
+}
