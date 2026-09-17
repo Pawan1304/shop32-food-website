@@ -1,4 +1,4 @@
-const CACHE = 'sudh-vaishno-tandoor-v12-native-vertical-scroll';
+const CACHE = 'sudh-vaishno-tandoor-v11-native-vertical-scroll';
 const APP_SHELL = [
   './', './index.html','./gallery.html','./story.html', './style.css', './app.js', './config.js', './supabase-config.js',
   './manifest.json', './favicon.png', './assets/photos/logo.png', './assets/icons/icon-192.png', './assets/icons/icon-512.png'
