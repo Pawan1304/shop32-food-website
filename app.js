@@ -31,66 +31,122 @@ function attachSafeHorizontalSwipe(track) {
 
   const isInteractive = target => !!target?.closest?.("button, a, input, textarea, select, video, audio");
 
-  track.addEventListener("pointerdown", event => {
-    if (event.pointerType === "mouse" && event.button !== 0) return;
-    if (isInteractive(event.target)) return;
-    startX = event.clientX;
-    startY = event.clientY;
+  const begin = (x, y, id = null) => {
+    startX = x;
+    startY = y;
     startScroll = track.scrollLeft;
     dragging = true;
     horizontal = false;
-    pointerId = event.pointerId;
-  }, { passive: true });
+    pointerId = id;
+  };
 
-  track.addEventListener("pointermove", event => {
-    if (!dragging || event.pointerId !== pointerId) return;
-    const dx = event.clientX - startX;
-    const dy = event.clientY - startY;
+  const move = (x, y, event = null) => {
+    if (!dragging) return;
+    const dx = x - startX;
+    const dy = y - startY;
 
     if (!horizontal) {
-      if (Math.abs(dy) > Math.abs(dx) + 7) {
-        // Vertical gesture: release immediately so the page scrolls normally.
+      // Let the browser own clearly vertical gestures.
+      if (Math.abs(dy) > Math.abs(dx) + 8) {
         dragging = false;
         return;
       }
-      if (Math.abs(dx) < 7) return;
+      // Ignore tiny finger jitter.
+      if (Math.abs(dx) < 8) return;
       horizontal = true;
-      try { track.setPointerCapture(pointerId); } catch (_) {}
     }
 
     if (horizontal) {
-      event.preventDefault();
+      // Horizontal gesture is now owned by this carousel only.
+      if (event?.cancelable) event.preventDefault();
       track.scrollLeft = startScroll - dx;
     }
-  }, { passive: false });
+  };
 
-  const finish = event => {
-    if (!dragging || (event && event.pointerId !== pointerId)) return;
+  const finish = (x = startX) => {
+    if (!dragging) return;
     const wasHorizontal = horizontal;
-    const dx = event ? event.clientX - startX : 0;
+    const dx = x - startX;
     dragging = false;
     horizontal = false;
     pointerId = null;
 
     if (!wasHorizontal) return;
-    const slideTrack = track.classList.contains("reviews-touch-carousel") ? track.querySelector(".reviews-track") : track;
+
+    const slideTrack = track.classList.contains("reviews-touch-carousel")
+      ? track.querySelector(".reviews-track")
+      : track;
     const slides = [...(slideTrack?.children || [])];
     if (!slides.length) return;
+
+    // Find the slide nearest to the current position.
     let current = 0;
     let nearest = Infinity;
     slides.forEach((slide, index) => {
       const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
-      if (distance < nearest) { nearest = distance; current = index; }
+      if (distance < nearest) {
+        nearest = distance;
+        current = index;
+      }
     });
+
     let target = current;
-    if (Math.abs(dx) > 35) target = dx < 0 ? Math.min(slides.length - 1, current + 1) : Math.max(0, current - 1);
+    if (Math.abs(dx) > 35) {
+      target = dx < 0
+        ? Math.min(slides.length - 1, current + 1)
+        : Math.max(0, current - 1);
+    }
+
     track.scrollTo({ left: slides[target].offsetLeft, behavior: "smooth" });
   };
 
-  track.addEventListener("pointerup", finish, { passive: true });
-  track.addEventListener("pointercancel", finish, { passive: true });
-  track.addEventListener("lostpointercapture", () => {
-    if (dragging) { dragging = false; horizontal = false; pointerId = null; }
+  /* Pointer support: desktop mouse + modern mobile browsers. */
+  track.addEventListener("pointerdown", event => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (isInteractive(event.target)) return;
+    begin(event.clientX, event.clientY, event.pointerId);
+  }, { passive: true });
+
+  track.addEventListener("pointermove", event => {
+    if (!dragging || event.pointerId !== pointerId) return;
+    move(event.clientX, event.clientY, event);
+  }, { passive: false });
+
+  track.addEventListener("pointerup", event => {
+    if (event.pointerId !== pointerId) return;
+    finish(event.clientX);
+  }, { passive: true });
+
+  track.addEventListener("pointercancel", () => {
+    dragging = false;
+    horizontal = false;
+    pointerId = null;
+  }, { passive: true });
+
+  /* Touch fallback: deliberately uses pan-y in CSS so vertical page
+     scrolling stays native while horizontal swipes are handled here. */
+  track.addEventListener("touchstart", event => {
+    if (!event.touches?.length || isInteractive(event.target)) return;
+    const t = event.touches[0];
+    begin(t.clientX, t.clientY, "touch");
+  }, { passive: true });
+
+  track.addEventListener("touchmove", event => {
+    if (!dragging || pointerId !== "touch" || !event.touches?.length) return;
+    const t = event.touches[0];
+    move(t.clientX, t.clientY, event);
+  }, { passive: false });
+
+  track.addEventListener("touchend", event => {
+    if (!dragging || pointerId !== "touch") return;
+    const t = event.changedTouches?.[0];
+    finish(t ? t.clientX : startX);
+  }, { passive: true });
+
+  track.addEventListener("touchcancel", () => {
+    dragging = false;
+    horizontal = false;
+    pointerId = null;
   }, { passive: true });
 }
 
