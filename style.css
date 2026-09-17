@@ -5599,3 +5599,101 @@ footer > p::after {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   FOOTER VISIT & ORDER — COMPACT POLISH
+   ========================================================= */
+
+.footer-contact-list {
+  gap: 7px !important;
+}
+
+.footer-contact-card {
+  min-height: 48px !important;
+  height: 48px !important;
+  padding: 7px 10px !important;
+  gap: 9px !important;
+  border-radius: 12px !important;
+  box-sizing: border-box;
+}
+
+/* Smaller emoji container */
+.footer-contact-icon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  flex: 0 0 28px !important;
+
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+
+  display: grid !important;
+  place-items: center !important;
+}
+
+/* Smaller label */
+.footer-contact-card span {
+  font-size: 9px !important;
+  line-height: 1.1 !important;
+  margin-bottom: 2px !important;
+}
+
+/* Smaller main text */
+.footer-contact-card strong {
+  font-size: 11px !important;
+  line-height: 1.15 !important;
+}
+
+/* Keep WhatsApp button compact too */
+.footer-order-btn {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 8px 12px !important;
+  margin-top: 2px !important;
+
+  border-radius: 11px !important;
+  font-size: 11px !important;
+  gap: 6px !important;
+}
+
+/* Desktop: don't let this column become unnecessarily wide */
+@media (min-width: 901px) {
+  .footer-contact-list {
+    max-width: 465px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .footer-contact-list {
+    gap: 6px !important;
+  }
+
+  .footer-contact-card {
+    height: 46px !important;
+    min-height: 46px !important;
+    padding: 6px 9px !important;
+  }
+
+  .footer-contact-icon {
+    width: 27px !important;
+    height: 27px !important;
+    min-width: 27px !important;
+    font-size: 12px !important;
+  }
+
+  .footer-contact-card span {
+    font-size: 8.5px !important;
+  }
+
+  .footer-contact-card strong {
+    font-size: 10.5px !important;
+  }
+
+  .footer-order-btn {
+    height: 42px !important;
+    min-height: 42px !important;
+    font-size: 11px !important;
+  }
+}
