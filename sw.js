@@ -1,4 +1,4 @@
-const CACHE = 'sudh-vaishno-tandoor-v6-motion';
+const CACHE = 'sudh-vaishno-tandoor-v7-motion';
 const APP_SHELL = [
   './', './index.html','./gallery.html','./story.html', './style.css', './app.js', './config.js', './supabase-config.js',
   './manifest.json', './favicon.png', './assets/photos/logo.png', './assets/icons/icon-192.png', './assets/icons/icon-512.png'
