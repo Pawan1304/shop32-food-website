@@ -18,6 +18,82 @@ if (year) year.textContent = new Date().getFullYear();
 /* =====================================================
    GENERIC SWIPE CAROUSEL
    ===================================================== */
+function attachSafeHorizontalSwipe(track) {
+  if (!track || track.dataset.safeSwipe === "1") return;
+  track.dataset.safeSwipe = "1";
+
+  let startX = 0;
+  let startY = 0;
+  let startScroll = 0;
+  let dragging = false;
+  let horizontal = false;
+  let pointerId = null;
+
+  const isInteractive = target => !!target?.closest?.("button, a, input, textarea, select, video, audio");
+
+  track.addEventListener("pointerdown", event => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (isInteractive(event.target)) return;
+    startX = event.clientX;
+    startY = event.clientY;
+    startScroll = track.scrollLeft;
+    dragging = true;
+    horizontal = false;
+    pointerId = event.pointerId;
+  }, { passive: true });
+
+  track.addEventListener("pointermove", event => {
+    if (!dragging || event.pointerId !== pointerId) return;
+    const dx = event.clientX - startX;
+    const dy = event.clientY - startY;
+
+    if (!horizontal) {
+      if (Math.abs(dy) > Math.abs(dx) + 7) {
+        // Vertical gesture: release immediately so the page scrolls normally.
+        dragging = false;
+        return;
+      }
+      if (Math.abs(dx) < 7) return;
+      horizontal = true;
+      try { track.setPointerCapture(pointerId); } catch (_) {}
+    }
+
+    if (horizontal) {
+      event.preventDefault();
+      track.scrollLeft = startScroll - dx;
+    }
+  }, { passive: false });
+
+  const finish = event => {
+    if (!dragging || (event && event.pointerId !== pointerId)) return;
+    const wasHorizontal = horizontal;
+    const dx = event ? event.clientX - startX : 0;
+    dragging = false;
+    horizontal = false;
+    pointerId = null;
+
+    if (!wasHorizontal) return;
+    const slideTrack = track.classList.contains("reviews-touch-carousel") ? track.querySelector(".reviews-track") : track;
+    const slides = [...(slideTrack?.children || [])];
+    if (!slides.length) return;
+    let current = 0;
+    let nearest = Infinity;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
+      if (distance < nearest) { nearest = distance; current = index; }
+    });
+    let target = current;
+    if (Math.abs(dx) > 35) target = dx < 0 ? Math.min(slides.length - 1, current + 1) : Math.max(0, current - 1);
+    track.scrollTo({ left: slides[target].offsetLeft, behavior: "smooth" });
+  };
+
+  track.addEventListener("pointerup", finish, { passive: true });
+  track.addEventListener("pointercancel", finish, { passive: true });
+  track.addEventListener("lostpointercapture", () => {
+    if (dragging) { dragging = false; horizontal = false; pointerId = null; }
+  }, { passive: true });
+}
+
 function setupSwipeCarousel(id) {
   const root = document.getElementById(id);
   if (!root) return;
@@ -27,21 +103,25 @@ function setupSwipeCarousel(id) {
 
   const slides = [...track.children];
   if (!slides.length) return;
+  attachSafeHorizontalSwipe(track);
+
+  const goTo = index => {
+    const safe = Math.max(0, Math.min(slides.length - 1, index));
+    track.scrollTo({ left: slides[safe].offsetLeft, behavior: "smooth" });
+  };
 
   if (dots) {
     dots.innerHTML = slides.map((_, i) =>
       `<button class="swipe-dot ${i === 0 ? "active" : ""}" type="button" aria-label="Go to photo ${i + 1}"></button>`
     ).join("");
     [...dots.children].forEach((dot, i) => {
-      dot.addEventListener("click", () => {
-        slides[i].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-      });
+      dot.addEventListener("click", () => goTo(i));
     });
   }
 
   const updateDots = () => {
     if (!dots) return;
-    const index = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / track.clientWidth)));
+    const index = Math.max(0, Math.min(slides.length - 1, Math.round(track.scrollLeft / Math.max(1, track.clientWidth))));
     [...dots.children].forEach((dot, i) => dot.classList.toggle("active", i === index));
   };
 
@@ -49,17 +129,15 @@ function setupSwipeCarousel(id) {
 
   root.querySelectorAll(`[data-carousel-prev="${id}"]`).forEach(btn => {
     btn.addEventListener("click", () => {
-      const current = Math.round(track.scrollLeft / track.clientWidth);
-      const next = Math.max(0, current - 1);
-      slides[next].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      const current = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      goTo(current - 1);
     });
   });
 
   root.querySelectorAll(`[data-carousel-next="${id}"]`).forEach(btn => {
     btn.addEventListener("click", () => {
-      const current = Math.round(track.scrollLeft / track.clientWidth);
-      const next = Math.min(slides.length - 1, current + 1);
-      slides[next].scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      const current = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+      goTo(current + 1);
     });
   });
 }
@@ -749,6 +827,7 @@ loadLiveMenuItems();
       raf = requestAnimationFrame(animate);
     };
 
+    attachSafeHorizontalSwipe(root);
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(animate);
 
@@ -851,10 +930,21 @@ loadLiveMenuItems();
         .in('setting_key',['header_profile_image_url','phone_showcase_logo_url']);
       if (error) throw error;
       const map = Object.fromEntries((data || []).map(x => [x.setting_key, x.setting_value]));
-      const header = document.getElementById('headerProfileImage');
-      const phone = document.getElementById('phoneShowcaseScreenLogo');
-      if (header) header.src = map.header_profile_image_url || 'assets/photos/logo.png';
-      if (phone) phone.src = map.phone_showcase_logo_url || 'assets/photos/logo.png';
+      const fallback = 'assets/photos/logo.png';
+      const applyBrandImage = (img, url) => {
+        if (!img) return;
+        img.dataset.fallback = fallback;
+        img.dataset.fallbackApplied = '0';
+        img.onerror = () => {
+          if (img.dataset.fallbackApplied === '1') return;
+          img.dataset.fallbackApplied = '1';
+          img.src = fallback;
+        };
+        const clean = String(url || '').trim();
+        img.src = clean || fallback;
+      };
+      applyBrandImage(document.getElementById('headerProfileImage'), map.header_profile_image_url);
+      applyBrandImage(document.getElementById('phoneShowcaseScreenLogo'), map.phone_showcase_logo_url);
     } catch (e) {
       console.warn('Branding settings unavailable; using built-in images.', e.message || e);
     }
