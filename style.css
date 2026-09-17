@@ -5485,17 +5485,26 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
   82%, 100% { background-position: 100% 0; }
 }
 
-/* 5) PHOTO SCROLLING — vertical page scroll always wins for vertical gestures.
-   Horizontal photo swipes are handled safely by app.js. */
+/* 5 new photo scrolling code */
 .swipe-track,
 .reviews-touch-carousel {
-  touch-action: pan-y !important;
+  touch-action: pan-x pan-y !important;
   overscroll-behavior-y: auto !important;
   overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
+
 .swipe-track {
-  scroll-behavior: auto;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
 }
+
+.swipe-track::-webkit-scrollbar {
+  display: none;
+}
+
 .swipe-track > * {
   user-select: none;
 }
