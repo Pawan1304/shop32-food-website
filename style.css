@@ -5485,26 +5485,24 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
   82%, 100% { background-position: 100% 0; }
 }
 
-/* 5 new photo scrolling code */
+/* 5) PHOTO SCROLLING — vertical page scroll always wins for vertical gestures.
+   Horizontal photo swipes are handled safely by app.js. */
 .swipe-track,
 .reviews-touch-carousel {
+  /* Allow the browser to recognize BOTH directions.
+     app.js takes over only after a clear horizontal gesture. */
   touch-action: pan-x pan-y !important;
   overscroll-behavior-y: auto !important;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }
-
 .swipe-track {
+  scroll-behavior: smooth;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  scroll-behavior: smooth;
   scrollbar-width: none;
 }
-
-.swipe-track::-webkit-scrollbar {
-  display: none;
-}
-
+.swipe-track::-webkit-scrollbar { display:none; }
 .swipe-track > * {
   user-select: none;
 }
@@ -5610,99 +5608,34 @@ footer > p::after {
 }
 
 /* =========================================================
-   FOOTER VISIT & ORDER — COMPACT POLISH
+   V10 CAROUSEL GESTURE FIX
+   Vertical swipes stay with the page; horizontal swipes stay with the photo.
    ========================================================= */
-
-.footer-contact-list {
-  gap: 7px !important;
+.swipe-track,
+.reviews-touch-carousel {
+  touch-action: pan-y !important;
+  overscroll-behavior-y: auto !important;
+  overscroll-behavior-x: contain !important;
 }
 
-.footer-contact-card {
-  min-height: 48px !important;
-  height: 48px !important;
-  padding: 7px 10px !important;
-  gap: 9px !important;
-  border-radius: 12px !important;
-  box-sizing: border-box;
+.swipe-track {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-/* Smaller emoji container */
-.footer-contact-icon {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px !important;
-  flex: 0 0 28px !important;
+.swipe-track::-webkit-scrollbar { display: none; }
 
-  border-radius: 8px !important;
-  font-size: 13px !important;
-  line-height: 1 !important;
-
-  display: grid !important;
-  place-items: center !important;
+.swipe-track .swipe-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
 }
 
-/* Smaller label */
-.footer-contact-card span {
-  font-size: 9px !important;
-  line-height: 1.1 !important;
-  margin-bottom: 2px !important;
-}
-
-/* Smaller main text */
-.footer-contact-card strong {
-  font-size: 11px !important;
-  line-height: 1.15 !important;
-}
-
-/* Keep WhatsApp button compact too */
-.footer-order-btn {
-  min-height: 42px !important;
-  height: 42px !important;
-  padding: 8px 12px !important;
-  margin-top: 2px !important;
-
-  border-radius: 11px !important;
-  font-size: 11px !important;
-  gap: 6px !important;
-}
-
-/* Desktop: don't let this column become unnecessarily wide */
-@media (min-width: 901px) {
-  .footer-contact-list {
-    max-width: 465px;
-  }
-}
-
-/* Mobile */
-@media (max-width: 600px) {
-  .footer-contact-list {
-    gap: 6px !important;
-  }
-
-  .footer-contact-card {
-    height: 46px !important;
-    min-height: 46px !important;
-    padding: 6px 9px !important;
-  }
-
-  .footer-contact-icon {
-    width: 27px !important;
-    height: 27px !important;
-    min-width: 27px !important;
-    font-size: 12px !important;
-  }
-
-  .footer-contact-card span {
-    font-size: 8.5px !important;
-  }
-
-  .footer-contact-card strong {
-    font-size: 10.5px !important;
-  }
-
-  .footer-order-btn {
-    height: 42px !important;
-    min-height: 42px !important;
-    font-size: 11px !important;
-  }
+/* Never let decorative/food images start the browser's native image drag. */
+.swipe-track img {
+  -webkit-user-drag: none;
+  user-drag: none;
 }
