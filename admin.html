@@ -42,6 +42,30 @@ textarea{width:100%;padding:11px;border:1px solid #d9c9be;border-radius:10px;bac
 .admin-review-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px;border:1px solid #eaded5;border-radius:14px;background:#fffaf7}
 .admin-review-row p{margin:7px 0 0;color:#5f544d;line-height:1.5;font-size:13px}
 @media(max-width:650px){.admin-review-row{grid-template-columns:1fr}.admin-review-row .actions button{width:auto}}
+
+/* =========================================================
+   ADMIN UI — MOTION POLISH
+   ========================================================= */
+:root{--admin-ease:cubic-bezier(.22,1,.36,1)}
+.card,.photo-card,.admin-review-row,.branding-box,.dash-stat,.status,.quick-actions a button{transition:transform .32s var(--admin-ease),box-shadow .32s var(--admin-ease),border-color .25s ease,background-color .25s ease}
+.card{position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;left:-35%;top:0;width:35%;height:1px;background:linear-gradient(90deg,transparent,rgba(240,75,35,.55),transparent);animation:adminSheen 8s ease-in-out infinite;pointer-events:none}
+button{transition:transform .18s var(--admin-ease),box-shadow .18s var(--admin-ease),filter .18s ease,opacity .18s ease}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 9px 20px rgba(45,29,18,.11);filter:saturate(1.04)}
+button:active:not(:disabled){transform:translateY(1px) scale(.985);box-shadow:none}
+input,select,textarea{transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease}
+input:focus,select:focus,textarea:focus{border-color:#ef5b2a;box-shadow:0 0 0 4px rgba(239,91,42,.09);outline:none}
+.photo-card,.admin-review-row,.branding-box,.dash-stat{animation:adminRise .48s var(--admin-ease) both}
+.photo-card:nth-child(2),.admin-review-row:nth-child(2){animation-delay:45ms}.photo-card:nth-child(3),.admin-review-row:nth-child(3){animation-delay:90ms}.photo-card:nth-child(4),.admin-review-row:nth-child(4){animation-delay:135ms}
+.photo-card img,.photo-card video,.branding-preview img{transition:transform .6s var(--admin-ease),filter .4s ease}
+.photo-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(50,25,10,.12);border-color:#efd0c1}
+.photo-card:hover img,.photo-card:hover video,.branding-box:hover .branding-preview img{transform:scale(1.035);filter:saturate(1.04)}
+.admin-list-toggle button{position:relative;overflow:hidden}
+.admin-list-toggle button::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.45) 50%,transparent 75%);transform:translateX(-100%);transition:transform .65s var(--admin-ease)}
+.admin-list-toggle button:hover::after{transform:translateX(100%)}
+@keyframes adminRise{from{opacity:.001;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes adminSheen{0%,70%{left:-35%;opacity:0}80%{opacity:1}100%{left:100%;opacity:0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
