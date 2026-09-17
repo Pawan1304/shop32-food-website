@@ -143,16 +143,40 @@ function renderMenu() {
     const action = qty > 0
       ? `<div class="menu-qty" aria-label="Quantity controls for ${item.name}"><button type="button" data-menu-minus="${item.id}" aria-label="Decrease ${item.name} quantity">−</button><strong>${qty}</strong><button type="button" data-menu-plus="${item.id}" aria-label="Increase ${item.name} quantity">+</button></div>`
       : `<button class="add-btn" data-add="${item.id}">+ Add</button>`;
-    return `<article class="menu-card"><div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}"><div class="swipe-track">${slides}</div>${images.length > 1 ? `<button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${item.name} photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${item.name} photo">›</button><div class="swipe-dots"></div>` : ""}</div><div class="menu-body"><h3>${item.name}</h3><p>${item.description}</p><div class="menu-bottom"><span class="price">${money(item.price)}</span>${action}</div></div></article>`;
+    return `<article class="menu-card" data-menu-card="${item.id}"><div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}"><div class="swipe-track">${slides}</div>${images.length > 1 ? `<button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${item.name} photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${item.name} photo">›</button><div class="swipe-dots"></div>` : ""}</div><div class="menu-body"><h3>${item.name}</h3><p>${item.description}</p><div class="menu-bottom"><span class="price">${money(item.price)}</span><span class="menu-action" data-menu-action="${item.id}">${action}</span></div></div></article>`;
   }).join("");
   items.forEach(item => { if ((liveMenuMediaByName[item.name] || item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`); });
 }
 
 function changeMenuQty(id, delta){
-  const row = cart.find(x => Number(x.id) === Number(id));
-  if (row) { row.qty += delta; if (row.qty <= 0) cart = cart.filter(x => Number(x.id) !== Number(id)); }
-  else if (delta > 0) cart.push({ id:Number(id), qty:1 });
-  save(); updateCart(); renderMenu();
+  const numericId = Number(id);
+  const row = cart.find(x => Number(x.id) === numericId);
+  if (row) {
+    row.qty += delta;
+    if (row.qty <= 0) cart = cart.filter(x => Number(x.id) !== numericId);
+  } else if (delta > 0) {
+    cart.push({ id:numericId, qty:1 });
+  }
+
+  save();
+  updateCart();
+
+  // Update ONLY this item's control. Do not rebuild the whole menu grid:
+  // rebuilding caused the visible menu to flash/re-enter on every +/− tap.
+  const actionWrap = document.querySelector(`[data-menu-action="${numericId}"]`);
+  if (!actionWrap) return;
+  const item = SHOP_CONFIG.menu.find(x => Number(x.id) === numericId);
+  const name = item?.name || 'menu item';
+  const qty = getMenuQty(numericId);
+  actionWrap.innerHTML = qty > 0
+    ? `<div class="menu-qty menu-qty-pop" aria-label="Quantity controls for ${name}"><button type="button" data-menu-minus="${numericId}" aria-label="Decrease ${name} quantity">−</button><strong>${qty}</strong><button type="button" data-menu-plus="${numericId}" aria-label="Increase ${name} quantity">+</button></div>`
+    : `<button class="add-btn add-btn-pop" data-add="${numericId}">+ Add</button>`;
+
+  // Tiny local feedback only; the card/photos remain completely still.
+  const control = actionWrap.firstElementChild;
+  if (control) {
+    control.addEventListener('animationend', () => control.classList.remove('menu-qty-pop','add-btn-pop'), { once:true });
+  }
 }
 
 const menuGrid = document.getElementById("menuGrid");
