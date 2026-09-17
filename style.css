@@ -5359,3 +5359,243 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
 @media(prefers-reduced-motion:reduce){
   .hero-order-btn,.hero-order-btn::before,.hero-order-btn .order-icon,.scroll-down,.scroll-arrow,.experience-content .feature-card,.feature-icon,.story-section .food-thali,.story-section .floating-water,.story-section .floating-food,.story-section .butter-tikki,.phone-logo img,.phone-menu-button,.story-location .location-icon,.langar-point-icon,.gallery-more-icon,.footer-contact-icon{animation:none !important}
 }
+
+/* =========================================================
+   FINAL VISUAL + SCROLL FIX — DESKTOP + MOBILE
+   Keeps existing layout/content; fixes only the reported interactions.
+   ========================================================= */
+
+/* 1) PHONE SHOWCASE LOGO — always has a visible local fallback.
+   The admin-uploaded image still appears on top when available. */
+.phone-logo {
+  background: #fff url("assets/photos/logo.png") center / contain no-repeat !important;
+  border: 1px solid rgba(234,223,213,.9);
+  box-shadow: 0 8px 22px rgba(240,75,35,.12), 0 0 0 4px rgba(240,75,35,.04);
+}
+.phone-logo img {
+  position: relative;
+  z-index: 2;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  background: transparent !important;
+}
+.phone-logo img[src=""] { opacity: 0 !important; }
+
+/* 2) STORY DECORATIONS — four left-side objects get their own lanes.
+   Prevents roti/thali/water/paratha from stacking over each other on desktop. */
+@media (min-width: 1001px) {
+  .story-section .food-roti {
+    width: clamp(150px, 10vw, 190px) !important;
+    height: clamp(150px, 10vw, 190px) !important;
+    left: 1.5% !important;
+    top: 9% !important;
+  }
+  .story-section .food-thali {
+    width: clamp(125px, 8vw, 155px) !important;
+    height: clamp(125px, 8vw, 155px) !important;
+    left: 3.2% !important;
+    top: 40% !important;
+  }
+  .story-section .floating-water {
+    width: clamp(48px, 3.4vw, 68px) !important;
+    height: clamp(88px, 5.6vw, 118px) !important;
+    left: 1.8% !important;
+    top: 64% !important;
+    bottom: auto !important;
+  }
+  .story-section .food-paratha {
+    width: clamp(160px, 10.5vw, 205px) !important;
+    height: clamp(160px, 10.5vw, 205px) !important;
+    left: 5.5% !important;
+    bottom: 3% !important;
+  }
+
+  .story-section .food-dal {
+    width: clamp(155px, 9.5vw, 190px) !important;
+    height: clamp(155px, 9.5vw, 190px) !important;
+    right: 2.5% !important;
+    top: 5% !important;
+  }
+  .story-section .food-rajma {
+    width: clamp(185px, 11vw, 225px) !important;
+    height: clamp(185px, 11vw, 225px) !important;
+    right: 2.2% !important;
+    top: 42% !important;
+  }
+  .story-section .butter-tikki {
+    width: clamp(145px, 9.5vw, 190px) !important;
+    height: clamp(145px, 9.5vw, 190px) !important;
+    right: 11% !important;
+    bottom: 5% !important;
+  }
+}
+
+/* 3) DISCOVER OUR STORY — clear premium invitation to click. */
+.story-button {
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 12px 28px rgba(32,27,23,.16);
+  animation: storyCtaBreath 3.8s ease-in-out infinite;
+}
+.story-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,.22) 48%, transparent 72%);
+  background-size: 230% 100%;
+  animation: storyCtaShine 4.4s ease-in-out infinite;
+}
+.story-button span {
+  display: inline-block;
+  animation: storyArrowNudge 1.8s ease-in-out infinite;
+}
+@keyframes storyCtaShine {
+  0%, 58% { background-position: 150% 0; }
+  76%, 100% { background-position: -70% 0; }
+}
+@keyframes storyCtaBreath {
+  0%, 72%, 100% { box-shadow: 0 12px 28px rgba(32,27,23,.16); }
+  80% { box-shadow: 0 16px 34px rgba(240,75,35,.20); }
+}
+@keyframes storyArrowNudge {
+  0%, 100% { transform: translateX(0); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(1px); }
+}
+
+/* 4) TRUST STRIP — yellow stars fill from left to right, then reset. */
+.trust-strip > div:nth-child(2) strong {
+  display: inline-block;
+  color: transparent;
+  background: linear-gradient(90deg, #ffd43b 0%, #ffd43b 20%, #fff 20%, #fff 100%);
+  background-size: 500% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 4px rgba(255,212,59,.18));
+  animation: starsFill 4.2s cubic-bezier(.22,1,.36,1) infinite;
+}
+@keyframes starsFill {
+  0%, 18% { background-position: 100% 0; }
+  48%, 66% { background-position: 0% 0; }
+  82%, 100% { background-position: 100% 0; }
+}
+
+/* 5) PHOTO SCROLLING — vertical page scroll always wins for vertical gestures.
+   Horizontal photo swipes are handled safely by app.js. */
+.swipe-track,
+.reviews-touch-carousel {
+  touch-action: pan-y !important;
+  overscroll-behavior-y: auto !important;
+  overscroll-behavior-x: contain;
+}
+.swipe-track {
+  scroll-behavior: auto;
+}
+.swipe-track > * {
+  user-select: none;
+}
+
+/* 6) CONTACT — VISIT / ORDER / ENJOY gets the same premium energy. */
+.v2-contact {
+  isolation: isolate;
+}
+.v2-contact-main .eyebrow {
+  animation: contactEyebrowPulse 3.8s ease-in-out infinite;
+}
+.v2-contact-main h2 {
+  animation: contactHeadingFloat 5s ease-in-out infinite;
+}
+.v2-contact-meta .v2-meta-chip {
+  animation: contactChipFloat 4.5s ease-in-out infinite;
+}
+.v2-contact-meta .v2-meta-chip:nth-child(2) { animation-delay: .35s; }
+.v2-contact-meta .v2-meta-chip:nth-child(3) { animation-delay: .7s; }
+.v2-contact-meta .v2-meta-chip:nth-child(4) { animation-delay: 1.05s; }
+.v2-action {
+  overflow: hidden;
+}
+.v2-action::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -30%;
+  width: 24%;
+  transform: rotate(18deg) translateX(-220%);
+  background: rgba(255,255,255,.18);
+  pointer-events: none;
+  animation: contactActionShine 5.5s ease-in-out infinite;
+}
+.v2-action:nth-child(2)::after { animation-delay: .6s; }
+.v2-action:nth-child(3)::after { animation-delay: 1.2s; }
+.v2-action:nth-child(4)::after { animation-delay: 1.8s; }
+.v2-action:nth-child(5)::after { animation-delay: 2.4s; }
+@keyframes contactEyebrowPulse {
+  0%, 70%, 100% { letter-spacing: 1.8px; opacity: .78; }
+  80% { letter-spacing: 2.5px; opacity: 1; }
+}
+@keyframes contactHeadingFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes contactChipFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes contactActionShine {
+  0%, 58% { transform: rotate(18deg) translateX(-220%); }
+  78%, 100% { transform: rotate(18deg) translateX(650%); }
+}
+
+/* 7) FOOTER — copyright items stay together instead of being pushed apart. */
+footer > p {
+  justify-content: center !important;
+  flex-wrap: wrap;
+  gap: 7px !important;
+  text-align: center;
+}
+footer > p::after {
+  margin-left: 4px;
+}
+
+/* 8) Small premium movement for the remaining visible emoji/icon areas. */
+.v2-meta-chip,
+.v2-action,
+.footer-contact-icon,
+.location-icon,
+.langar-point-icon,
+.gallery-more-icon,
+.experience-bottom span:first-child {
+  will-change: transform;
+}
+.v2-meta-chip::first-letter,
+.v2-action::first-letter {
+  display: inline-block;
+}
+
+/* Keep motion elegant on smaller screens. */
+@media (max-width: 600px) {
+  .story-button { animation-duration: 4.6s; }
+  .v2-contact-main h2 { animation-duration: 6s; }
+  .v2-contact-meta .v2-meta-chip { animation-duration: 5.5s; }
+  .v2-action::after { animation-duration: 6.5s; }
+  footer > p { gap: 5px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-button,
+  .story-button::before,
+  .story-button span,
+  .trust-strip > div:nth-child(2) strong,
+  .v2-contact-main .eyebrow,
+  .v2-contact-main h2,
+  .v2-contact-meta .v2-meta-chip,
+  .v2-action::after {
+    animation: none !important;
+  }
+}
