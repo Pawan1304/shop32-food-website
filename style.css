@@ -5639,3 +5639,39 @@ footer > p::after {
   -webkit-user-drag: none;
   user-drag: none;
 }
+
+
+/* =========================================================
+   V11 PHONE + MENU PHOTO GESTURE FIX
+   Native vertical page scroll; pointer-only horizontal carousel.
+   ========================================================= */
+.phone-frame,
+.phone-screen,
+.phone-media-carousel,
+.menu-card .menu-carousel {
+  touch-action: auto !important;
+}
+
+.phone-media-carousel .swipe-track,
+.menu-card .menu-carousel .swipe-track,
+.about-image .swipe-track,
+.langar-gallery .swipe-track,
+.food-moments-carousel .swipe-track {
+  touch-action: pan-y pinch-zoom !important;
+  overscroll-behavior-y: auto !important;
+  overscroll-behavior-x: contain !important;
+}
+
+.swipe-track {
+  cursor: grab;
+}
+
+.swipe-track:active {
+  cursor: grabbing;
+}
+
+/* Do not animate the track while the finger is physically dragging it. */
+.swipe-track.is-dragging {
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+}
