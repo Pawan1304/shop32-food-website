@@ -159,11 +159,81 @@ function attachSafeHorizontalSwipe(track) {
    Horizontal finger movement changes photos; vertical movement is left
    to the browser so the page can scroll normally. */
 function attachPhoneShowcaseTouchSwipe(track) {
-  /* Section 2: use native touch scrolling. This deliberately does not
-     preventDefault, so a vertical finger movement continues to scroll
-     the page, while a horizontal movement scrolls the photo track. */
+  /* SECTION 2 ONLY: two-axis mobile gesture handling.
+     - Horizontal swipe = move the phone showcase photos.
+     - Vertical swipe = browser keeps scrolling the page.
+     We deliberately avoid pointer capture here so the page can retain
+     normal vertical scrolling when the gesture is vertical. */
   if (!track || track.dataset.phoneTouchSwipe === "1") return;
   track.dataset.phoneTouchSwipe = "1";
+
+  let startX = 0;
+  let startY = 0;
+  let startScroll = 0;
+  let direction = null;
+  let tracking = false;
+
+  const slides = () => [...track.children];
+
+  const snap = dx => {
+    const items = slides();
+    if (!items.length) return;
+    const current = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    let target = current;
+    if (Math.abs(dx) >= 35) {
+      target = dx < 0
+        ? Math.min(items.length - 1, current + 1)
+        : Math.max(0, current - 1);
+    }
+    track.scrollTo({ left: items[target].offsetLeft, behavior: "smooth" });
+  };
+
+  track.addEventListener("touchstart", event => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startScroll = track.scrollLeft;
+    direction = null;
+    tracking = true;
+  }, { passive: true });
+
+  track.addEventListener("touchmove", event => {
+    if (!tracking || event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (!direction) {
+      if (absX < 8 && absY < 8) return;
+      direction = absX > absY + 5 ? "horizontal" : "vertical";
+    }
+
+    /* For vertical movement, do nothing: the browser owns the gesture
+       and the document can scroll normally up/down. */
+    if (direction !== "horizontal") return;
+
+    if (event.cancelable) event.preventDefault();
+    track.scrollLeft = startScroll - dx;
+  }, { passive: false });
+
+  track.addEventListener("touchend", event => {
+    if (!tracking) return;
+    if (direction === "horizontal") {
+      const touch = event.changedTouches[0];
+      snap(touch.clientX - startX);
+    }
+    tracking = false;
+    direction = null;
+  }, { passive: true });
+
+  track.addEventListener("touchcancel", () => {
+    tracking = false;
+    direction = null;
+  }, { passive: true });
 }
 
 function setupSwipeCarousel(id) {
