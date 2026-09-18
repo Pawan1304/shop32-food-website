@@ -5781,3 +5781,25 @@ footer > p::after {
   user-select: none !important;
   -webkit-user-select: none !important;
 }
+
+
+/* =========================================================
+   SECTION 3 — OUR STORY ONLY
+   Targeted mobile decoration fix. Do not alter Sections 1–2.
+   ========================================================= */
+@media (max-width: 600px) {
+  .story-section .floating-water {
+    width: 56px !important;
+    height: 98px !important;
+    right: 2% !important;
+    left: auto !important;
+    top: 55% !important;
+    bottom: auto !important;
+    z-index: 4 !important;
+  }
+  .story-section .food-rajma {
+    right: -14px !important;
+    top: 43% !important;
+    z-index: 2 !important;
+  }
+}
