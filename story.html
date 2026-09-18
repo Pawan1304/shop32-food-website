@@ -5672,26 +5672,37 @@ footer > p::after {
    and a clearer Google Maps location link.
    ========================================================= */
 
-/* 1) Scroll down: keep it completely stationary on desktop + mobile. */
+/* 1) Scroll down: restore a subtle transient/floating motion on desktop + mobile. */
 .scroll-down {
-  animation: none !important;
-  will-change: auto !important;
+  animation: scrollPromptFloat 1.8s ease-in-out infinite !important;
+  will-change: transform;
 }
 
 .scroll-down .scroll-arrow {
-  animation: none !important;
-  will-change: auto !important;
+  animation: scrollArrowBounce 1.8s ease-in-out infinite !important;
+  will-change: transform;
 }
 
-/* Preserve the existing desktop position without animated transforms. */
+/* Keep the desktop centering while the floating animation runs. */
 @media (min-width: 601px) {
   .scroll-down {
-    transform: translateX(-50%) !important;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+/* On mobile the button is positioned at the lower-right, so use a Y-only motion. */
+@media (max-width: 600px) {
+  .scroll-down {
+    animation: scrollFloatMobile 1.8s ease-in-out infinite !important;
+    transform: none;
   }
 }
 
 /* 2) See Menu / Order Food: always use the requested solid yellow. */
 .hero-order-btn.menu-btn {
+  background-color: #f5a20a !important;
   background: #f5a20a !important;
   background-image: none !important;
   opacity: 1 !important;
