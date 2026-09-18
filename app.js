@@ -323,6 +323,77 @@ function attachMenuCarouselTouchSwipe(track) {
   }, { passive: true });
 }
 
+
+/* SECTION 5 ONLY — Langar carousel two-axis touch handling.
+   Horizontal = change Langar media; vertical = normal page scrolling. */
+function attachLangarCarouselTouchSwipe(track) {
+  if (!track || track.dataset.langarTouchSwipe === "1") return;
+  track.dataset.langarTouchSwipe = "1";
+
+  let startX = 0;
+  let startY = 0;
+  let startScroll = 0;
+  let direction = null;
+  let tracking = false;
+
+  const getSlides = () => [...track.children];
+  const snap = dx => {
+    const slides = getSlides();
+    if (!slides.length) return;
+    const current = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+    let target = current;
+    if (Math.abs(dx) >= 32) {
+      target = dx < 0
+        ? Math.min(slides.length - 1, current + 1)
+        : Math.max(0, current - 1);
+    }
+    track.scrollTo({ left: slides[target].offsetLeft, behavior: "smooth" });
+  };
+
+  track.addEventListener("touchstart", event => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startScroll = track.scrollLeft;
+    direction = null;
+    tracking = true;
+  }, { passive: true });
+
+  track.addEventListener("touchmove", event => {
+    if (!tracking || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (!direction) {
+      if (absX < 8 && absY < 8) return;
+      direction = absX > absY + 6 ? "horizontal" : "vertical";
+    }
+
+    if (direction !== "horizontal") return;
+    if (event.cancelable) event.preventDefault();
+    track.scrollLeft = startScroll - dx;
+  }, { passive: false });
+
+  track.addEventListener("touchend", event => {
+    if (!tracking) return;
+    if (direction === "horizontal") {
+      const touch = event.changedTouches[0];
+      snap(touch.clientX - startX);
+    }
+    tracking = false;
+    direction = null;
+  }, { passive: true });
+
+  track.addEventListener("touchcancel", () => {
+    tracking = false;
+    direction = null;
+  }, { passive: true });
+}
+
 function setupSwipeCarousel(id) {
   const root = document.getElementById(id);
   if (!root) return;
@@ -336,6 +407,10 @@ function setupSwipeCarousel(id) {
     attachPhoneShowcaseTouchSwipe(track);
   } else if (id.startsWith("menuCarousel-")) {
     attachMenuCarouselTouchSwipe(track);
+  } else if (id === "langarCarousel") {
+    // Section 5: use the browser's native two-axis touch scrolling.
+    // This keeps horizontal photo swiping and vertical page scrolling
+    // independent without JS gesture interception.
   } else {
     attachSafeHorizontalSwipe(track);
   }
