@@ -6334,3 +6334,189 @@ footer > p::after {
     transition: none !important;
   }
 }
+
+/* =========================================================
+   SECTION 10 — FINAL MOBILE COMPACT FOOTER + NAV
+   Scoped only to footer and the fixed mobile navigation.
+   ========================================================= */
+@media (max-width: 600px) {
+  /* Make the footer substantially shorter without hiding content. */
+  footer {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding: 30px 18px 18px !important;
+  }
+
+  .footer-brand {
+    gap: 11px !important;
+    align-items: flex-start !important;
+  }
+
+  .footer-brand .brand-mark {
+    width: 52px !important;
+    height: 52px !important;
+    flex-basis: 52px !important;
+    border-radius: 14px !important;
+    padding: 4px !important;
+  }
+
+  .footer-brand strong {
+    margin-top: 0 !important;
+    font-size: 22px !important;
+    line-height: 1.08 !important;
+  }
+
+  .footer-brand small {
+    margin-top: 4px !important;
+    font-size: 10px !important;
+  }
+
+  .footer-brand .footer-description {
+    margin: 9px 0 0 !important;
+    max-width: 100% !important;
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+  }
+
+  .footer-badge {
+    margin-top: 9px !important;
+    padding: 6px 10px !important;
+    font-size: 9px !important;
+  }
+
+  .footer-column h4 {
+    margin: 0 0 9px !important;
+    font-size: 9px !important;
+    letter-spacing: 1.5px !important;
+  }
+
+  /* Two compact columns for Explore links. */
+  .footer-links {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px 14px !important;
+    width: 100% !important;
+  }
+
+  .footer-links a {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
+  }
+
+  .footer-contact-list {
+    gap: 7px !important;
+  }
+
+  .footer-contact-card {
+    gap: 9px !important;
+    padding: 8px 10px !important;
+    border-radius: 11px !important;
+  }
+
+  /* Center the emoji inside its complete tile. */
+  .footer-contact-icon {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    flex-basis: 38px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    text-align: center !important;
+    font-size: 19px !important;
+    line-height: 1 !important;
+  }
+
+  .footer-contact-card span {
+    font-size: 8px !important;
+    margin-bottom: 1px !important;
+  }
+
+  .footer-contact-card strong {
+    font-size: 10px !important;
+    line-height: 1.25 !important;
+  }
+
+  .footer-order-btn {
+    min-height: 42px !important;
+    margin-top: 0 !important;
+    padding: 9px 12px !important;
+    border-radius: 11px !important;
+    font-size: 11px !important;
+  }
+
+  footer > p {
+    padding-top: 13px !important;
+    font-size: 8px !important;
+    line-height: 1.4 !important;
+  }
+
+  footer > p::after {
+    font-size: 8px !important;
+    margin-top: 3px !important;
+  }
+
+  /* Mobile navigation: larger, genuinely centered icons + polished buttons. */
+  .mobile-nav a,
+  .mobile-nav button {
+    height: 50px !important;
+    min-height: 50px !important;
+    padding: 4px 5px !important;
+    gap: 3px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    font-size: 23px !important;
+    line-height: 1 !important;
+    border-radius: 12px !important;
+  }
+
+  .mobile-nav a span,
+  .mobile-nav button span {
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+    font-weight: 800 !important;
+  }
+
+  .mobile-nav a:active,
+  .mobile-nav button:active {
+    transform: translateY(-1px) scale(.96) !important;
+  }
+
+  .mobile-nav b {
+    top: 1px !important;
+    right: calc(50% - 24px) !important;
+    min-width: 17px !important;
+    height: 17px !important;
+    font-size: 8px !important;
+    line-height: 17px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  footer {
+    padding: 26px 16px 15px !important;
+    gap: 15px !important;
+  }
+
+  .footer-brand .brand-mark {
+    width: 48px !important;
+    height: 48px !important;
+    flex-basis: 48px !important;
+  }
+
+  .footer-brand strong { font-size: 20px !important; }
+  .footer-brand .footer-description { font-size: 10.5px !important; }
+  .footer-links { gap: 6px 12px !important; }
+  .footer-links a { font-size: 10.5px !important; }
+
+  .footer-contact-icon {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    flex-basis: 36px !important;
+    font-size: 18px !important;
+  }
+}
