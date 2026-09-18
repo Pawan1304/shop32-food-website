@@ -1634,23 +1634,19 @@
       font-size: 11px;
     }
 
+
     .category-tabs {
+
       display: flex;
+
       gap: 9px;
-      width: 100%;
-      min-width: 0;
+
       overflow-x: auto;
-      overflow-y: hidden;
+
       padding-bottom: 10px;
+
       margin-bottom: 28px;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior-x: contain;
-      touch-action: pan-x;
-      scrollbar-width: none;
     }
-
-    .category-tabs::-webkit-scrollbar { display: none; }
-
 
 
     .category-tabs button {
@@ -2370,88 +2366,7 @@
       }
     }
 
-    
-
     @media (max-width: 600px) {
-      /* Mobile interaction layer: keep cart/nav above animated sections. */
-      .mobile-nav {
-        z-index: 1000 !important;
-        isolation: isolate;
-        padding-bottom: max(7px, env(safe-area-inset-bottom));
-      }
-
-      .mobile-nav a,
-      .mobile-nav button {
-        min-width: 54px;
-        min-height: 52px;
-        touch-action: manipulation;
-      }
-
-      .cart-button {
-        flex: 0 0 auto;
-        min-width: 112px;
-        min-height: 46px;
-        white-space: nowrap;
-      }
-
-      .cart-button span {
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
-      }
-
-      .menu-section .section-heading {
-        align-items: center;
-        gap: 12px;
-      }
-
-      .menu-section .section-heading > div { min-width: 0; }
-
-      .phone-media-carousel,
-      .menu-card .menu-carousel,
-      .about-story-carousel,
-      .food-moments-carousel,
-      .langar-gallery,
-      .daily-menu-carousel {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-      }
-
-      .phone-media-carousel .swipe-track,
-      .menu-card .menu-carousel .swipe-track,
-      .about-story-carousel .swipe-track,
-      .food-moments-carousel .swipe-track,
-      .langar-gallery .swipe-track,
-      .daily-menu-carousel .swipe-track {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-      }
-
-      .phone-media-carousel .swipe-arrow,
-      .menu-card .menu-carousel .swipe-arrow,
-      .about-story-carousel .swipe-arrow,
-      .food-moments-carousel .swipe-arrow,
-      .langar-gallery .swipe-arrow {
-        z-index: 20;
-        pointer-events: auto;
-      }
-
-      .feature-icon,
-      .contact-info-icon,
-      .langar-point-icon {
-        flex: 0 0 48px;
-        width: 48px;
-        height: 48px;
-        min-width: 48px;
-        min-height: 48px;
-        font-size: 24px;
-        line-height: 1;
-        display: grid;
-        place-items: center;
-      }
-@media (max-width: 600px) {
       .contact-section {
         margin: 0 20px 70px;
         padding: 32px 20px;
@@ -4076,10 +3991,9 @@
       scroll-behavior: smooth;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
-            /* Mobile: vertical page scroll remains native; horizontal swipes are handled by the carousel. */
-      touch-action: pan-y pinch-zoom;
-      cursor: grab;
-
+      /* Allow BOTH vertical page scrolling and horizontal photo swiping.
+         Previously this was `pan-x`, which trapped finger gestures on photos
+         and made the page feel stuck while scrolling down. */
         }
 
     .swipe-track::-webkit-scrollbar { display: none; }
@@ -4095,20 +4009,8 @@
     .swipe-slide {
       flex: 0 0 100%;
       width: 100%;
-      min-width: 100%;
       scroll-snap-align: center;
       scroll-snap-stop: always;
-    }
-
-    .swipe-track.is-dragging {
-      cursor: grabbing;
-      scroll-behavior: auto !important;
-      scroll-snap-type: none !important;
-    }
-
-    .swipe-track.is-dragging img,
-    .swipe-track.is-dragging video {
-      pointer-events: none;
     }
 
     .swipe-dots {
@@ -5762,4 +5664,80 @@ footer > p::after {
   object-fit: cover;
   border-radius: 21px;
   background: #000;
+}
+
+/* =========================================================
+   SECTION 1 — HERO ONLY
+   Final targeted fixes: static scroll prompt, solid menu CTA,
+   and a clearer Google Maps location link.
+   ========================================================= */
+
+/* 1) Scroll down: restore a subtle transient/floating motion on desktop + mobile. */
+.scroll-down {
+  animation: scrollPromptFloat 1.8s ease-in-out infinite !important;
+  will-change: transform;
+}
+
+.scroll-down .scroll-arrow {
+  animation: scrollArrowBounce 1.8s ease-in-out infinite !important;
+  will-change: transform;
+}
+
+/* Keep the desktop centering while the floating animation runs. */
+@media (min-width: 601px) {
+  .scroll-down {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+}
+
+/* On mobile the button is positioned at the lower-right, so use a Y-only motion. */
+@media (max-width: 600px) {
+  .scroll-down {
+    animation: scrollFloatMobile 1.8s ease-in-out infinite !important;
+    transform: none;
+  }
+}
+
+/* 2) See Menu / Order Food: always use the requested solid yellow. */
+.hero-order-btn.menu-btn {
+  background-color: #f5a20a !important;
+  background: #f5a20a !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+/* 3) Open Maps: make the location link look like a deliberate CTA. */
+.hero-location {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  background: rgba(20,18,16,.42);
+  color: rgba(255,255,255,.95) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.hero-location:hover {
+  background: rgba(20,18,16,.62);
+  border-color: rgba(255,255,255,.46);
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.16);
+}
+
+@media (max-width: 600px) {
+  .hero-location {
+    padding: 5px 9px;
+    gap: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
