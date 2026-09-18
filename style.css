@@ -6048,3 +6048,23 @@ footer > p::after {
     box-sizing:border-box;
   }
 }
+
+
+/* SECTION 6 ONLY — desktop About Us image sizing.
+   Keep the approved mobile sizing unchanged. */
+@media (min-width: 601px) {
+  #aboutStoryCarousel .about-story-slide {
+    height: 560px;
+    min-height: 560px;
+  }
+  #aboutStoryCarousel .about-story-image {
+    height: 560px;
+    min-height: 0;
+  }
+  #aboutStoryCarousel .about-story-image img {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    object-fit: cover;
+  }
+}
