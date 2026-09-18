@@ -159,63 +159,11 @@ function attachSafeHorizontalSwipe(track) {
    Horizontal finger movement changes photos; vertical movement is left
    to the browser so the page can scroll normally. */
 function attachPhoneShowcaseTouchSwipe(track) {
+  /* Section 2: use native touch scrolling. This deliberately does not
+     preventDefault, so a vertical finger movement continues to scroll
+     the page, while a horizontal movement scrolls the photo track. */
   if (!track || track.dataset.phoneTouchSwipe === "1") return;
   track.dataset.phoneTouchSwipe = "1";
-
-  let startX = 0;
-  let startY = 0;
-  let startScroll = 0;
-  let horizontal = false;
-
-  const snap = dx => {
-    const slides = [...track.children];
-    if (!slides.length) return;
-    const width = Math.max(1, track.clientWidth);
-    const current = Math.round(track.scrollLeft / width);
-    const direction = Math.abs(dx) >= 36 ? (dx < 0 ? 1 : -1) : 0;
-    const index = Math.max(0, Math.min(slides.length - 1, current + direction));
-    track.scrollTo({ left: slides[index].offsetLeft, behavior: "smooth" });
-  };
-
-  track.addEventListener("touchstart", event => {
-    if (event.touches.length !== 1) return;
-    const touch = event.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-    startScroll = track.scrollLeft;
-    horizontal = false;
-  }, { passive: true });
-
-  track.addEventListener("touchmove", event => {
-    if (event.touches.length !== 1) return;
-    const touch = event.touches[0];
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
-
-    if (!horizontal) {
-      if (absX < 8 && absY < 8) return;
-      if (absY > absX + 6) return;
-      horizontal = true;
-    }
-
-    if (horizontal) {
-      if (event.cancelable) event.preventDefault();
-      track.scrollLeft = startScroll - dx;
-    }
-  }, { passive: false });
-
-  track.addEventListener("touchend", event => {
-    if (!horizontal) return;
-    const touch = event.changedTouches[0];
-    snap(touch.clientX - startX);
-    horizontal = false;
-  }, { passive: true });
-
-  track.addEventListener("touchcancel", () => {
-    horizontal = false;
-  }, { passive: true });
 }
 
 function setupSwipeCarousel(id) {
