@@ -4,6 +4,13 @@ let activeCategory = "All";
 const money = n => `${SHOP_CONFIG.currency}${n}`;
 const save = () => localStorage.setItem("foodShopCart", JSON.stringify(cart));
 
+const escHtml = value => String(value ?? "")
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;")
+  .replace(/'/g, "&#039;");
+
 /* Basic shop links/text */
 document.querySelectorAll("[data-shop-name]").forEach(el => el.textContent = SHOP_CONFIG.shopName);
 document.querySelectorAll("[data-address]").forEach(el => el.textContent = SHOP_CONFIG.address);
@@ -22,54 +29,113 @@ function attachSafeHorizontalSwipe(track) {
   if (!track || track.dataset.safeSwipe === "1") return;
   track.dataset.safeSwipe = "1";
 
+  let pointerId = null;
   let startX = 0;
   let startY = 0;
   let startScroll = 0;
-  let pointerId = null;
-  let dragging = false;
+  let active = false;
   let horizontal = false;
 
   const isInteractive = target => !!target?.closest?.(
-    "button, a, input, textarea, select, video, audio"
+    "button, input, textarea, select, video, audio"
   );
 
-  const reset = () => {
-    dragging = false;
+  const setDragging = on => {
+    track.classList.toggle("is-dragging", on);
+    if (on) {
+      track.style.scrollBehavior = "auto";
+      track.style.scrollSnapType = "none";
+    } else {
+      track.style.removeProperty("scroll-behavior");
+      track.style.removeProperty("scroll-snap-type");
+    }
+  };
+
+  const cleanup = () => {
+    setDragging(false);
+    active = false;
     horizontal = false;
     pointerId = null;
-    track.classList.remove("is-dragging");
+  };
+
+  const snapToNearest = dx => {
+    const slides = [...track.children];
+    if (!slides.length) return;
+
+    let nearestIndex = 0;
+    let nearestDistance = Infinity;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    let targetIndex = nearestIndex;
+    if (Math.abs(dx) >= 36) {
+      targetIndex = dx < 0
+        ? Math.min(slides.length - 1, nearestIndex + 1)
+        : Math.max(0, nearestIndex - 1);
+    }
+
+    track.scrollTo({
+      left: slides[targetIndex].offsetLeft,
+      behavior: "smooth"
+    });
+  };
+
+  const end = event => {
+    if (!active || event.pointerId !== pointerId) return;
+
+    const wasHorizontal = horizontal;
+    const dx = event.clientX - startX;
+
+    if (wasHorizontal && !track.classList.contains("reviews-touch-carousel")) snapToNearest(dx);
+
+    try {
+      if (track.hasPointerCapture?.(event.pointerId)) {
+        track.releasePointerCapture(event.pointerId);
+      }
+    } catch (_) {}
+
+    cleanup();
   };
 
   track.addEventListener("pointerdown", event => {
+    if (!event.isPrimary) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (isInteractive(event.target)) return;
 
+    pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
     startScroll = track.scrollLeft;
-    pointerId = event.pointerId;
-    dragging = true;
+    active = true;
     horizontal = false;
   }, { passive: true });
 
   track.addEventListener("pointermove", event => {
-    if (!dragging || event.pointerId !== pointerId) return;
+    if (!active || event.pointerId !== pointerId) return;
 
     const dx = event.clientX - startX;
     const dy = event.clientY - startY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
 
-    // Vertical gesture: immediately return control to the browser/page.
-    // touch-action: pan-y keeps normal up/down scrolling available.
     if (!horizontal) {
-      if (Math.abs(dy) > Math.abs(dx) + 6) {
-        reset();
+      if (absX < 8 && absY < 8) return;
+
+      // Vertical gesture: immediately hand the gesture back to the browser.
+      // `touch-action: pan-y pinch-zoom` then keeps normal page scrolling.
+      if (absY > absX + 6) {
+        cleanup();
         return;
       }
 
-      if (Math.abs(dx) < 8) return;
-
-      // A clear horizontal gesture belongs to the photo carousel.
+      // Horizontal gesture: JS takes control of the carousel.
       horizontal = true;
+      setDragging(true);
       try { track.setPointerCapture(event.pointerId); } catch (_) {}
     }
 
@@ -79,56 +145,13 @@ function attachSafeHorizontalSwipe(track) {
     track.scrollLeft = startScroll - dx;
   }, { passive: false });
 
-  const finish = event => {
-    if (!dragging || event.pointerId !== pointerId) return;
+  track.addEventListener("pointerup", end, { passive: true });
+  track.addEventListener("pointercancel", event => {
+    if (event.pointerId === pointerId) cleanup();
+  }, { passive: true });
 
-    const wasHorizontal = horizontal;
-    const dx = event.clientX - startX;
-
-    if (wasHorizontal) {
-      const slideTrack = track.classList.contains("reviews-touch-carousel")
-        ? track.querySelector(".reviews-track")
-        : track;
-      const slides = [...(slideTrack?.children || [])];
-
-      if (slides.length) {
-        let current = 0;
-        let nearest = Infinity;
-        slides.forEach((slide, index) => {
-          const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
-          if (distance < nearest) {
-            nearest = distance;
-            current = index;
-          }
-        });
-
-        let target = current;
-        if (Math.abs(dx) > 35) {
-          target = dx < 0
-            ? Math.min(slides.length - 1, current + 1)
-            : Math.max(0, current - 1);
-        }
-
-        track.scrollTo({
-          left: slides[target].offsetLeft,
-          behavior: "smooth"
-        });
-      }
-    }
-
-    try {
-      if (track.hasPointerCapture?.(event.pointerId)) {
-        track.releasePointerCapture(event.pointerId);
-      }
-    } catch (_) {}
-
-    reset();
-  };
-
-  track.addEventListener("pointerup", finish, { passive: true });
-  track.addEventListener("pointercancel", reset, { passive: true });
-  track.addEventListener("lostpointercapture", () => {
-    if (horizontal) reset();
+  track.addEventListener("lostpointercapture", event => {
+    if (event.pointerId === pointerId && active) cleanup();
   }, { passive: true });
 }
 
@@ -184,12 +207,13 @@ function renderMediaCollection(trackId, dotsId, items, allowVideo = false) {
   const track = document.getElementById(trackId);
   if (!track) return;
 
-  track.innerHTML = items.map(item => {
+  track.innerHTML = items.map((item, index) => {
     const media = typeof item === "string" ? { type: "image", src: item, alt: "Sudh Vaishno Tandoor food" } : item;
+    const loading = index === 0 ? "eager" : "lazy";
     if (allowVideo && media.type === "video") {
       return `<div class="swipe-slide"><video src="${media.src}" autoplay muted loop playsinline preload="metadata" aria-label="${media.alt || "Food video"}"></video></div>`;
     }
-    return `<div class="swipe-slide"><img src="${media.src}" alt="${media.alt || "Sudh Vaishno Tandoor food"}" loading="lazy"></div>`;
+    return `<div class="swipe-slide"><img src="${media.src}" alt="${media.alt || "Sudh Vaishno Tandoor food"}" loading="${loading}" decoding="async"></div>`;
   }).join("");
 
   const root = track.closest(".swipe-carousel");
@@ -201,8 +225,6 @@ function renderMediaCollection(trackId, dotsId, items, allowVideo = false) {
 renderMediaCollection("phoneMediaTrack", "phoneMediaDots", SHOP_CONFIG.experienceMedia || [], true);
 
 /* About gallery */
-renderMediaCollection("aboutTrack", "aboutDots", SHOP_CONFIG.aboutImages || []);
-
 /* Food & Moments gallery */
 renderMediaCollection("galleryTrack", "galleryDots", SHOP_CONFIG.galleryImages || []);
 
@@ -252,14 +274,19 @@ function renderMenu() {
       const type = typeof media === 'string' ? 'image' : (media.type || 'image');
       const src = typeof media === 'string' ? media : media.src;
       const caption = typeof media === 'string' ? '' : (media.caption || '');
-      if(type === 'video') return `<div class="swipe-slide"><div class="menu-media-wrap"><video class="menu-img menu-video" src="${src}" controls muted playsinline preload="metadata" aria-label="${item.name} video"></video>${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
-      return `<div class="swipe-slide"><div class="menu-media-wrap"><img class="menu-img" src="${src}" alt="${item.name} photo ${i + 1}" loading="lazy">${caption ? `<div class="menu-media-caption">${caption}</div>` : ''}</div></div>`;
+      const safeSrc = escHtml(src);
+      const safeCaption = escHtml(caption);
+      const safeName = escHtml(item.name);
+      if(type === 'video') return `<div class="swipe-slide"><div class="menu-media-wrap"><video class="menu-img menu-video" src="${safeSrc}" controls muted playsinline preload="metadata" aria-label="${safeName} video"></video>${caption ? `<div class="menu-media-caption">${safeCaption}</div>` : ''}</div></div>`;
+      return `<div class="swipe-slide"><div class="menu-media-wrap"><img class="menu-img" src="${safeSrc}" alt="${safeName} photo ${i + 1}" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">${caption ? `<div class="menu-media-caption">${safeCaption}</div>` : ''}</div></div>`;
     }).join("");
     const qty = getMenuQty(item.id);
+    const safeName = escHtml(item.name);
     const action = qty > 0
-      ? `<div class="menu-qty" aria-label="Quantity controls for ${item.name}"><button type="button" data-menu-minus="${item.id}" aria-label="Decrease ${item.name} quantity">−</button><strong>${qty}</strong><button type="button" data-menu-plus="${item.id}" aria-label="Increase ${item.name} quantity">+</button></div>`
+      ? `<div class="menu-qty" aria-label="Quantity controls for ${safeName}"><button type="button" data-menu-minus="${item.id}" aria-label="Decrease ${safeName} quantity">−</button><strong>${qty}</strong><button type="button" data-menu-plus="${item.id}" aria-label="Increase ${safeName} quantity">+</button></div>`
       : `<button class="add-btn" data-add="${item.id}">+ Add</button>`;
-    return `<article class="menu-card" data-menu-card="${item.id}"><div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}"><div class="swipe-track">${slides}</div>${images.length > 1 ? `<button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${item.name} photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${item.name} photo">›</button><div class="swipe-dots"></div>` : ""}</div><div class="menu-body"><h3>${item.name}</h3><p>${item.description}</p><div class="menu-bottom"><span class="price">${money(item.price)}</span><span class="menu-action" data-menu-action="${item.id}">${action}</span></div></div></article>`;
+    const safeDescription = escHtml(item.description);
+    return `<article class="menu-card" data-menu-card="${item.id}"><div class="menu-carousel swipe-carousel" id="menuCarousel-${item.id}"><div class="swipe-track">${slides}</div>${images.length > 1 ? `<button class="swipe-arrow prev" type="button" data-carousel-prev="menuCarousel-${item.id}" aria-label="Previous ${safeName} photo">‹</button><button class="swipe-arrow next" type="button" data-carousel-next="menuCarousel-${item.id}" aria-label="Next ${safeName} photo">›</button><div class="swipe-dots"></div>` : ""}</div><div class="menu-body"><h3>${safeName}</h3><p>${safeDescription}</p><div class="menu-bottom"><span class="price">${money(item.price)}</span><span class="menu-action" data-menu-action="${item.id}">${action}</span></div></div></article>`;
   }).join("");
   items.forEach(item => { if ((liveMenuMediaByName[item.name] || item.images || []).length > 1) setupSwipeCarousel(`menuCarousel-${item.id}`); });
 }
@@ -565,229 +592,6 @@ loadLiveMenuItems();
 
 
 /* =====================================================
-   SUPABASE LIVE MEDIA SYSTEM
-   - Today's Menu: only the admin-selected menu photo
-   - Langar: ONLY Supabase Langar photos + YouTube thumbnails
-   - Gallery: Supabase gallery photos
-   ===================================================== */
-(function () {
-  if (!window.supabase || typeof supabaseClient === "undefined") return;
-
-  const esc = (value) => String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-
-  async function getPhotos(category, limit) {
-    const { data, error } = await supabaseClient
-      .from("site_photos")
-      .select("id,title,short_title,category,media_type,youtube_url,public_url,is_today")
-      .eq("category", category)
-      .order("id", { ascending: false })
-      .limit(limit);
-
-    if (error) {
-      console.warn("Supabase media system:", error.message);
-      return [];
-    }
-
-    return data || [];
-  }
-
-  async function getTodaysMenu() {
-    // Prefer the photo explicitly marked Today's Menu in Admin Panel.
-    const { data, error } = await supabaseClient
-      .from("site_photos")
-      .select("id,title,short_title,category,public_url,is_today")
-      .eq("category", "menu")
-      .eq("is_today", true)
-      .order("id", { ascending: false })
-      .limit(1);
-
-    if (error) {
-      console.warn("Today's Menu:", error.message);
-      return null;
-    }
-
-    // Backward-compatible fallback if older menu uploads do not have is_today set.
-    if (data && data.length) return data[0];
-
-    const { data: latest, error: latestError } = await supabaseClient
-      .from("site_photos")
-      .select("id,title,short_title,category,public_url,is_today")
-      .eq("category", "menu")
-      .order("id", { ascending: false })
-      .limit(1);
-
-    if (latestError) {
-      console.warn("Latest Menu:", latestError.message);
-      return null;
-    }
-
-    return latest?.[0] || null;
-  }
-
-  function renderDailyMenu(photo) {
-    const box = document.getElementById("dailyMenuPhotoBox");
-    if (!box || !photo) return;
-
-    box.innerHTML = `
-      <div class="daily-menu-photo-card">
-        <div class="daily-menu-photo-heading">
-          <span>🍽️ TODAY'S MENU</span>
-        </div>
-        <img src="${esc(photo.public_url)}" alt="${esc(photo.short_title || photo.title || "Today's menu")}" loading="lazy">
-      </div>
-    `;
-  }
-
-  function ensureLangarCaptionStyles() {
-    if (document.getElementById("supabaseLangarCaptionStyles")) return;
-
-    const style = document.createElement("style");
-    style.id = "supabaseLangarCaptionStyles";
-    style.textContent = `
-      .langar-media-slide { position: relative; }
-      .langar-photo-card, .langar-youtube-card {
-        position: relative; width: 100%; height: 100%; display: block;
-        overflow: hidden; border-radius: 21px;
-      }
-      .langar-photo-card img, .langar-youtube-card img {
-        display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 21px;
-      }
-      .langar-photo-caption, .langar-youtube-info {
-        position: absolute; left: 0; right: 0; bottom: 0; z-index: 3;
-        padding: 12px 16px 14px;
-        background: rgba(0, 0, 0, 0.58);
-        color: #fff;
-        backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-      }
-      .langar-photo-caption strong, .langar-youtube-info strong {
-        display: block; color: #fff; font-size: 16px; line-height: 1.35;
-        font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.55);
-      }
-      .langar-youtube-info em {
-        display: block; margin-top: 4px; color: rgba(255,255,255,.9);
-        font-size: 12px; font-style: normal;
-      }
-      .langar-youtube-play {
-        position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-        z-index: 4; width: 58px; height: 58px; display: grid; place-items: center;
-        border-radius: 50%; background: #ef3333; color: #fff; font-size: 25px;
-        padding-left: 4px; box-shadow: 0 6px 18px rgba(0,0,0,.3);
-      }
-      @media (max-width: 600px) {
-        .langar-photo-caption, .langar-youtube-info { padding: 9px 12px 11px; }
-        .langar-photo-caption strong, .langar-youtube-info strong { font-size: 14px; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  function renderLangar(items) {
-    const track = document.getElementById("langarTrack");
-    const dots = document.getElementById("langarDots");
-    const root = document.getElementById("langarCarousel");
-
-    if (!track || !root) return;
-
-    ensureLangarCaptionStyles();
-
-    // IMPORTANT: clear the old static/config Langar images first.
-    track.innerHTML = "";
-    if (dots) dots.innerHTML = "";
-
-    if (!items.length) {
-      track.innerHTML = `
-        <div class="swipe-slide langar-empty-slide">
-          <div class="langar-empty-message">
-            🙏 Langar Seva photos and videos will appear here.
-          </div>
-        </div>
-      `;
-      return;
-    }
-
-    track.innerHTML = items.map((item) => {
-      const title = item.short_title || item.title || "Langar Seva";
-      // YouTube item: thumbnail is stored in Supabase; clicking opens the saved YouTube URL.
-      if (item.media_type === "youtube" && item.youtube_url) {
-        return `
-          <div class="swipe-slide langar-media-slide">
-            <a
-              class="langar-youtube-card"
-              href="${esc(item.youtube_url)}"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Watch ${esc(title)} on YouTube"
-            >
-              <img src="${esc(item.public_url)}" alt="${esc(title)}" loading="lazy">
-              <span class="langar-youtube-play" aria-hidden="true">▶</span>
-              <div class="langar-youtube-info">
-                <strong>${esc(title)}</strong>
-                <em>▶ Watch on YouTube ↗</em>
-              </div>
-            </a>
-          </div>
-        `;
-      }
-
-      // Normal Langar food/distribution photo.
-      return `
-        <div class="swipe-slide langar-media-slide">
-          <div class="langar-photo-card">
-            <img src="${esc(item.public_url)}" alt="${esc(title)}" loading="lazy">
-            <div class="langar-photo-caption">
-              <strong>${esc(title)}</strong>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    // Build dots and arrow behavior once, after the live slides exist.
-    setupSwipeCarousel("langarCarousel");
-  }
-
-  function renderGallery(photos) {
-    const grid = document.getElementById("livePhotoGrid");
-    if (!grid || !photos.length) return;
-
-    grid.innerHTML = photos.map(photo => `
-      <figure class="live-photo-card">
-        <img src="${esc(photo.public_url)}" alt="${esc(photo.title || "Sudh Vaishno Tandoor photo")}" loading="lazy">
-        <figcaption>${esc(photo.title || "Sudh Vaishno Tandoor")}</figcaption>
-      </figure>
-    `).join("");
-  }
-
-  async function loadLivePhotos() {
-    try {
-      const [menu, langar, gallery] = await Promise.all([
-        getTodaysMenu(),
-        getPhotos("langar", 12),
-        getPhotos("gallery", 12)
-      ]);
-
-      renderDailyMenu(menu);
-      renderLangar(langar);
-      renderGallery(gallery.slice(0,5));
-    } catch (error) {
-      console.warn("Live media system:", error);
-    }
-  }
-
-  // app.js is loaded at the end of index.html, but this also works if the script is moved.
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", loadLivePhotos);
-  } else {
-    loadLivePhotos();
-  }
-})();
-
-/* =====================================================
    ADVANCED LIVE CONTENT + PWA UX
    - Today's Menu multi-photo carousel
    - Editable About stories
@@ -923,6 +727,47 @@ loadLiveMenuItems();
     return data || [];
   }
 
+  function renderLangar(items) {
+    const track = document.getElementById('langarTrack');
+    const root = document.getElementById('langarCarousel');
+    if (!track || !root) return;
+
+    track.innerHTML = '';
+    const rows = items || [];
+    if (!rows.length) {
+      track.innerHTML = `<div class="swipe-slide langar-empty-slide"><div class="langar-empty-message">🙏 Langar Seva photos and videos will appear here.</div></div>`;
+      root.querySelectorAll('.swipe-arrow,.swipe-dots').forEach(el => el.remove());
+      return;
+    }
+
+    track.innerHTML = rows.map(item => {
+      const title = item.short_title || item.title || 'Langar Seva';
+      if (item.media_type === 'youtube' && item.youtube_url) {
+        return `<div class="swipe-slide langar-media-slide">
+          <a class="langar-youtube-card" href="${esc(item.youtube_url)}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${esc(title)} on YouTube">
+            <img src="${esc(item.public_url)}" alt="${esc(title)}" loading="lazy">
+            <span class="langar-youtube-play" aria-hidden="true">▶</span>
+            <div class="langar-youtube-info"><strong>${esc(title)}</strong><em>▶ Watch on YouTube ↗</em></div>
+          </a>
+        </div>`;
+      }
+      if (item.media_type === 'video') {
+        return `<div class="swipe-slide langar-media-slide"><div class="langar-photo-card"><video src="${esc(item.public_url)}" controls muted playsinline preload="metadata" aria-label="${esc(title)}"></video><div class="langar-photo-caption"><strong>${esc(title)}</strong></div></div></div>`;
+      }
+      return `<div class="swipe-slide langar-media-slide"><div class="langar-photo-card"><img src="${esc(item.public_url)}" alt="${esc(title)}" loading="lazy"><div class="langar-photo-caption"><strong>${esc(title)}</strong></div></div></div>`;
+    }).join('');
+
+    root.querySelectorAll('.swipe-arrow,.swipe-dots').forEach(el => el.remove());
+    if (rows.length > 1) {
+      root.insertAdjacentHTML('beforeend', `
+        <button class="swipe-arrow prev" type="button" data-carousel-prev="langarCarousel" aria-label="Previous Langar photo">‹</button>
+        <button class="swipe-arrow next" type="button" data-carousel-next="langarCarousel" aria-label="Next Langar photo">›</button>
+        <div class="swipe-dots" id="langarDots"></div>
+      `);
+      setupSwipeCarousel('langarCarousel');
+    }
+  }
+
   function renderToday(items) {
     const box = document.getElementById('dailyMenuPhotoBox');
     if (!box) return;
@@ -938,26 +783,71 @@ loadLiveMenuItems();
 
   function renderAbout(rows) {
     const track = document.getElementById('aboutStoryTrack');
-    if (!track) return;
-    const fallback = [{title:'Pure vegetarian food since 1996.', story_text:'Sudh Vaishno Tandoor is a pure vegetarian food shop at Gate No. 2, GMCH, Chandigarh, serving simple, satisfying and homely meals. Owned by Sudhir Mandal and serving customers since 1996.', public_url:'assets/photos/thali.png'}];
-    const first = (rows.length ? rows : fallback)[0];
-    const fullText = String(first.story_text || first.caption || 'Pure vegetarian food, fresh every day, with a homely taste.').trim();
-    const preview = fullText.length > 260 ? fullText.slice(0,257).trimEnd() + '…' : fullText;
-    track.innerHTML = `<article class="about-story-slide"><div class="about-story-image"><img src="${esc(first.public_url || 'assets/photos/thali.png')}" alt="${esc(first.title||'Sudh Vaishno Tandoor story')}" loading="eager"></div><div class="about-story-copy"><span class="eyebrow">ABOUT US</span><h2>${esc(first.title||'Our story')}</h2><p class="about-story-preview-text">${esc(preview)}</p><a class="about-read-more" href="story.html">Read full story <span>→</span></a><div class="about-story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div></div></article>`;
-    document.getElementById('aboutStoryCarousel')?.querySelectorAll('.swipe-arrow,.swipe-dots').forEach(el=>el.remove());
+    const root = document.getElementById('aboutStoryCarousel');
+    if (!track || !root) return;
+
+    const fallback = [{
+      title: 'Pure vegetarian food since 1996.',
+      story_text: 'Sudh Vaishno Tandoor is a pure vegetarian food shop at Gate No. 2, GMCH, Chandigarh, serving simple, satisfying and homely meals. Owned by Sudhir Mandal and serving customers since 1996.',
+      public_url: 'assets/photos/thali.png'
+    }];
+    const items = rows.length ? rows : fallback;
+
+    track.innerHTML = items.map((item, index) => {
+      const title = item.title || 'Our story';
+      const fullText = String(item.story_text || item.caption || 'Pure vegetarian food, fresh every day, with a homely taste.').trim();
+      const preview = fullText.length > 260 ? fullText.slice(0, 257).trimEnd() + '…' : fullText;
+      const image = item.public_url || 'assets/photos/thali.png';
+      return `<article class="about-story-slide">
+        <div class="about-story-image"><img src="${esc(image)}" alt="${esc(title)}" loading="${index === 0 ? 'eager' : 'lazy'}"></div>
+        <div class="about-story-copy">
+          <span class="eyebrow">ABOUT US</span>
+          <h2>${esc(title)}</h2>
+          <p class="about-story-preview-text">${esc(preview)}</p>
+          <a class="about-read-more" href="story.html">Read full story <span>→</span></a>
+          <div class="about-story-meta"><span>🌱 Pure Vegetarian</span><span>Since 1996</span><span>📍 Chandigarh</span></div>
+        </div>
+      </article>`;
+    }).join('');
+
+    const oldControls = root.querySelectorAll('.swipe-arrow,.swipe-dots');
+    oldControls.forEach(el => el.remove());
+
+    if (items.length > 1) {
+      root.insertAdjacentHTML('beforeend', `
+        <button class="swipe-arrow prev" type="button" data-carousel-prev="aboutStoryCarousel" aria-label="Previous story">‹</button>
+        <button class="swipe-arrow next" type="button" data-carousel-next="aboutStoryCarousel" aria-label="Next story">›</button>
+        <div class="swipe-dots" id="aboutStoryDots"></div>
+      `);
+      setupSwipeCarousel('aboutStoryCarousel');
+    }
   }
 
   function renderGallery(rows) {
     const track = document.getElementById('galleryTrack');
-    if (!track) return;
-    const fallback = (SHOP_CONFIG.galleryImages||[]).map((src,i)=>({public_url:src,title:'Sudh Vaishno Tandoor'}));
-    const items = rows.length ? rows : fallback;
-    track.innerHTML = items.map((p,i)=>{
+    const root = document.getElementById('galleryCarousel');
+    if (!track || !root) return;
+
+    const fallback = (SHOP_CONFIG.galleryImages || []).map(src => ({ public_url: src, title: 'Sudh Vaishno Tandoor' }));
+    const items = rows.length ? rows : fallback.slice(0, 5);
+
+    track.innerHTML = items.map((p, i) => {
       const title = p.caption || p.title || 'Sudh Vaishno Tandoor';
-      if (p.media_type === 'video') return `<div class="swipe-slide"><div class="gallery-media-card"><video src="${esc(p.public_url)}" controls muted playsinline preload="metadata" aria-label="${esc(title)}"></video><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
-      return `<div class="swipe-slide"><div class="gallery-media-card"><img src="${esc(p.public_url)}" alt="${esc(title)}" loading="${i===0?'eager':'lazy'}"><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
+      if (p.media_type === 'video') {
+        return `<div class="swipe-slide"><div class="gallery-media-card"><video src="${esc(p.public_url)}" controls muted playsinline preload="metadata" aria-label="${esc(title)}"></video><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
+      }
+      return `<div class="swipe-slide"><div class="gallery-media-card"><img src="${esc(p.public_url)}" alt="${esc(title)}" loading="${i === 0 ? 'eager' : 'lazy'}"><div class="gallery-media-caption">${esc(title)}</div></div></div>`;
     }).join('');
-    if (items.length>1) setupSwipeCarousel('galleryCarousel');
+
+    root.querySelectorAll('.swipe-arrow,.swipe-dots').forEach(el => el.remove());
+    if (items.length > 1) {
+      root.insertAdjacentHTML('beforeend', `
+        <button class="swipe-arrow prev" type="button" data-carousel-prev="galleryCarousel" aria-label="Previous food photo">‹</button>
+        <button class="swipe-arrow next" type="button" data-carousel-next="galleryCarousel" aria-label="Next food photo">›</button>
+        <div class="swipe-dots" id="galleryDots"></div>
+      `);
+      setupSwipeCarousel('galleryCarousel');
+    }
   }
 
   async function loadBranding() {
@@ -990,21 +880,26 @@ loadLiveMenuItems();
 
   async function loadAdvancedContent() {
     renderReviews(fallbackReviews);
-    try {
-      const [today,about,gallery] = await Promise.all([
-        getContent('menu', 20).then(rows => rows.filter(x=>x.is_today)),
-        getContent('about', 20),
-        getContent('gallery', 30)
-      ]);
-      renderToday(today);
-      renderAbout(about);
-      renderGallery(gallery.slice(0,5));
-    } catch(e) {
-      console.warn('Advanced content migration not installed yet; using built-in website content.', e.message || e);
-      renderAbout([]);
-      renderGallery([]);
-      // Existing legacy Today's Menu loader will still populate the single-photo version if available.
-    }
+
+    const results = await Promise.allSettled([
+      getContent('menu', 20).then(rows => rows.filter(x => x.is_today)),
+      getContent('about', 20),
+      getContent('gallery', 30),
+      getContent('langar', 30)
+    ]);
+
+    const valueAt = index => results[index]?.status === 'fulfilled' ? results[index].value : [];
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.warn(`Live content category ${index + 1} unavailable:`, result.reason?.message || result.reason);
+      }
+    });
+
+    renderToday(valueAt(0));
+    renderAbout(valueAt(1));
+    renderGallery(valueAt(2).slice(0, 5));
+    renderLangar(valueAt(3));
+
     loadReviews();
     loadBranding();
   }
