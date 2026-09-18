@@ -236,6 +236,93 @@ function attachPhoneShowcaseTouchSwipe(track) {
   }, { passive: true });
 }
 
+/* SECTION 4 ONLY — MENU CARD PHOTO SWIPE
+   Keep the menu carousel independent from the other carousels so changes here
+   cannot alter the Hero, phone showcase, Story, or other sections. */
+function attachMenuCarouselTouchSwipe(track) {
+  if (!track || track.dataset.menuTouchSwipe === "1") return;
+  track.dataset.menuTouchSwipe = "1";
+
+  let startX = 0;
+  let startY = 0;
+  let startScroll = 0;
+  let direction = null;
+  let tracking = false;
+
+  const getSlides = () => [...track.children];
+
+  const snapToSlide = dx => {
+    const slides = getSlides();
+    if (!slides.length) return;
+
+    let nearest = 0;
+    let nearestDistance = Infinity;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearest = index;
+      }
+    });
+
+    let target = nearest;
+    if (Math.abs(dx) >= 32) {
+      target = dx < 0
+        ? Math.min(slides.length - 1, nearest + 1)
+        : Math.max(0, nearest - 1);
+    }
+
+    track.scrollTo({ left: slides[target].offsetLeft, behavior: "smooth" });
+  };
+
+  track.addEventListener("touchstart", event => {
+    if (event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startScroll = track.scrollLeft;
+    direction = null;
+    tracking = true;
+  }, { passive: true });
+
+  track.addEventListener("touchmove", event => {
+    if (!tracking || event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (!direction) {
+      if (absX < 8 && absY < 8) return;
+      direction = absX > absY + 6 ? "horizontal" : "vertical";
+    }
+
+    // Vertical gesture: never cancel it. The page remains normally scrollable.
+    if (direction !== "horizontal") return;
+
+    // Horizontal gesture: this carousel owns the movement.
+    if (event.cancelable) event.preventDefault();
+    track.scrollLeft = startScroll - dx;
+  }, { passive: false });
+
+  track.addEventListener("touchend", event => {
+    if (!tracking) return;
+    if (direction === "horizontal") {
+      const touch = event.changedTouches[0];
+      snapToSlide(touch.clientX - startX);
+    }
+    tracking = false;
+    direction = null;
+  }, { passive: true });
+
+  track.addEventListener("touchcancel", () => {
+    tracking = false;
+    direction = null;
+  }, { passive: true });
+}
+
 function setupSwipeCarousel(id) {
   const root = document.getElementById(id);
   if (!root) return;
@@ -247,6 +334,8 @@ function setupSwipeCarousel(id) {
   if (!slides.length) return;
   if (id === "phoneMediaCarousel") {
     attachPhoneShowcaseTouchSwipe(track);
+  } else if (id.startsWith("menuCarousel-")) {
+    attachMenuCarouselTouchSwipe(track);
   } else {
     attachSafeHorizontalSwipe(track);
   }
