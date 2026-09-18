@@ -5813,3 +5813,200 @@ footer > p::after {
     z-index: 2 !important;
   }
 }
+
+
+/* =========================================================
+   SECTION 5 — LANGAR SEVA / BULK ORDERS
+   Targeted mobile/layout/gesture fixes only.
+   Sections 1–4 are intentionally left unchanged.
+   ========================================================= */
+.langar-section .langar-copy,
+.langar-section .langar-visual,
+.langar-section .langar-points,
+.langar-section .langar-actions,
+.langar-section .langar-gallery,
+.langar-section .swipe-carousel,
+.langar-section .swipe-track,
+.langar-section .swipe-slide {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+.langar-section .langar-copy > p,
+.langar-section .langar-point strong,
+.langar-section .langar-point small,
+.langar-section .langar-actions .btn {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.langar-section .langar-point {
+  min-width: 0;
+}
+
+/* Give each emoji/icon the full visual space of its icon tile. */
+.langar-section .langar-point-icon {
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  font-size: 25px !important;
+  line-height: 1 !important;
+  border-radius: 13px !important;
+}
+
+.langar-section .langar-point > span:last-child {
+  min-width: 0;
+}
+
+/* Keep the Langar photo inside its own card instead of letting it
+   enlarge the grid or push content outside the viewport. */
+.langar-section .langar-visual {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.langar-section .langar-gallery .swipe-carousel {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.langar-section .langar-gallery .swipe-track {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  gap: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  touch-action: pan-y pinch-zoom !important;
+  scroll-snap-type: x mandatory !important;
+}
+.langar-section .langar-gallery .swipe-slide {
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 350px;
+  overflow: hidden;
+  scroll-snap-align: start !important;
+}
+.langar-section .langar-gallery .swipe-slide img,
+.langar-section .langar-gallery .swipe-slide video,
+.langar-section .langar-photo-card,
+.langar-section .langar-youtube-card {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-width: 0;
+  object-fit: cover;
+  box-sizing: border-box;
+}
+.langar-section .langar-photo-card,
+.langar-section .langar-youtube-card {
+  overflow: hidden;
+  border-radius: 21px;
+}
+
+@media (max-width: 1000px) {
+  .langar-section {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .langar-section .langar-copy,
+  .langar-section .langar-visual {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .langar-section {
+    width: calc(100% - 32px) !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    padding: 24px 16px 22px !important;
+    gap: 22px !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+  }
+
+  .langar-section .langar-visual {
+    order: -1;
+    min-height: 0 !important;
+    padding: 8px !important;
+    border-radius: 18px !important;
+  }
+
+  .langar-section .langar-gallery .swipe-slide {
+    height: clamp(230px, 68vw, 300px) !important;
+    border-radius: 15px !important;
+  }
+
+  .langar-section .langar-gallery .swipe-slide img,
+  .langar-section .langar-gallery .swipe-slide video {
+    border-radius: 15px !important;
+  }
+
+  .langar-section .langar-eyebrow {
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: normal;
+    line-height: 1.25;
+  }
+
+  .langar-section .langar-copy h2 {
+    max-width: 100%;
+    font-size: clamp(35px, 11vw, 44px) !important;
+    letter-spacing: -1.5px !important;
+    overflow-wrap: normal;
+  }
+
+  .langar-section .langar-copy > p {
+    max-width: 100% !important;
+    font-size: 13px !important;
+    line-height: 1.65 !important;
+  }
+
+  .langar-section .langar-points {
+    width: 100%;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 20px !important;
+  }
+
+  .langar-section .langar-point {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px !important;
+    gap: 12px !important;
+    align-items: center !important;
+    border-radius: 14px !important;
+  }
+
+  .langar-section .langar-point strong {
+    font-size: 12px !important;
+  }
+
+  .langar-section .langar-point small {
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+  }
+
+  .langar-section .langar-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px !important;
+    margin-top: 20px !important;
+  }
+
+  .langar-section .langar-actions .btn {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    text-align: center;
+  }
+}
