@@ -6143,3 +6143,59 @@ footer > p::after {
   0%,100% { transform:translateX(0); }
   50% { transform:translateX(4px); }
 }
+
+/* =====================================================
+   SECTION 9 — CONTACT / VISIT / ORDER / ENJOY
+   Scoped additions only: spacing + five CTA motions.
+   ===================================================== */
+
+/* Give the Contact section a controlled header gap and a smaller
+   gap before the footer, without changing the section's layout. */
+.contact-section.v2-contact {
+  margin-top: 28px;
+  margin-bottom: 34px;
+}
+
+/* Subtle independent transient movement for all five action buttons. */
+.v2-contact-actions .v2-action {
+  animation: contactButtonFloat 4.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.v2-contact-actions .v2-action:nth-child(1) { animation-delay: 0s; }
+.v2-contact-actions .v2-action:nth-child(2) { animation-delay: .45s; }
+.v2-contact-actions .v2-action:nth-child(3) { animation-delay: .9s; }
+.v2-contact-actions .v2-action:nth-child(4) { animation-delay: 1.35s; }
+.v2-contact-actions .v2-action:nth-child(5) { animation-delay: 1.8s; }
+
+@keyframes contactButtonFloat {
+  0%, 72%, 100% { transform: translateY(0); }
+  78% { transform: translateY(-3px); }
+  84% { transform: translateY(0); }
+  89% { transform: translateY(-2px); }
+  94% { transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .contact-section.v2-contact {
+    margin-top: 24px;
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-section.v2-contact {
+    margin-top: 24px;
+    margin-bottom: 22px;
+  }
+
+  .v2-contact-actions .v2-action {
+    animation-duration: 5.2s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v2-contact-actions .v2-action {
+    animation: none !important;
+  }
+}
