@@ -5851,9 +5851,15 @@ footer > p::after {
   width: 48px !important;
   height: 48px !important;
   min-width: 48px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
   font-size: 25px !important;
   line-height: 1 !important;
   border-radius: 13px !important;
+  box-sizing: border-box !important;
 }
 
 .langar-section .langar-point > span:last-child {
@@ -5879,8 +5885,11 @@ footer > p::after {
   gap: 0 !important;
   overflow-x: auto !important;
   overflow-y: hidden !important;
-  touch-action: pan-y pinch-zoom !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-x pan-y pinch-zoom !important;
   scroll-snap-type: x mandatory !important;
+  scroll-snap-stop: always !important;
+  scroll-behavior: smooth !important;
 }
 .langar-section .langar-gallery .swipe-slide {
   flex: 0 0 100% !important;
