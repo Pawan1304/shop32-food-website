@@ -29,26 +29,17 @@ function attachSafeHorizontalSwipe(track) {
   if (!track || track.dataset.safeSwipe === "1") return;
   track.dataset.safeSwipe = "1";
 
-  let pointerId = null;
-  let startX = 0;
-  let startY = 0;
-  let startScroll = 0;
-  let active = false;
-  let horizontal = false;
+  let pointerId = null, startX = 0, startY = 0, startScroll = 0;
+  let active = false, horizontal = false;
 
   const isInteractive = target => !!target?.closest?.(
-    "button, input, textarea, select, video, audio"
+    "button, input, textarea, select, video, audio, a, [contenteditable='true']"
   );
 
   const setDragging = on => {
     track.classList.toggle("is-dragging", on);
-    if (on) {
-      track.style.scrollBehavior = "auto";
-      track.style.scrollSnapType = "none";
-    } else {
-      track.style.removeProperty("scroll-behavior");
-      track.style.removeProperty("scroll-snap-type");
-    }
+    track.style.scrollBehavior = on ? "auto" : "";
+    track.style.scrollSnapType = on ? "none" : "";
   };
 
   const cleanup = () => {
@@ -61,9 +52,7 @@ function attachSafeHorizontalSwipe(track) {
   const snapToNearest = dx => {
     const slides = [...track.children];
     if (!slides.length) return;
-
-    let nearestIndex = 0;
-    let nearestDistance = Infinity;
+    let nearestIndex = 0, nearestDistance = Infinity;
     slides.forEach((slide, index) => {
       const distance = Math.abs(slide.offsetLeft - track.scrollLeft);
       if (distance < nearestDistance) {
@@ -71,34 +60,23 @@ function attachSafeHorizontalSwipe(track) {
         nearestIndex = index;
       }
     });
-
     let targetIndex = nearestIndex;
     if (Math.abs(dx) >= 36) {
       targetIndex = dx < 0
         ? Math.min(slides.length - 1, nearestIndex + 1)
         : Math.max(0, nearestIndex - 1);
     }
-
-    track.scrollTo({
-      left: slides[targetIndex].offsetLeft,
-      behavior: "smooth"
-    });
+    track.scrollTo({ left: slides[targetIndex].offsetLeft, behavior: "smooth" });
   };
 
   const end = event => {
     if (!active || event.pointerId !== pointerId) return;
-
     const wasHorizontal = horizontal;
     const dx = event.clientX - startX;
-
-    if (wasHorizontal && !track.classList.contains("reviews-touch-carousel")) snapToNearest(dx);
-
+    if (wasHorizontal) snapToNearest(dx);
     try {
-      if (track.hasPointerCapture?.(event.pointerId)) {
-        track.releasePointerCapture(event.pointerId);
-      }
+      if (track.hasPointerCapture?.(event.pointerId)) track.releasePointerCapture(event.pointerId);
     } catch (_) {}
-
     cleanup();
   };
 
@@ -106,7 +84,6 @@ function attachSafeHorizontalSwipe(track) {
     if (!event.isPrimary) return;
     if (event.pointerType === "mouse" && event.button !== 0) return;
     if (isInteractive(event.target)) return;
-
     pointerId = event.pointerId;
     startX = event.clientX;
     startY = event.clientY;
@@ -117,30 +94,21 @@ function attachSafeHorizontalSwipe(track) {
 
   track.addEventListener("pointermove", event => {
     if (!active || event.pointerId !== pointerId) return;
-
-    const dx = event.clientX - startX;
-    const dy = event.clientY - startY;
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
+    const dx = event.clientX - startX, dy = event.clientY - startY;
+    const absX = Math.abs(dx), absY = Math.abs(dy);
 
     if (!horizontal) {
       if (absX < 8 && absY < 8) return;
-
-      // Vertical gesture: immediately hand the gesture back to the browser.
-      // `touch-action: pan-y pinch-zoom` then keeps normal page scrolling.
       if (absY > absX + 6) {
         cleanup();
         return;
       }
-
-      // Horizontal gesture: JS takes control of the carousel.
       horizontal = true;
       setDragging(true);
       try { track.setPointerCapture(event.pointerId); } catch (_) {}
     }
 
     if (!horizontal) return;
-
     if (event.cancelable) event.preventDefault();
     track.scrollLeft = startScroll - dx;
   }, { passive: false });
