@@ -999,6 +999,86 @@ loadLiveMenuItems();
     { reviewer_name:'Tarkesh 99', review_text:'Tasty food.', rating:5, review_count:4 }
   ];
 
+  /* SECTION 8 / REVIEWS ONLY — two-axis touch swipe.
+     Horizontal gestures move one review at a time; vertical gestures remain
+     native page scrolling. This is intentionally isolated from all other
+     carousels. */
+  function attachReviewsTouchSwipe(root) {
+    if (!root || root.dataset.reviewTouchSwipe === '1') return;
+    root.dataset.reviewTouchSwipe = '1';
+
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startScroll = 0;
+    let direction = null;
+
+    const track = root.querySelector('.reviews-track');
+    const getSlides = () => track ? [...track.querySelectorAll('.review')] : [];
+
+    const snap = dx => {
+      const slides = getSlides();
+      if (!slides.length) return;
+      const currentLeft = root.scrollLeft;
+      let nearest = 0;
+      let distance = Infinity;
+      slides.forEach((slide, i) => {
+        const d = Math.abs(slide.offsetLeft - currentLeft);
+        if (d < distance) { distance = d; nearest = i; }
+      });
+      let target = nearest;
+      if (Math.abs(dx) >= 40) {
+        target = dx < 0 ? Math.min(slides.length - 1, nearest + 1)
+                        : Math.max(0, nearest - 1);
+      }
+      root.scrollTo({ left: Math.max(0, slides[target].offsetLeft), behavior: 'smooth' });
+    };
+
+    const end = event => {
+      if (pointerId !== event.pointerId) return;
+      if (direction === 'horizontal') snap(event.clientX - startX);
+      pointerId = null;
+      direction = null;
+      root.classList.remove('is-dragging');
+    };
+
+    root.addEventListener('pointerdown', event => {
+      if (!event.isPrimary) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startScroll = root.scrollLeft;
+      direction = null;
+      root.classList.add('is-dragging');
+    }, { passive: true });
+
+    root.addEventListener('pointermove', event => {
+      if (pointerId !== event.pointerId) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      const ax = Math.abs(dx);
+      const ay = Math.abs(dy);
+
+      if (!direction) {
+        if (ax < 8 && ay < 8) return;
+        direction = ax > ay + 6 ? 'horizontal' : 'vertical';
+      }
+
+      if (direction !== 'horizontal') return;
+      if (event.cancelable) event.preventDefault();
+      root.scrollLeft = startScroll - dx;
+    }, { passive: false });
+
+    root.addEventListener('pointerup', end, { passive: true });
+    root.addEventListener('pointercancel', end, { passive: true });
+    root.addEventListener('lostpointercapture', () => {
+      pointerId = null;
+      direction = null;
+      root.classList.remove('is-dragging');
+    }, { passive: true });
+  }
+
   function setupAutoReviewCarousel() {
     const root = document.getElementById('reviewsCarousel');
     const track = document.getElementById('reviewsTrack');
@@ -1055,7 +1135,7 @@ loadLiveMenuItems();
       raf = requestAnimationFrame(animate);
     };
 
-    attachSafeHorizontalSwipe(root);
+    attachReviewsTouchSwipe(root);
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(animate);
 
