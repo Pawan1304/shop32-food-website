@@ -1951,6 +1951,8 @@
 
     .reviews-section {
       background: white;
+      padding-top: 72px;
+      padding-bottom: 72px;
     }
 
     .google-rating-card {
@@ -4681,12 +4683,13 @@
 .gallery-media-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:56px; height:56px; border-radius:50%; display:grid; place-items:center; background:rgba(240,75,35,.95); color:#fff; font-size:22px; padding-left:3px; }
 
 /* Reviews: swipeable, readable, auto-advance; interaction pauses and resumes after 1 second. */
-.reviews-marquee.reviews-touch-carousel { overflow-x:auto; overflow-y:hidden; padding:8px 6vw 22px; margin-left:0; width:100%; mask-image:none; -webkit-mask-image:none; scrollbar-width:none; cursor:grab; }
+.reviews-marquee.reviews-touch-carousel { overflow-x:auto; overflow-y:hidden; padding:8px 6vw 22px; margin-left:0; width:100%; mask-image:none; -webkit-mask-image:none; scrollbar-width:none; cursor:grab; touch-action:pan-y pinch-zoom; overscroll-behavior-x:contain; }
 .reviews-touch-carousel::-webkit-scrollbar { display:none; }
-.reviews-touch-carousel:active { cursor:grabbing; }
+.reviews-touch-carousel:active, .reviews-touch-carousel.is-dragging { cursor:grabbing; }
 .reviews-touch-carousel .reviews-track { width:max-content; animation:none !important; gap:16px; }
 .reviews-touch-carousel .review { flex:0 0 min(350px,82vw); width:min(350px,82vw); min-height:235px; }
 @media(max-width:600px){
+  .reviews-section { padding-top: 56px; padding-bottom: 56px; }
   .reviews-marquee.reviews-touch-carousel { padding:6px 14px 18px; scroll-snap-type:none; }
   .reviews-touch-carousel .reviews-track .review { flex-basis:82vw; width:82vw; min-height:205px; padding:18px; scroll-snap-align:none; }
 }
@@ -6126,4 +6129,17 @@ footer > p::after {
   .photos-section .gallery-more-arrow {
     animation: none !important;
   }
+}
+
+/* Reviews CTA arrow: subtle transient nudge */
+.reviews-cta-actions .btn-primary { position:relative; }
+.reviews-cta-actions .btn-primary::after {
+  content:'→';
+  display:inline-block;
+  margin-left:6px;
+  animation: reviewsArrowNudge 1.5s ease-in-out infinite;
+}
+@keyframes reviewsArrowNudge {
+  0%,100% { transform:translateX(0); }
+  50% { transform:translateX(4px); }
 }
