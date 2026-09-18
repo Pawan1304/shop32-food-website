@@ -6199,3 +6199,138 @@ footer > p::after {
     animation: none !important;
   }
 }
+
+/* =========================================================
+   SECTION 10 — MOBILE NAVIGATION FINAL COMPACT UI
+   Scoped only to the fixed mobile navigation.
+   ========================================================= */
+@media (max-width: 900px) {
+  .mobile-nav {
+    height: 62px !important;
+    min-height: 62px !important;
+    padding: 4px 8px calc(4px + env(safe-area-inset-bottom)) !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 5px !important;
+    background: rgba(255,252,248,.98) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    box-shadow: 0 -6px 24px rgba(45,29,18,.10) !important;
+  }
+
+  .mobile-nav a,
+  .mobile-nav button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 72px !important;
+    height: 52px !important;
+    margin: 0 !important;
+    padding: 5px 4px 4px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    border: 1px solid transparent !important;
+    border-radius: 13px !important;
+    color: #756a60 !important;
+    background: transparent !important;
+    line-height: 1 !important;
+    font-size: 20px !important;
+    text-decoration: none !important;
+    transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease, box-shadow .18s ease !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav a:hover,
+  .mobile-nav button:hover {
+    background: rgba(240,75,35,.07) !important;
+    border-color: rgba(240,75,35,.10) !important;
+  }
+
+  .mobile-nav a:active,
+  .mobile-nav button:active {
+    transform: translateY(-1px) scale(.97) !important;
+    background: rgba(240,75,35,.12) !important;
+  }
+
+  /* The emoji/symbol itself gets a predictable, centered footprint. */
+  .mobile-nav a:not(:has(span)),
+  .mobile-nav button:not(:has(span)) {
+    font-size: 20px !important;
+  }
+
+  .mobile-nav a,
+  .mobile-nav button {
+    text-align: center !important;
+  }
+
+  .mobile-nav span {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 8.5px !important;
+    line-height: 1.15 !important;
+    font-weight: 800 !important;
+    letter-spacing: .1px !important;
+  }
+
+  .mobile-nav b {
+    top: 3px !important;
+    right: calc(50% - 22px) !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    padding: 0 4px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    font-size: 8px !important;
+    line-height: 16px !important;
+    background: #f04b23 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+  }
+
+  /* Keep page content clear of the shorter fixed navigation. */
+  body {
+    padding-bottom: 62px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .mobile-nav {
+    height: 60px !important;
+    min-height: 60px !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+  }
+
+  .mobile-nav a,
+  .mobile-nav button {
+    height: 50px !important;
+    font-size: 19px !important;
+    border-radius: 12px !important;
+  }
+
+  .mobile-nav span {
+    font-size: 8px !important;
+  }
+
+  .mobile-nav b {
+    right: calc(50% - 21px) !important;
+  }
+
+  body {
+    padding-bottom: 60px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav a,
+  .mobile-nav button {
+    transition: none !important;
+  }
+}
