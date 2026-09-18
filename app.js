@@ -394,6 +394,66 @@ function attachLangarCarouselTouchSwipe(track) {
   }, { passive: true });
 }
 
+
+/* SECTION 6 ONLY — About Us story carousel touch handling.
+   Horizontal swipe changes the story; vertical swipe stays with the page. */
+function attachAboutStoryTouchSwipe(track) {
+  if (!track || track.dataset.aboutTouchSwipe === "1") return;
+  track.dataset.aboutTouchSwipe = "1";
+
+  let startX = 0, startY = 0, startScroll = 0;
+  let direction = null, tracking = false;
+
+  const slides = () => [...track.children];
+  const snap = dx => {
+    const items = slides();
+    if (!items.length) return;
+    let current = 0, best = Infinity;
+    items.forEach((slide, i) => {
+      const d = Math.abs(slide.offsetLeft - track.scrollLeft);
+      if (d < best) { best = d; current = i; }
+    });
+    let target = current;
+    if (Math.abs(dx) >= 35) {
+      target = dx < 0 ? Math.min(items.length - 1, current + 1)
+                       : Math.max(0, current - 1);
+    }
+    track.scrollTo({ left: items[target].offsetLeft, behavior: "smooth" });
+  };
+
+  track.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY;
+    startScroll = track.scrollLeft;
+    direction = null; tracking = true;
+  }, { passive: true });
+
+  track.addEventListener("touchmove", e => {
+    if (!tracking || e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const dx = t.clientX - startX, dy = t.clientY - startY;
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (!direction) {
+      if (ax < 8 && ay < 8) return;
+      direction = ax > ay + 6 ? "horizontal" : "vertical";
+    }
+    if (direction !== "horizontal") return;
+    if (e.cancelable) e.preventDefault();
+    track.scrollLeft = startScroll - dx;
+  }, { passive: false });
+
+  track.addEventListener("touchend", e => {
+    if (!tracking) return;
+    if (direction === "horizontal") snap(e.changedTouches[0].clientX - startX);
+    tracking = false; direction = null;
+  }, { passive: true });
+
+  track.addEventListener("touchcancel", () => {
+    tracking = false; direction = null;
+  }, { passive: true });
+}
+
 function setupSwipeCarousel(id) {
   const root = document.getElementById(id);
   if (!root) return;
@@ -405,6 +465,8 @@ function setupSwipeCarousel(id) {
   if (!slides.length) return;
   if (id === "phoneMediaCarousel") {
     attachPhoneShowcaseTouchSwipe(track);
+  } else if (id === "aboutStoryCarousel") {
+    attachAboutStoryTouchSwipe(track);
   } else if (id.startsWith("menuCarousel-")) {
     attachMenuCarouselTouchSwipe(track);
   } else if (id === "langarCarousel") {
