@@ -1,7 +1,7 @@
-const CACHE = 'sudh-vaishno-tandoor-v11-native-vertical-scroll';
+const CACHE = 'sudh-vaishno-tandoor-v14-audit-fix';
 const APP_SHELL = [
   './', './index.html','./gallery.html','./story.html', './style.css', './app.js', './config.js', './supabase-config.js',
-  './manifest.json', './favicon.png', './assets/photos/logo.png', './assets/icons/icon-192.png', './assets/icons/icon-512.png'
+  './manifest.json', './favicon.png', './og-image.jpg', './assets/photos/logo.png', './assets/photos/thali.png', './assets/photos/paratha.png', './assets/photos/rajma-rice.png', './assets/photos/dal.png', './assets/photos/roti.png', './assets/icons/icon-192.png', './assets/icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {
