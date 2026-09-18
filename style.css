@@ -4061,6 +4061,9 @@
 
     .phone-media-carousel .swipe-track {
       border-radius: 17px;
+      /* Section 2 only: keep vertical page scrolling native while the
+         dedicated JS handler owns horizontal photo swipes. */
+      touch-action: pan-y pinch-zoom;
     }
 
     .phone-media-carousel .swipe-slide {
