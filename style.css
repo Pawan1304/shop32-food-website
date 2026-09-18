@@ -3956,23 +3956,17 @@
 
     .hero-location { margin-bottom: 2px; }
 
-    /* Floating cart only while user is inside the menu */
+    /* Floating cart: always visible while scrolling the page */
     #openCart {
       position: fixed;
       left: 20px;
       bottom: 92px;
-      z-index: 145;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(14px) scale(.96);
-      box-shadow: 0 16px 38px rgba(32,27,23,.22);
-      transition: opacity .25s ease, transform .25s ease;
-    }
-
-    body.menu-visible #openCart {
+      z-index: 9999;
       opacity: 1;
+      visibility: visible;
       pointer-events: auto;
       transform: translateY(0) scale(1);
+      box-shadow: 0 16px 38px rgba(32,27,23,.22);
     }
 
     /* Generic swipe carousel */
