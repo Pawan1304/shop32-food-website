@@ -4094,9 +4094,25 @@
       background: #fff7f1;
     }
 
-    .menu-card .menu-carousel .swipe-track { gap: 0; }
+    /* SECTION 4 ONLY: menu photos have their own horizontal touch lane.
+       Vertical gestures remain available to the page. */
+    .menu-card .menu-carousel .swipe-track {
+      gap: 0;
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      touch-action: pan-y pinch-zoom;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
 
-    .menu-card .menu-carousel .swipe-slide { flex-basis: 100%; }
+    .menu-card .menu-carousel .swipe-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      min-width: 100%;
+      flex-basis: 100%;
+    }
 
     .menu-card .menu-img {
       width: 100%;
