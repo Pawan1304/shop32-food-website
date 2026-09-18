@@ -3994,8 +3994,7 @@
       /* Allow BOTH vertical page scrolling and horizontal photo swiping.
          Previously this was `pan-x`, which trapped finger gestures on photos
          and made the page feel stuck while scrolling down. */
-      touch-action: pan-x pan-y;
-    }
+        }
 
     .swipe-track::-webkit-scrollbar { display: none; }
 
@@ -4690,7 +4689,6 @@
   overflow-y: hidden;
   scroll-behavior: auto;
   overscroll-behavior-x: contain;
-  touch-action: pan-x;
 }
 .reviews-touch-carousel .reviews-track {
   width: max-content;
@@ -5303,7 +5301,6 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
   animation:waterFloatFarLeft 4.8s ease-in-out infinite;
 }
 .story-section .food-rajma { right:2%;top:43%;z-index:2; }
-.story-section .floating-food,.story-section .floating-water,.story-section .butter-tikki{touch-action:none}
 
 /* Menu: only the clicked quantity control changes; no whole-grid redraw. */
 .menu-action{display:inline-flex;align-items:center;justify-content:flex-end;min-width:0}
@@ -5316,7 +5313,7 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
 .menu-qty-pop strong{animation:qtyNumberPop 420ms var(--motion-ease) both}
 
 /* Reviews: allow both horizontal review swipes AND normal vertical page scrolling. */
-.reviews-touch-carousel{touch-action:pan-x pan-y;overscroll-behavior-x:contain;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
+.reviews-touch-carousel{overscroll-behavior-x:contain;overscroll-behavior-y:auto;-webkit-overflow-scrolling:touch}
 .reviews-touch-carousel .review{transform:translateZ(0)}
 
 /* Visible emoji/icon micro-interactions. */
@@ -5352,7 +5349,7 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
   .story-section .food-rajma{width:76px !important;height:76px !important;right:-10px !important;top:43% !important}
   .experience-content .feature-card{animation-duration:5.8s}
   .feature-icon{animation-duration:3.7s}
-  .reviews-touch-carousel{touch-action:pan-x pan-y !important}
+  /* touch-action handled by the V14 gesture block below */
   .hero-order-btn:active .order-icon,.feature-card:active .feature-icon{animation-play-state:paused;transform:scale(.92)}
 }
 
@@ -5491,7 +5488,6 @@ img[loading="lazy"] { transition: opacity 500ms ease, transform 700ms var(--moti
 .reviews-touch-carousel {
   /* Allow the browser to recognize BOTH directions.
      app.js takes over only after a clear horizontal gesture. */
-  touch-action: pan-x pan-y !important;
   overscroll-behavior-y: auto !important;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
@@ -5608,70 +5604,64 @@ footer > p::after {
 }
 
 /* =========================================================
-   V10 CAROUSEL GESTURE FIX
-   Vertical swipes stay with the page; horizontal swipes stay with the photo.
+   V14 — AUTHORITATIVE TWO-AXIS GESTURE SYSTEM
+   One Pointer Events handler owns horizontal carousel movement.
+   Browser owns vertical page scrolling and pinch zooming.
    ========================================================= */
 .swipe-track,
 .reviews-touch-carousel {
-  touch-action: pan-y !important;
-  overscroll-behavior-y: auto !important;
-  overscroll-behavior-x: contain !important;
-}
-
-.swipe-track {
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.swipe-track::-webkit-scrollbar { display: none; }
-
-.swipe-track .swipe-slide {
-  flex: 0 0 100%;
-  min-width: 100%;
-  scroll-snap-align: start;
-}
-
-/* Never let decorative/food images start the browser's native image drag. */
-.swipe-track img {
-  -webkit-user-drag: none;
-  user-drag: none;
-}
-
-
-/* =========================================================
-   V11 PHONE + MENU PHOTO GESTURE FIX
-   Native vertical page scroll; pointer-only horizontal carousel.
-   ========================================================= */
-.phone-frame,
-.phone-screen,
-.phone-media-carousel,
-.menu-card .menu-carousel {
-  touch-action: auto !important;
-}
-
-.phone-media-carousel .swipe-track,
-.menu-card .menu-carousel .swipe-track,
-.about-image .swipe-track,
-.langar-gallery .swipe-track,
-.food-moments-carousel .swipe-track {
   touch-action: pan-y pinch-zoom !important;
   overscroll-behavior-y: auto !important;
   overscroll-behavior-x: contain !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
 }
 
 .swipe-track {
+  display: flex !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  scroll-snap-type: x mandatory !important;
+  scroll-behavior: smooth !important;
   cursor: grab;
 }
 
-.swipe-track:active {
-  cursor: grabbing;
+.swipe-track::-webkit-scrollbar { display: none !important; }
+
+.swipe-track > .swipe-slide {
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  scroll-snap-align: start !important;
 }
 
-/* Do not animate the track while the finger is physically dragging it. */
 .swipe-track.is-dragging {
-  scroll-behavior: auto !important;
+  cursor: grabbing !important;
   scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
+.swipe-track img,
+.swipe-track video {
+  -webkit-user-drag: none !important;
+}
+
+/* Never make a decorative floating object steal page scrolling. */
+.story-section .floating-food,
+.story-section .floating-water,
+.story-section .butter-tikki {
+  touch-action: auto !important;
+}
+
+/* V14: Langar video slides use the same full-frame treatment as photos. */
+.langar-photo-card video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 21px;
+  background: #000;
 }
