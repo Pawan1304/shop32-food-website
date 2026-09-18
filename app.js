@@ -662,7 +662,7 @@ const menuSection = document.getElementById("menu");
 if (menuSection && "IntersectionObserver" in window) {
   const menuObserver = new IntersectionObserver(entries => {
     document.body.classList.toggle("menu-visible", entries[0].isIntersecting);
-  }, { threshold: 0.08 });
+  }, { threshold: 0 });
   menuObserver.observe(menuSection);
 }
 
