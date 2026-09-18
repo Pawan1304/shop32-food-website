@@ -5741,3 +5741,40 @@ footer > p::after {
     text-overflow: ellipsis;
   }
 }
+
+
+/* =========================================================
+   SECTION 2 — PHONE SHOWCASE TOUCH ONLY
+   Do not alter other sections/carousels.
+   ========================================================= */
+#phoneMediaCarousel #phoneMediaTrack {
+  touch-action: pan-y pinch-zoom !important;
+  overscroll-behavior-x: contain !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+  cursor: grab;
+}
+
+#phoneMediaCarousel #phoneMediaTrack::-webkit-scrollbar {
+  display: none !important;
+}
+
+#phoneMediaCarousel #phoneMediaTrack.is-dragging {
+  cursor: grabbing;
+}
+
+#phoneMediaCarousel .swipe-slide {
+  flex: 0 0 100% !important;
+  min-width: 100% !important;
+  scroll-snap-align: start !important;
+}
+
+#phoneMediaCarousel img,
+#phoneMediaCarousel video {
+  -webkit-user-drag: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
