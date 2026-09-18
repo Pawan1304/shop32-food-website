@@ -6068,3 +6068,62 @@ footer > p::after {
     object-fit: cover;
   }
 }
+
+/* =========================================================
+   SECTION 7 — FOOD & MOMENTS SPACING / TOUCH / MOTION
+   Only affects the Food & Moments section.
+   ========================================================= */
+.photos-section {
+  padding-top: 64px;
+  padding-bottom: 58px;
+}
+
+.photos-section .section-heading {
+  margin-bottom: 28px;
+}
+
+.photos-section .section-heading .eyebrow {
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.photos-section .food-moments-carousel .swipe-track {
+  touch-action: pan-y pinch-zoom !important;
+  overscroll-behavior-y: auto !important;
+  overscroll-behavior-x: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.photos-section .gallery-more-arrow {
+  display: inline-block;
+  will-change: transform;
+  animation: foodMomentsArrowNudge 1.8s ease-in-out infinite;
+}
+
+@keyframes foodMomentsArrowNudge {
+  0%, 100% { transform: translateX(0); }
+  45% { transform: translateX(6px); }
+  70% { transform: translateX(2px); }
+}
+
+@media (max-width: 600px) {
+  .photos-section {
+    padding-top: 52px;
+    padding-bottom: 44px;
+  }
+
+  .photos-section .section-heading {
+    margin-bottom: 24px;
+  }
+
+  .photos-section .food-moments-carousel .swipe-track {
+    touch-action: pan-y pinch-zoom !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photos-section .gallery-more-arrow {
+    animation: none !important;
+  }
+}
